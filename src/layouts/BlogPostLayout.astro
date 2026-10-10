@@ -1,0 +1,181 @@
+---
+import type { MarkdownHeading } from 'astro';
+import type { BlogPost } from '../lib/blog';
+import { estimateReadingTime, getAdjacentPosts } from '../lib/blog';
+import { sitePath } from '../lib/paths';
+import SiteNav from '../components/SiteNav.astro';
+import SeoHead from '../components/SeoHead.astro';
+import PostMeta from '../components/blog/PostMeta.astro';
+import PostNavigation from '../components/blog/PostNavigation.astro';
+import TableOfContents from '../components/blog/TableOfContents.astro';
+import '../styles/home.css';
+import '../styles/blog.css';
+
+interface Props {
+  post: BlogPost;
+  posts: BlogPost[];
+  headings: MarkdownHeading[];
+}
+
+const { post, posts, headings } = Astro.props;
+const { olderPost, newerPost } = getAdjacentPosts(posts, post.id);
+const readingMinutes = estimateReadingTime(post.body ?? '');
+const canonicalPath = `/blog/${post.id}`;
+const articleUrl = Astro.site ? new URL(sitePath(canonicalPath), Astro.site).toString() : undefined;
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: post.data.title,
+  description: post.data.description,
+  datePublished: post.data.publishedAt.toISOString(),
+  dateModified: (post.data.updatedAt ?? post.data.publishedAt).toISOString(),
+  inLanguage: 'zh-CN',
+  author: {
+    '@type': 'Person',
+    name: '于洋',
+  },
+  keywords: post.data.tags.join(', '),
+  ...(articleUrl ? { mainEntityOfPage: articleUrl, url: articleUrl } : {}),
+};
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <SeoHead
+      title={`${post.data.title}｜于洋技术博客`}
+      description={post.data.description}
+      canonicalPath={canonicalPath}
+      type="article"
+      publishedAt={post.data.publishedAt}
+      updatedAt={post.data.updatedAt}
+    />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </head>
+  <body class="blog-page blog-article-page">
+    <a class="skip-link" href="#article-content">跳至正文</a>
+    <SiteNav locale="zh" pathname={canonicalPath} showLanguageSwitch={false} />
+
+    <main id="article-content">
+      <header class="article-hero">
+        <div class="article-hero-inner">
+          <nav class="article-breadcrumb" aria-label="面包屑">
+            <a class="article-back" href={sitePath('/blog')}>博客</a>
+            <span aria-hidden="true">/</span>
+            <span>{post.data.category}</span>
+          </nav>
+          <p class="article-series">
+            {post.data.series
+              ? `${post.data.series} · ${String(post.data.seriesOrder).padStart(2, '0')}`
+              : '独立技术笔记'}
+          </p>
+          <h1>{post.data.title}</h1>
+          <p class="article-description">{post.data.description}</p>
+          <PostMeta
+            publishedAt={post.data.publishedAt}
+            updatedAt={post.data.updatedAt}
+            category={post.data.category}
+            readingMinutes={readingMinutes}
+            draft={post.data.draft}
+          />
+          <ul class="article-tags" aria-label="文章标签">
+            {post.data.tags.map((tag) => <li>{tag}</li>)}
+          </ul>
+        </div>
+      </header>
+
+      <TableOfContents headings={headings} mobile />
+
+      <div class="article-shell">
+        <aside class="article-aside">
+          <TableOfContents headings={headings} />
+        </aside>
+        <article class="article-prose" data-article-prose>
+          <slot />
+        </article>
+      </div>
+
+      <div class="article-end">
+        <p><span>END OF NOTE</span> 文中的命令、接口与边界均以文末来源和注明的运行环境为准。</p>
+        <PostNavigation olderPost={olderPost} newerPost={newerPost} />
+      </div>
+    </main>
+
+    <footer class="blog-footer">
+      <p>持续记录可复现、可解释、可维护的工程实践。</p>
+      <div>
+        <span>Yu Yang / 2026</span>
+        <a href="mailto:yuyang24@mails.ucas.ac.cn">yuyang24@mails.ucas.ac.cn</a>
+      </div>
+    </footer>
+
+    <script>
+      const article = document.querySelector<HTMLElement>('[data-article-prose]');
+
+      article?.querySelectorAll<HTMLAnchorElement>('a[href^="http"]').forEach((link) => {
+        link.rel = 'external noopener noreferrer';
+      });
+
+      article?.querySelectorAll('pre').forEach((pre) => {
+        const code = pre.querySelector('code');
+        if (!code || pre.querySelector('.code-copy')) return;
+        const button = document.createElement('button');
+        button.className = 'code-copy';
+        button.type = 'button';
+        button.textContent = '复制';
+        button.setAttribute('aria-label', '复制代码');
+
+        button.addEventListener('click', async () => {
+          const source = code.textContent ?? '';
+          try {
+            if (navigator.clipboard && window.isSecureContext) {
+              await navigator.clipboard.writeText(source);
+            } else {
+              const textarea = document.createElement('textarea');
+              textarea.value = source;
+              textarea.style.position = 'fixed';
+              textarea.style.opacity = '0';
+              document.body.append(textarea);
+              textarea.select();
+              const copied = document.execCommand('copy');
+              textarea.remove();
+              if (!copied) throw new Error('copy failed');
+            }
+            button.textContent = '已复制';
+          } catch {
+            button.textContent = '复制失败';
+          }
+          window.setTimeout(() => {
+            button.textContent = '复制';
+          }, 1800);
+        });
+        pre.append(button);
+      });
+
+      const toc = document.querySelector<HTMLElement>('[data-table-of-contents]');
+      const tocLinks = Array.from(toc?.querySelectorAll<HTMLAnchorElement>('a[href^="#"]') ?? []);
+      const sections = tocLinks
+        .map((link) => document.getElementById(decodeURIComponent(link.hash.slice(1))))
+        .filter((section): section is HTMLElement => Boolean(section));
+
+      if (sections.length && 'IntersectionObserver' in window) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            const visible = entries
+              .filter((entry) => entry.isIntersecting)
+              .sort((left, right) => left.boundingClientRect.top - right.boundingClientRect.top)[0];
+            if (!visible) return;
+            tocLinks.forEach((link) => {
+              if (link.hash === `#${visible.target.id}`) link.setAttribute('aria-current', 'location');
+              else link.removeAttribute('aria-current');
+            });
+          },
+          { rootMargin: '-16% 0px -72%', threshold: [0, 1] },
+        );
+        sections.forEach((section) => observer.observe(section));
+      }
+    </script>
+  </body>
+</html>

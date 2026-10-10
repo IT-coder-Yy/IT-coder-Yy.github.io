@@ -1,0 +1,55 @@
+---
+import type { BlogPost } from '../../lib/blog';
+import { estimateReadingTime, formatBlogDate, postHref } from '../../lib/blog';
+
+interface Props {
+  posts: BlogPost[];
+}
+
+const { posts } = Astro.props;
+---
+
+<ol class="post-list" data-post-list>
+  {posts.map((post, index) => {
+    const searchText = [
+      post.data.title,
+      post.data.description,
+      post.data.category,
+      ...post.data.tags,
+    ].join(' ').toLocaleLowerCase('zh-CN');
+    const publishedDate = post.data.publishedAt.toISOString().slice(0, 10);
+
+    return (
+      <li
+        class="post-row"
+        data-post-row
+        data-category={post.data.category}
+        data-search={searchText}
+      >
+        <span class="post-sequence" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+        <div class="post-date">
+          <time datetime={publishedDate}>{formatBlogDate(post.data.publishedAt)}</time>
+          {post.data.featured && <span>精选</span>}
+        </div>
+        <article class="post-summary">
+          <p class="post-category">{post.data.category}</p>
+          <h2><a href={postHref(post)}>{post.data.title}</a></h2>
+          <p>{post.data.description}</p>
+          <ul aria-label="标签">
+            {post.data.tags.map((tag) => <li>{tag}</li>)}
+          </ul>
+        </article>
+        <div class="post-reading">
+          <span>约 {estimateReadingTime(post.body ?? '')} 分钟</span>
+          {post.data.draft && <strong class="draft-label">草稿</strong>}
+          <a href={postHref(post)} aria-label={`阅读《${post.data.title}》`}>阅读 <i aria-hidden="true">↗</i></a>
+        </div>
+      </li>
+    );
+  })}
+</ol>
+
+<div class="blog-empty" data-blog-empty hidden>
+  <p>没有匹配的文章。</p>
+  <button type="button" data-clear-search>清除搜索与筛选</button>
+</div>

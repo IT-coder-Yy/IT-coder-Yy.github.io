@@ -1,0 +1,48 @@
+---
+import { sitePath } from '../lib/paths';
+
+interface Props {
+  title: string;
+  description: string;
+  canonicalPath: string;
+  type?: 'website' | 'article';
+  publishedAt?: Date;
+  updatedAt?: Date;
+}
+
+const {
+  title,
+  description,
+  canonicalPath,
+  type = 'website',
+  publishedAt,
+  updatedAt,
+} = Astro.props;
+const canonical = Astro.site ? new URL(sitePath(canonicalPath), Astro.site) : undefined;
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+<meta name="theme-color" content="#f4f0e8" />
+<meta property="og:locale" content="zh_CN" />
+<meta property="og:site_name" content="于洋 · 技术博客" />
+<meta property="og:type" content={type} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+{canonical && <link rel="canonical" href={canonical} />}
+{canonical && <meta property="og:url" content={canonical} />}
+{type === 'article' && publishedAt && (
+  <meta property="article:published_time" content={publishedAt.toISOString()} />
+)}
+{type === 'article' && updatedAt && (
+  <meta property="article:modified_time" content={updatedAt.toISOString()} />
+)}
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="于洋技术博客 RSS"
+  href={sitePath('/rss.xml')}
+/>

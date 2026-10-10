@@ -1,0 +1,117 @@
+---
+interface Props {
+  categories: readonly string[];
+  postCount: number;
+}
+
+const { categories, postCount } = Astro.props;
+---
+
+<section class="blog-controls" aria-labelledby="blog-search-title" data-blog-search>
+  <div class="search-field">
+    <label id="blog-search-title" for="blog-query">检索技术笔记</label>
+    <div>
+      <span aria-hidden="true">⌕</span>
+      <input
+        id="blog-query"
+        type="search"
+        inputmode="search"
+        autocomplete="off"
+        placeholder="搜索标题、摘要、分类或标签"
+        data-search-input
+      />
+      <kbd aria-hidden="true">/</kbd>
+    </div>
+  </div>
+  <div class="category-filter" aria-label="按分类筛选">
+    <button type="button" data-category-filter="" aria-pressed="true">全部</button>
+    {categories.map((category) => (
+      <button type="button" data-category-filter={category} aria-pressed="false">{category}</button>
+    ))}
+  </div>
+  <p class="search-status" role="status" aria-live="polite" data-search-status>
+    共 {postCount} 篇技术笔记
+  </p>
+</section>
+
+<script>
+  const searchRoot = document.querySelector<HTMLElement>('[data-blog-search]');
+
+  if (searchRoot && !searchRoot.dataset.ready) {
+    searchRoot.dataset.ready = 'true';
+    const input = searchRoot.querySelector<HTMLInputElement>('[data-search-input]');
+    const buttons = Array.from(
+      searchRoot.querySelectorAll<HTMLButtonElement>('[data-category-filter]'),
+    );
+    const rows = Array.from(document.querySelectorAll<HTMLElement>('[data-post-row]'));
+    const status = searchRoot.querySelector<HTMLElement>('[data-search-status]');
+    const emptyState = document.querySelector<HTMLElement>('[data-blog-empty]');
+    const clearButton = emptyState?.querySelector<HTMLButtonElement>('[data-clear-search]');
+    let activeCategory = '';
+
+    const normalize = (value: string) => value.trim().toLocaleLowerCase('zh-CN');
+
+    const render = () => {
+      const query = normalize(input?.value ?? '');
+      let visibleCount = 0;
+
+      rows.forEach((row) => {
+        const matchesQuery = !query || (row.dataset.search ?? '').includes(query);
+        const matchesCategory = !activeCategory || row.dataset.category === activeCategory;
+        const visible = matchesQuery && matchesCategory;
+        row.hidden = !visible;
+        if (visible) visibleCount += 1;
+      });
+
+      buttons.forEach((button) => {
+        button.setAttribute('aria-pressed', String(button.dataset.categoryFilter === activeCategory));
+      });
+      if (status) status.textContent = `显示 ${visibleCount} / ${rows.length} 篇技术笔记`;
+      if (emptyState) emptyState.hidden = visibleCount !== 0;
+
+      const url = new URL(window.location.href);
+      if (query) url.searchParams.set('q', input?.value.trim() ?? '');
+      else url.searchParams.delete('q');
+      if (activeCategory) url.searchParams.set('category', activeCategory);
+      else url.searchParams.delete('category');
+      window.history.replaceState({}, '', url);
+    };
+
+    const params = new URLSearchParams(window.location.search);
+    if (input) input.value = params.get('q') ?? '';
+    const requestedCategory = params.get('category') ?? '';
+    activeCategory = buttons.some((button) => button.dataset.categoryFilter === requestedCategory)
+      ? requestedCategory
+      : '';
+
+    input?.addEventListener('input', render);
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => {
+        activeCategory = button.dataset.categoryFilter ?? '';
+        render();
+      });
+    });
+    clearButton?.addEventListener('click', () => {
+      if (input) input.value = '';
+      activeCategory = '';
+      render();
+      input?.focus();
+    });
+    document.addEventListener('keydown', (event) => {
+      const target = event.target as HTMLElement | null;
+      if (
+        event.key === '/' &&
+        !event.metaKey &&
+        !event.ctrlKey &&
+        !event.altKey &&
+        target?.tagName !== 'INPUT' &&
+        target?.tagName !== 'TEXTAREA'
+      ) {
+        event.preventDefault();
+        input?.focus();
+      }
+    });
+
+    render();
+  }
+</script>

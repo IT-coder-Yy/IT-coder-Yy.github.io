@@ -1,0 +1,27 @@
+---
+import { formatBlogDate } from '../../lib/blog';
+
+interface Props {
+  publishedAt: Date;
+  updatedAt?: Date;
+  category: string;
+  readingMinutes: number;
+  draft?: boolean;
+}
+
+const { publishedAt, updatedAt, category, readingMinutes, draft = false } = Astro.props;
+const isoPublishedAt = publishedAt.toISOString().slice(0, 10);
+const isoUpdatedAt = updatedAt?.toISOString().slice(0, 10);
+---
+
+<div class="post-meta" aria-label="文章信息">
+  <span>{category}</span>
+  <time datetime={isoPublishedAt}>{formatBlogDate(publishedAt)}</time>
+  <span>约 {readingMinutes} 分钟</span>
+  {updatedAt && (
+    <span class="post-meta-updated">
+      更新于 <time datetime={isoUpdatedAt}>{formatBlogDate(updatedAt)}</time>
+    </span>
+  )}
+  {draft && <strong class="draft-label">草稿预览</strong>}
+</div>

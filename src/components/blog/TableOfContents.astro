@@ -1,0 +1,37 @@
+---
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+  headings: MarkdownHeading[];
+  mobile?: boolean;
+}
+
+const { headings, mobile = false } = Astro.props;
+const visibleHeadings = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+---
+
+{visibleHeadings.length >= 2 && (
+  mobile ? (
+    <details class="toc toc-mobile">
+      <summary>本文目录 <span aria-hidden="true">+</span></summary>
+      <ol>
+        {visibleHeadings.map((heading) => (
+          <li class:list={{ 'toc-level-three': heading.depth === 3 }}>
+            <a href={`#${heading.slug}`}>{heading.text}</a>
+          </li>
+        ))}
+      </ol>
+    </details>
+  ) : (
+    <nav class="toc toc-desktop" aria-label="本文目录" data-table-of-contents>
+      <p>本文目录</p>
+      <ol>
+        {visibleHeadings.map((heading) => (
+          <li class:list={{ 'toc-level-three': heading.depth === 3 }}>
+            <a href={`#${heading.slug}`}>{heading.text}</a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  )
+)}

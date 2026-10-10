@@ -1,0 +1,30 @@
+---
+import type { BlogPost } from '../../lib/blog';
+import { postHref } from '../../lib/blog';
+import { sitePath } from '../../lib/paths';
+
+interface Props {
+  olderPost?: BlogPost;
+  newerPost?: BlogPost;
+}
+
+const { olderPost, newerPost } = Astro.props;
+---
+
+<nav class="post-navigation" aria-label="文章导航">
+  <a class="post-navigation-index" href={sitePath('/blog')}>← 返回全部文章</a>
+  <div>
+    {olderPost ? (
+      <a href={postHref(olderPost)}>
+        <span>较早一篇</span>
+        <strong>{olderPost.data.title}</strong>
+      </a>
+    ) : <span></span>}
+    {newerPost && (
+      <a href={postHref(newerPost)}>
+        <span>较新一篇</span>
+        <strong>{newerPost.data.title}</strong>
+      </a>
+    )}
+  </div>
+</nav>
