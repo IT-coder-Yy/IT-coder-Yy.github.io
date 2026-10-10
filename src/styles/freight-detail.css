@@ -1,0 +1,323 @@
+.freight-detail-hero {
+  align-items: center;
+}
+
+.freight-hero-board {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr 1fr;
+  margin: 0;
+  border-top: 1px solid var(--detail-ink);
+  border-bottom: 1px solid var(--detail-ink);
+}
+
+.freight-board-column {
+  display: flex;
+  min-height: 18rem;
+  padding: clamp(1rem, 2.3vw, 1.6rem);
+  flex-direction: column;
+  justify-content: space-between;
+  border-right: 1px solid var(--detail-line);
+}
+
+.freight-board-column:last-of-type {
+  border-right: 0;
+}
+
+.freight-board-column p,
+.sandbox-context > p,
+.sandbox-stage-label,
+.sandbox-lanes p,
+.sandbox-controls > p {
+  margin: 0;
+  color: var(--detail-red);
+  font: 700 0.64rem/1.35 var(--font-data);
+  letter-spacing: 0.1em;
+}
+
+.freight-board-column strong {
+  max-width: 8ch;
+  font-size: clamp(1.4rem, 2.2vw, 2.35rem);
+  line-height: 1.05;
+  letter-spacing: -0.045em;
+}
+
+.freight-board-column span {
+  color: var(--detail-soft);
+  font-size: 0.76rem;
+  line-height: 1.6;
+}
+
+.freight-board-core {
+  color: #fff;
+  background: var(--detail-ink);
+}
+
+.freight-board-core p {
+  color: #efb3a9;
+}
+
+.freight-board-core span {
+  color: #d9cdc0;
+}
+
+.freight-hero-board figcaption {
+  grid-column: 1 / -1;
+  padding: 0.8rem clamp(1rem, 2.3vw, 1.6rem);
+  border-top: 1px solid var(--detail-ink);
+  color: var(--detail-soft);
+  font-size: 0.76rem;
+  line-height: 1.6;
+}
+
+.freight-footnote {
+  align-items: flex-start;
+}
+
+.sandbox-section {
+  max-width: none;
+}
+
+.sandbox-section > p:not(.section-label) {
+  max-width: 42rem;
+}
+
+.sandbox-shell {
+  display: grid;
+  margin-top: clamp(2rem, 4vw, 3.3rem);
+  border-top: 1px solid var(--detail-ink);
+  border-bottom: 1px solid var(--detail-ink);
+  grid-template-columns: minmax(9rem, 0.72fr) minmax(0, 1.45fr) minmax(8.5rem, 0.58fr);
+}
+
+.sandbox-context,
+.sandbox-controls {
+  padding: 1.2rem 1rem;
+  background: var(--detail-paper-deep);
+}
+
+.sandbox-context {
+  border-right: 1px solid var(--detail-line);
+}
+
+.sandbox-context ul {
+  display: grid;
+  gap: 0.55rem;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sandbox-context li {
+  position: relative;
+  padding-left: 0.7rem;
+  color: var(--detail-soft);
+  font-size: 0.77rem;
+  line-height: 1.55;
+}
+
+.sandbox-context li::before {
+  position: absolute;
+  top: 0.55rem;
+  left: 0;
+  width: 0.25rem;
+  height: 0.25rem;
+  background: var(--detail-red);
+  content: '';
+}
+
+.sandbox-stage {
+  min-width: 0;
+  padding: 1.2rem clamp(1rem, 2.4vw, 1.75rem);
+}
+
+.sandbox-lanes {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 1.2rem;
+}
+
+.sandbox-lanes section {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  gap: 0.85rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--detail-line);
+}
+
+.sandbox-lanes strong {
+  font-size: 0.84rem;
+  font-weight: 600;
+  line-height: 1.55;
+}
+
+.sandbox-outcome {
+  margin-top: 1.1rem;
+}
+
+.sandbox-outcome > p {
+  margin: 0;
+  font-size: clamp(1rem, 1.65vw, 1.28rem);
+  font-weight: 700;
+  line-height: 1.45;
+  letter-spacing: -0.02em;
+}
+
+.sandbox-outcome ul {
+  display: grid;
+  gap: 0.34rem;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  color: var(--detail-soft);
+  list-style: none;
+  font-size: 0.76rem;
+  line-height: 1.55;
+}
+
+.sandbox-outcome li {
+  position: relative;
+  padding-left: 0.75rem;
+}
+
+.sandbox-outcome li::before {
+  position: absolute;
+  left: 0;
+  color: var(--detail-red);
+  content: '→';
+}
+
+.sandbox-outcome > strong {
+  display: block;
+  margin-top: 0.85rem;
+  color: var(--detail-red-deep);
+  font: 700 0.69rem/1.4 var(--font-data);
+  letter-spacing: 0.06em;
+}
+
+.sandbox-controls {
+  display: flex;
+  gap: 0.45rem;
+  flex-direction: column;
+  border-left: 1px solid var(--detail-line);
+}
+
+.sandbox-controls button {
+  min-height: 2.2rem;
+  padding: 0.48rem 0.55rem;
+  border: 1px solid var(--detail-line);
+  border-radius: 0;
+  color: var(--detail-ink);
+  background: transparent;
+  cursor: pointer;
+  font: 700 0.68rem/1 var(--font-data);
+  letter-spacing: 0.055em;
+  text-align: left;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.sandbox-controls > p {
+  margin-bottom: 0.5rem;
+}
+
+.sandbox-controls button:hover {
+  border-color: var(--detail-red);
+  color: var(--detail-red-deep);
+  transform: translateX(2px);
+}
+
+.sandbox-controls button.is-active {
+  border-color: var(--detail-red);
+  color: #fff;
+  background: var(--detail-red);
+}
+
+.sandbox-note {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--detail-line);
+  color: var(--detail-soft);
+  font-size: 0.72rem;
+  line-height: 1.55;
+}
+
+@media (max-width: 860px) {
+  .freight-hero-board {
+    max-width: 48rem;
+  }
+
+  .sandbox-shell {
+    grid-template-columns: minmax(0, 1fr) minmax(8rem, 0.38fr);
+  }
+
+  .sandbox-context {
+    grid-column: 1 / -1;
+    border-right: 0;
+    border-bottom: 1px solid var(--detail-line);
+  }
+
+  .sandbox-context ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem 1rem;
+    margin-top: 0.75rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .freight-hero-board {
+    grid-template-columns: 1fr;
+  }
+
+  .freight-board-column {
+    min-height: 9rem;
+    border-right: 0;
+    border-bottom: 1px solid var(--detail-line);
+  }
+
+  .freight-board-column strong {
+    max-width: none;
+    font-size: 1.5rem;
+  }
+
+  .freight-board-core {
+    border-bottom-color: var(--detail-ink);
+  }
+
+  .freight-hero-board figcaption {
+    grid-column: auto;
+  }
+
+  .sandbox-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sandbox-stage {
+    border-bottom: 1px solid var(--detail-line);
+  }
+
+  .sandbox-controls {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-left: 0;
+  }
+
+  .sandbox-controls > p {
+    grid-column: 1 / -1;
+  }
+
+  .sandbox-controls button {
+    min-height: 2.45rem;
+    text-align: center;
+  }
+
+  .sandbox-lanes section {
+    grid-template-columns: 1fr;
+    gap: 0.28rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sandbox-controls button {
+    transition: none;
+  }
+}

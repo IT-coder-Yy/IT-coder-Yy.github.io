@@ -1,0 +1,128 @@
+---
+import type { Artwork } from '../data/portfolio';
+interface Props { kind: Artwork; }
+const { kind } = Astro.props;
+// 封面用原创几何图形表达项目机制，不冒充产品截图或实测数据。
+const thermalCells = Array.from({ length: 168 }, (_, i) => {
+  const x = i % 21;
+  const y = Math.floor(i / 21);
+  const heat = Math.max(0, 1 - Math.hypot((x - 11) / 8, (y - 4) / 4));
+  const colors = ['#242936', '#38494d', '#637e65', '#bac98c', '#e4d777', '#eabc61', '#ed874c'];
+  return { x: 50 + x * 26, y: 118 + y * 26, color: colors[Math.min(6, Math.floor(heat * 7))] };
+});
+---
+<svg class:list={['project-artwork', `artwork-${kind}`]} viewBox="0 0 640 460" aria-hidden="true" focusable="false">
+  {kind === 'travel' && <>
+    <rect width="640" height="460" fill="#dfe8fa" />
+    <path d="M-40 180C110-30 230 350 400 140S650 200 710 20M-40 280C110 70 230 450 400 240S650 300 710 120M-40 380C110 170 230 550 400 340S650 400 710 220" fill="none" stroke="#c5d2eb" stroke-width="1.5" />
+    <text x="32" y="49" class="art-label" fill="#314768">MULTI-AGENT / TOOL CALLING</text>
+    <path d="M119 247C145 78 395 310 467 113" fill="none" stroke="#304abe" stroke-width="6" stroke-linecap="round" />
+    <circle cx="119" cy="247" r="18" fill="#fdfdff" /><circle cx="292" cy="188" r="18" fill="#fdfdff" /><circle cx="467" cy="113" r="18" fill="#304abe" />
+    <circle cx="119" cy="247" r="5" fill="#304abe" /><circle cx="292" cy="188" r="5" fill="#304abe" /><circle cx="467" cy="113" r="5" fill="#fff" />
+    <text x="85" y="287" class="art-detail" fill="#314768">ANALYZE</text><text x="273" y="230" class="art-detail" fill="#314768">PLAN</text><text x="437" y="155" class="art-detail" fill="#314768">EXECUTE</text>
+    <text x="30" y="399" class="art-title" fill="#233bb0">TRAVEL.</text>
+    <text x="34" y="431" class="art-label" fill="#314768">TOOLS → OBSERVATION → SYNTHESIS</text>
+  </>}
+  {kind === 'freight' && <>
+    <rect width="640" height="460" fill="#eee8df" />
+    <text x="32" y="49" class="art-label" fill="#685847">CONSTRAINTS / LONG-HORIZON PLANNING</text>
+    <path d="M90 197H273M273 197V115H468M273 197H530M273 197V279H468" fill="none" stroke="#bfac94" stroke-width="3" />
+    <path d="M90 197H273V115H468" fill="none" stroke="#e46c3d" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="90" cy="197" r="17" fill="#292824" /><circle cx="273" cy="197" r="17" fill="#fffaf1" /><circle cx="273" cy="197" r="6" fill="#e46c3d" />
+    <path d="M452 99L471 115L452 131" fill="none" stroke="#e46c3d" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="530" cy="197" r="6" fill="#8d7e6b" /><circle cx="468" cy="279" r="6" fill="#8d7e6b" />
+    <text x="326" y="98" class="art-detail" fill="#685847">ACCEPT</text><text x="326" y="181" class="art-detail" fill="#685847">WAIT</text><text x="326" y="263" class="art-detail" fill="#685847">REPOSITION</text>
+    <text x="30" y="399" class="art-title" fill="#2c2a26">DECIDE.</text>
+    <text x="34" y="431" class="art-label" fill="#685847">RULES FIRST. MODEL WHEN NEEDED.</text>
+  </>}
+  {kind === 'camera' && <>
+    <rect width="640" height="460" fill="#20242c" />
+    <text x="32" y="49" class="art-label" fill="#c7cfdb">INFRARED VISION / C++ / QT</text>
+    {thermalCells.map(cell => <rect x={cell.x} y={cell.y} width="23" height="23" rx="2" fill={cell.color} />)}
+    <path d="M38 110V95H55M602 110V95H585M38 323V338H55M602 323V338H585" stroke="#bdc4cf" fill="none" stroke-width="2" />
+    <text x="30" y="403" class="art-title" fill="#f3f1e8">16—BIT.</text>
+    <text x="34" y="433" class="art-label" fill="#c7cfdb">ACQUIRE → PROCESS → INFERENCE</text>
+  </>}
+  {kind === 'safety' && <>
+    <rect width="640" height="460" fill="#e1e9df" />
+    <text x="32" y="49" class="art-label" fill="#435d4d">DRIVER VISION / EMBEDDED IOT</text>
+    <path d="M97 205Q320 20 543 205Q320 390 97 205Z" fill="#f7faf2" />
+    <circle cx="320" cy="205" r="95" fill="#788e68" /><circle cx="320" cy="205" r="62" fill="#3f5546" /><circle cx="320" cy="205" r="35" fill="#212b25" />
+    {Array.from({length: 24}, (_, i) => <path d="M320 121V137" transform={`rotate(${i * 15} 320 205)`} stroke="#b7c6a6" stroke-width="3" />)}
+    <circle cx="295" cy="176" r="17" fill="#f7faf2" />
+    <path d="M82 174V153H103M558 174V153H537M82 235V256H103M558 235V256H537" fill="none" stroke="#435d4d" stroke-width="2" />
+    <text x="30" y="399" class="art-title" fill="#304a38">SENSE.</text>
+    <text x="34" y="431" class="art-label" fill="#435d4d">EAR / MAR / CO₂ / MQTT</text>
+  </>}
+  {kind === 'recruitment' && <>
+    <rect width="640" height="460" fill="#e5eddf" />
+    <text x="32" y="49" class="art-label" fill="#395644">HIRING WORKFLOW / HUMAN APPROVAL</text>
+    <path d="M111 138H528M153 204H486M203 270H436" stroke="#bccfb4" stroke-width="2" />
+    {[0, 1, 2].map(i => <>
+      <rect x={91 + i * 48} y={100 + i * 65} width={458 - i * 96} height="44" rx="5" fill={['#c1d5b4', '#87a982', '#395c46'][i]} />
+      <circle cx={121 + i * 48} cy={122 + i * 65} r="7" fill="#f8faf4" />
+      <path d={`M${146 + i * 48} ${122 + i * 65}h${160 - i * 36}`} stroke="#f8faf4" stroke-width="3" />
+    </>)}
+    <circle cx="501" cy="275" r="32" fill="#f8faf4" /><path d="M485 275L497 286L518 263" fill="none" stroke="#395c46" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+    <text x="30" y="399" class="art-title" fill="#2c4b36">RECRUIT.</text>
+    <text x="34" y="431" class="art-label" fill="#395644">RESUME → INTERVIEW → OFFER</text>
+  </>}
+  {kind === 'prompt' && <>
+    <rect width="640" height="460" fill="#f0e9d9" />
+    <text x="32" y="49" class="art-label" fill="#645338">PROMPT ENGINEERING / LEARN BY COMPARISON</text>
+    <path d="M99 112H78V290H99M542 112H563V290H542" stroke="#6d6048" stroke-width="4" fill="none" />
+    {[0, 1].map(i => <>
+      <rect x={124 + i * 219} y="119" width="174" height="167" rx="4" fill={i ? '#c5a45b' : '#fffdf6'} />
+      <text x={144 + i * 219} y="150" class="art-detail" fill="#493e2c">{i ? 'B / STRUCTURED' : 'A / BASELINE'}</text>
+      <path d={`M${144 + i * 219} 179h128m-128 23h${i ? 110 : 85}m-${i ? 110 : 85} 23h${i ? 121 : 99}m-${i ? 121 : 99} 23h75`} stroke="#796744" stroke-width="5" />
+    </>)}
+    <text x="30" y="399" class="art-title" fill="#4f412a">PROMPT.</text>
+    <text x="34" y="431" class="art-label" fill="#645338">LEARN → EXPERIMENT → COMPARE</text>
+  </>}
+  {kind === 'minimax' && <>
+    <rect width="640" height="460" fill="#dde6eb" />
+    <text x="32" y="49" class="art-label" fill="#36576a">MINIMAX H3 / LOCAL CUDA ADAPTATION</text>
+    {[0, 1, 2].map(i => <>
+      <rect x={106 + i * 100} y={98 + i * 30} width="231" height="144" rx="5" fill={['#b2c9d3', '#799fb1', '#31596e'][i]} stroke="#edf3f6" stroke-width="3" />
+      <path d={`M${155 + i * 100} ${198 + i * 30}l47 -56l44 39l35 -25l29 42Z`} fill={['#dce7ed', '#afc9d6', '#89adbf'][i]} />
+    </>)}
+    <text x="30" y="399" class="art-title" fill="#274d63">LOCAL H3.</text>
+    <text x="34" y="431" class="art-label" fill="#36576a">UPSTREAM ENGINE / ENVIRONMENT ADAPTATION</text>
+  </>}
+  {kind === 'video' && <>
+    <rect width="640" height="460" fill="#eaded9" />
+    <text x="32" y="49" class="art-label" fill="#6c4940">EDITING AGENT / STORYPLAN → EDITPLAN</text>
+    <path d="M72 133H566M72 197H566M72 261H566" stroke="#cdb9af" stroke-width="2" />
+    <rect x="84" y="112" width="155" height="43" rx="4" fill="#a15d4b" /><rect x="245" y="112" width="139" height="43" rx="4" fill="#c48768" /><rect x="390" y="112" width="150" height="43" rx="4" fill="#7c5146" />
+    <rect x="84" y="176" width="245" height="43" rx="4" fill="#bd9d88" /><rect x="337" y="176" width="203" height="43" rx="4" fill="#9c7965" />
+    <rect x="84" y="240" width="456" height="43" rx="4" fill="#faf3e9" />
+    <path d="M296 87V306" stroke="#3f342f" stroke-width="3" /><path d="M285 83H307L296 98Z" fill="#3f342f" />
+    <text x="30" y="399" class="art-title" fill="#683f34">CUT & MIX.</text>
+    <text x="34" y="431" class="art-label" fill="#6c4940">SELECT → PREVIEW → APPROVE → RENDER</text>
+  </>}
+  {kind === 'git' && <>
+    <rect width="640" height="460" fill="#e4e4f0" />
+    <text x="32" y="49" class="art-label" fill="#4c4b70">DEEPSEEK HARNESS / VISUAL GIT</text>
+    <path d="M139 278V113M139 230C139 183 263 223 263 159V113M263 159C263 231 392 193 392 278" fill="none" stroke="#696895" stroke-width="6" stroke-linecap="round" />
+    {[[139,113],[139,278],[263,113],[263,159],[392,278]].map(([x,y]) => <circle cx={x} cy={y} r="12" fill="#f8f8ff" stroke="#555580" stroke-width="4" />)}
+    <path d="M426 131H550M426 154H526M426 177H541" stroke="#b4b3cd" stroke-width="6" /><path d="M426 209H504" stroke="#696895" stroke-width="6" />
+    <text x="30" y="399" class="art-title" fill="#444368">COMMIT.</text>
+    <text x="34" y="431" class="art-label" fill="#4c4b70">INSPECT → REVIEW → EXECUTE</text>
+  </>}
+  {kind === 'random' && <>
+    <rect width="640" height="460" fill="#e8e9e3" />
+    <text x="32" y="49" class="art-label" fill="#50594b">CHINESE TEXT / FASTAPI / FAKER</text>
+    {[['山', 130, 134], ['月', 282, 172], ['风', 434, 128]].map(([character, x, y]) => <>
+      <rect x={Number(x)-24} y={Number(y)-32} width="98" height="112" rx="3" fill="#fafbf5" stroke="#c3c8bb" />
+      <text x={Number(x)+25} y={Number(y)+28} text-anchor="middle" font-size="53" font-family="serif" fill="#4f6044">{character}</text>
+    </>)}
+    <path d="M120 288H239M275 288H361M398 288H518" stroke="#99a38e" stroke-width="4" />
+    <text x="30" y="399" class="art-title" fill="#44553c">中文 / API.</text>
+    <text x="34" y="431" class="art-label" fill="#50594b">RANDOM CHARACTERS / SAMPLED VERSES</text>
+  </>}
+</svg>
+
+<style>
+  .art-label, .art-detail { font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 1.2px; }
+  .art-title { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 62px; letter-spacing: -2px; }
+</style>

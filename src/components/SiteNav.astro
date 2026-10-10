@@ -1,0 +1,132 @@
+---
+interface Props {
+  locale: 'zh' | 'en';
+  pathname: string;
+  detail?: boolean;
+  showLanguageSwitch?: boolean;
+  spatial?: boolean;
+}
+
+import { sitePath } from '../lib/paths';
+
+const { locale, pathname, detail = false, showLanguageSwitch = true, spatial = false } = Astro.props;
+const isEnglish = locale === 'en';
+const isBlog = pathname === '/blog' || pathname.startsWith('/blog/');
+const home = isEnglish ? sitePath('/en') : sitePath('/');
+const alternate = isEnglish
+  ? sitePath(pathname === '/en' ? '/' : pathname.replace(/^\/en/, ''))
+  : sitePath(pathname === '/' ? '/en' : `/en${pathname}`);
+const labels = isEnglish
+  ? { home: 'Home', agent: 'AI Agents', vision: 'Vision / C++', method: 'Engineering', blog: 'Blog', github: 'GitHub', switch: 'Language selection' }
+  : { home: '首页', agent: 'AI Agent', vision: '视觉 / C++', method: '工程方法', blog: '博客', github: 'GitHub', switch: '语言选择' };
+const headerClass = isBlog ? 'blog-header' : detail ? 'detail-header' : 'site-header';
+const wordmarkClass = isBlog ? 'blog-wordmark' : detail ? 'detail-wordmark' : 'wordmark';
+const markClass = isBlog ? 'blog-mark' : detail ? 'detail-mark' : 'wordmark-mark';
+---
+
+<header class={headerClass} data-site-header>
+  <a class={wordmarkClass} href={`${home}#top`} aria-label={isEnglish ? 'Yu Yang portfolio home' : '于洋个人作品集首页'}>
+    <span class={markClass} aria-hidden="true">Y</span>
+    <span>{spatial ? 'Meridian' : 'Yu Yang'}</span>
+  </a>
+  <button
+    class="nav-toggle"
+    type="button"
+    aria-expanded="false"
+    aria-controls="primary-navigation"
+    aria-label={isEnglish ? 'Open navigation' : '打开主导航'}
+  >
+    <span>{isEnglish ? 'Menu' : '菜单'}</span>
+    <i aria-hidden="true"><b></b><b></b></i>
+  </button>
+  <nav id="primary-navigation" data-site-nav aria-label={isEnglish ? 'Primary navigation' : '主导航'}>
+    {spatial ? <>
+      <a class="nav-link" data-view-link="top" href="#top">{isEnglish ? 'Canvas' : '画布'}</a>
+      <a class="nav-link" data-view-link="projects" href="#projects">{isEnglish ? 'Work' : '作品'}</a>
+      <a class="nav-link" href={sitePath('/blog')}>{isEnglish ? 'Notes · 中文' : '手记'} <span aria-hidden="true">↗</span></a>
+      <a class="nav-link" data-view-link="about" href="#about">{isEnglish ? 'About' : '关于'}</a>
+    </> : <>
+    <a class="nav-link nav-home" href={`${home}#top`}>{labels.home}</a>
+    <a class="nav-link nav-agent" href={`${home}#ai-agent`}>{labels.agent}</a>
+    <a class="nav-link nav-vision" href={`${home}#cv`}>{labels.vision}</a>
+    <a class="nav-link nav-method" href={`${home}#method`}>{labels.method}</a>
+    {!isEnglish && (
+      <a class="nav-link nav-blog" href={sitePath('/blog')} aria-current={isBlog ? 'page' : undefined}>{labels.blog}</a>
+    )}
+    <a class="nav-link nav-github" href="https://github.com/IT-coder-Yy" target="_blank" rel="noopener noreferrer">{labels.github} <span aria-hidden="true">↗</span></a>
+    </>}
+    {showLanguageSwitch && <div class="language-switch" role="group" aria-label={labels.switch}>
+      {isEnglish ? (
+        <>
+          <a class="language-option" href={alternate} lang="zh-CN" hreflang="zh-CN" aria-label="切换至中文版">中文</a>
+          <span aria-hidden="true">/</span>
+          <strong class="language-option" lang="en" aria-current="page">EN</strong>
+        </>
+      ) : (
+        <>
+          <strong class="language-option" lang="zh-CN" aria-current="page">中文</strong>
+          <span aria-hidden="true">/</span>
+          <a class="language-option" href={alternate} lang="en" hreflang="en" aria-label="Switch to English">EN</a>
+        </>
+      )}
+    </div>}
+  </nav>
+</header>
+
+<script>
+  const header = document.querySelector<HTMLElement>('[data-site-header]');
+
+  if (header && !header.dataset.ready) {
+    header.dataset.ready = 'true';
+    const toggle = header.querySelector<HTMLButtonElement>('.nav-toggle');
+    const navigation = header.querySelector<HTMLElement>('[data-site-nav]');
+
+    const setMenu = (open: boolean) => {
+      header.classList.toggle('is-open', open);
+      toggle?.setAttribute('aria-expanded', String(open));
+      toggle?.setAttribute(
+        'aria-label',
+        open
+          ? (document.documentElement.lang.startsWith('zh') ? '关闭主导航' : 'Close navigation')
+          : (document.documentElement.lang.startsWith('zh') ? '打开主导航' : 'Open navigation'),
+      );
+    };
+
+    toggle?.addEventListener('click', () => {
+      setMenu(toggle.getAttribute('aria-expanded') !== 'true');
+    });
+
+    navigation?.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => setMenu(false));
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && header.classList.contains('is-open')) {
+        setMenu(false);
+        toggle?.focus();
+      }
+    });
+  }
+
+  const chapterLinks = Array.from(
+    document.querySelectorAll<HTMLAnchorElement>('.chapter-rail a[href^="#"]'),
+  );
+  const chapterSections = chapterLinks
+    .map((link) => document.querySelector<HTMLElement>(link.hash))
+    .filter((section): section is HTMLElement => Boolean(section));
+
+  if (chapterSections.length && 'IntersectionObserver' in window) {
+    const chapterObserver = new IntersectionObserver(
+      (entries) => {
+        const active = entries.find((entry) => entry.isIntersecting)?.target as HTMLElement | undefined;
+        if (!active) return;
+        chapterLinks.forEach((link) => {
+          if (link.hash === `#${active.id}`) link.setAttribute('aria-current', 'location');
+          else link.removeAttribute('aria-current');
+        });
+      },
+      { rootMargin: '-18% 0px -70%', threshold: 0 },
+    );
+    chapterSections.forEach((section) => chapterObserver.observe(section));
+  }
+</script>

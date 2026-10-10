@@ -1,0 +1,16 @@
+---
+interface Props { name: 'home' | 'projects' | 'agent' | 'vision' | 'method' | 'blog' | 'github' | 'arrow' | 'grip'; }
+const { name } = Astro.props;
+const paths = {
+  home: 'M3 10 12 3l9 7M5 9v12h5v-7h4v7h5V9',
+  projects: 'm12 3 10 5-10 5L2 8l10-5ZM2 12l10 5 10-5M2 16l10 5 10-5',
+  agent: 'M6 6h12v12H6zM9 1v5m6-5v5M9 18v5m6-5v5M1 9h5m-5 6h5m12-6h5m-5 6h5M10 10h4v4h-4z',
+  vision: 'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Zm10-3a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z',
+  method: 'M6 3v4m0 0 6 5m-6-5h12v4M6 7v10m0 0h12M6 17v4m12-10v6m0 0v4',
+  blog: 'M4 3h7c2 0 3 1 3 3v15c0-2-1-3-3-3H4V3Zm16 0h-3M17 18h3V3M7 7h3m-3 4h3',
+  github: 'M9 19c-4 1-4-2-6-2m12 5v-3c0-1 0-2-1-2 3 0 6-2 6-6 0-2-1-3-2-4 0-1 0-3-1-3-2 0-3 1-4 2-2-1-4-2-6-2-1 0-1 2-1 3-1 1-2 2-2 4 0 4 3 6 6 6-1 0-1 1-1 2v3',
+  arrow: 'M5 12h14m-6-6 6 6-6 6',
+  grip: 'M8 5h.01M16 5h.01M8 12h.01M16 12h.01M8 19h.01M16 19h.01',
+};
+---
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width={name === 'grip' ? 4 : 1.65} stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d={paths[name]} /></svg>

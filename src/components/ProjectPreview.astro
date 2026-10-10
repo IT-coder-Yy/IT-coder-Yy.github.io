@@ -1,0 +1,30 @@
+---
+import ProjectArtwork from './ProjectArtwork.astro';
+import { projects, type Artwork, type Locale } from '../data/portfolio';
+import { sitePath } from '../lib/paths';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const en = locale === 'en';
+const notes: Record<Artwork, [string, string][]> = {
+  travel: [['agent-workflow-react-plan-execute', 'ReAct 与 Plan-and-Execute'], ['agent-tool-system', '从 Tool Schema 到安全执行器']],
+  freight: [['agent-memory-state-design', '上下文、任务状态与长期记忆'], ['agent-workflow-react-plan-execute', 'Agent 工作流的选择与边界']],
+  camera: [['ffmpeg-rtsp-video-pipeline', '从网络码流到图像帧'], ['vibe-background-modeling', 'ViBe 背景建模与前景误判']],
+  safety: [],
+  recruitment: [['agent-workflow-react-plan-execute', 'Agent 工作流的选择与边界']],
+  prompt: [['prompt-contract-and-evaluation', '提示词契约与评估']],
+  minimax: [['linux-gpu-diagnostics', 'Linux GPU 环境诊断'], ['floating-point-and-quantization', '浮点与量化']],
+  video: [['video-timeline-intermediate-representation', '视频时间线中间表示'], ['durable-media-task-workflows', '可恢复的媒体任务工作流']],
+  git: [['agent-tool-system', '从 Tool Schema 到安全执行器']],
+  random: [],
+};
+---
+<dialog class="project-preview" aria-labelledby="project-preview-title" data-project-preview>
+  <div class="preview-topbar"><span id="project-preview-title">{en ? 'PROJECT / QUICK LOOK' : '作品 / 快速预览'}</span><button type="button" data-preview-close aria-label={en ? 'Close preview' : '关闭预览'}>×</button></div>
+  {projects.map((project,index) => <article data-preview-project={project.id} hidden>
+    <div class="preview-layout"><div class="preview-visual"><ProjectArtwork kind={project.id} /><span>{project.ownership[locale]} · {project.tags.join(' / ')}</span></div><div class="preview-copy"><span class="section-kicker">{String(index+1).padStart(2,'0')} / SELECTED WORK</span><h2>{project.name[locale]}</h2><p class="preview-summary">{project.summary[locale]}</p><div class="preview-role"><h3>{project.caseStudy ? (en ? 'Implementation scope' : '实现范围') : (en ? 'My contribution' : '我负责什么')}</h3><p>{project.role[locale]}</p></div><a class="preview-case" href={sitePath(`${en?'/en':''}/projects/${project.slug}`)}>{en ? 'Read the full case study' : '进入完整项目案例'} <span aria-hidden="true">↗</span></a>{project.source && <a class="preview-source" href={project.source} target="_blank" rel="noopener noreferrer">GitHub ↗</a>}</div></div>
+    <div class="preview-evidence">{project.proofs[locale].map(([title,proof])=><div><h3>{title}</h3><p>{proof}</p></div>)}</div>
+    {notes[project.id].length > 0 && <div class="preview-connections"><span>{en ? 'FOLLOW THE THREAD' : '沿着这个问题，继续看'}</span>{notes[project.id].map(([slug,title])=><a href={sitePath(`/blog/${slug}`)}>{title}{en ? ' · 中文' : ''} ↗</a>)}</div>}
+    {project.id === 'safety' && <div class="preview-connections"><span>{en ? 'FOLLOW THE THREAD' : '沿着这个问题，继续看'}</span><a href={sitePath(`${en?'/en':''}/projects/multi-channel-camera`)}>{en ? 'Another vision system: infrared monitoring' : '另一个视觉系统：多通道红外监控'} ↗</a></div>}
+  </article>)}
+  <div class="preview-browse"><button type="button" data-preview-prev>← {en ? 'Previous' : '上一个作品'}</button><span data-preview-count aria-live="polite"></span><button type="button" data-preview-next>{en ? 'Next' : '下一个作品'} →</button></div>
+</dialog>

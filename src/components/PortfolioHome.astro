@@ -1,0 +1,152 @@
+---
+import portrait from '../assets/images/yu-yang-portrait.jpg';
+import litEmblem from '../assets/images/lit-official-emblem-transparent.png';
+import ucasEmblem from '../assets/images/ucas-official-emblem.png';
+import travelInterface from '../assets/images/super-travel-agent-interface.png';
+import SiteNav from './SiteNav.astro';
+import ProjectArtwork from './ProjectArtwork.astro';
+import ProjectPreview from './ProjectPreview.astro';
+import NavIcon from './NavIcon.astro';
+import { projects, projectGroups, capabilities, type Artwork, type Locale } from '../data/portfolio';
+import { sitePath } from '../lib/paths';
+import '../styles/portfolio-home.css';
+
+interface Props { locale: Locale; }
+const { locale } = Astro.props;
+const english = locale === 'en';
+const projectUrl = (slug: string) => sitePath(`${english ? '/en' : ''}/projects/${slug}`);
+const text = english ? {
+  name: 'Yu Yang', school: 'UCAS · MSc in Artificial Intelligence',
+  focus: 'AI Agents & intelligent systems', secondary: 'Computer vision / C++ engineering',
+  intro: 'From a working idea to a system that runs.', projects: 'Explore my work', about: 'About me',
+  workTitle: 'Selected work.', workIntro: 'Open a preview, explore the decisions, then follow the evidence.',
+  all: 'All work', agents: 'AI Agents', vision: 'Vision / C++', reset: 'Reset positions',
+  dragHint: 'Pick up a card by its handle.', case: 'Read case study', evidence: 'Role & evidence',
+  move: 'Move card:', myRole: 'My role', interface: 'Existing project interface',
+  aboutTitle: 'Hello, I’m Yu Yang.',
+  aboutIntro: 'I focus on AI Agents and AI applications, with hands-on experience in computer vision, C++ desktop software and embedded systems. I care about how constraints, state, tools and feedback come together in a reliable system.',
+  ucas: 'University of Chinese Academy of Sciences', ucasDegree: 'MSc · Artificial Intelligence', ucasResult: 'GPA 3.88 / 4.0 · Top 10%',
+  lit: 'Luoyang Institute of Science and Technology', litDegree: 'BEng · Internet of Things Engineering', litResult: 'Ranked 1 / 124',
+  honors: 'Selected honors', awardList: ['National Encouragement Scholarship, 2021–2023', 'Outstanding Graduate of Henan Province, 2024', 'First Prize, Provincial Mathematical Contest'],
+  matrix: 'Explore capabilities and project evidence', capability: 'Capability', primary: 'Primary project', proof: 'Evidence',
+  method: 'How I build.',
+  methods: [
+    ['Understand constraints.', 'Driver preferences, time windows and penalties are compiled before deciding whether a model should participate.'],
+    ['Keep the system controllable.', 'Action whitelists, parameter validation, path limits, fallback behavior and contract tests matter.'],
+    ['Carry it through to delivery.', 'Interfaces, state, streaming feedback, model deployment, threads, records and failure modes are part of the same work.'],
+  ],
+  contact: 'Let’s build something that works.', contactIntro: 'If your team is building intelligent systems for the real world, I would be glad to connect.',
+  copy: 'Copy email', copied: 'Email copied', copyError: 'Could not copy. Please select the email address.',
+  skip: 'Skip to content', nav: 'Project categories', table: 'Capabilities and project evidence',
+} : {
+  name: '于洋', school: '中国科学院大学 · 人工智能硕士',
+  focus: 'AI Agent 与智能系统工程', secondary: '计算机视觉 / C++ 工程实践',
+  intro: '把智能系统，从原型推到工程现场。', projects: '进入作品集', about: '关于我',
+  workTitle: '精选作品。', workIntro: '先看概览，再循着感兴趣的问题，进入项目与手记。',
+  all: '全部作品', agents: 'AI Agent', vision: '视觉 / C++', reset: '卡片归位',
+  dragHint: '轻拖把手，拿起一张作品。', case: '阅读项目案例', evidence: '职责与工程证据',
+  move: '移动作品卡片：', myRole: '我的职责', interface: '现有项目界面',
+  aboutTitle: '你好，我是于洋。',
+  aboutIntro: '主攻 AI Agent 与 AI 应用开发，同时具备计算机视觉、C++ 上位机和嵌入式系统工程经验。关注约束、状态、工具、反馈与交付如何组成可靠系统。',
+  ucas: '中国科学院大学', ucasDegree: '人工智能硕士', ucasResult: 'GPA 3.88 / 4.0 · 前 10%',
+  lit: '洛阳理工学院', litDegree: '物联网工程本科', litResult: '专业排名 1 / 124',
+  honors: '荣誉记录', awardList: ['国家励志奖学金 · 2021–2023', '河南省优秀毕业生 · 2024', '全国大学生数学竞赛省级一等奖'],
+  matrix: '查看能力与项目证据', capability: '能力', primary: '主要项目', proof: '公开证据',
+  method: '我的工程方法。',
+  methods: [
+    ['先理解约束。', '货运项目先编译司机偏好、时间窗和罚分，再决定是否交给模型。'],
+    ['让系统处于可控边界。', '重视动作白名单、参数校验、路径边界、失败回退和契约测试。'],
+    ['从原型推进到交付。', '同时处理接口、状态、流式反馈、模型部署、线程、记录与异常。'],
+  ],
+  contact: '一起，把想法做出来。', contactIntro: '如果你的团队正在构建真正可运行的智能系统，欢迎交流。',
+  copy: '复制邮箱', copied: '邮箱已复制', copyError: '复制失败，请选中邮箱文字复制。',
+  skip: '跳至正文', nav: '作品分类', table: '能力与项目证据',
+};
+const tilts: Record<Artwork, string> = {
+  travel: '-3deg', freight: '2deg', camera: '2deg', safety: '-2.5deg',
+  recruitment: '2deg', prompt: '-2.5deg', minimax: '-3deg', video: '2deg', git: '-3deg', random: '2deg',
+};
+---
+
+<!doctype html>
+<html lang={english ? 'en' : 'zh-CN'}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={english ? 'Yu Yang’s portfolio: AI Agents, AI applications, computer vision and C++ engineering.' : '于洋的个人作品集：AI Agent、AI 应用开发、计算机视觉与 C++ 工程实践。'} />
+    <meta name="theme-color" content="#f7f7f5" />
+    <link rel="icon" type="image/svg+xml" href={sitePath('/favicon.svg')} />
+    <title>Meridian · Yuy</title>
+  </head>
+  <body class="portfolio-home">
+    <!--
+      THESIS: 把个人网站组织为可往返探索的画布、作品与个人空间。
+      OWN-WORLD: 灰白透视画布、炭黑平面字、厚白作品框、接触阴影与底部 Dock。
+      STORY: 从画布预览作品，在项目、案例和相关手记间探索，返回原位后继续选择。
+      FIRST VIEWPORT: 姓名与全部项目对象在等距平面上，水平身份位于左上，主入口位于左下；手机采用可滚动的双列作品画布。
+      FORM: 用户明确指定参考02封面+01作品桌面；覆盖旧种子选择，以三维CSS平面和原生卡片实现。
+    -->
+    <a class="skip-link" href="#content">{text.skip}</a>
+    <SiteNav locale={locale} pathname={english ? '/en' : '/'} spatial />
+    <main id="content">
+      <section class="spatial-cover" id="top" aria-labelledby="hero-title" data-spatial-cover data-view="top">
+        <div class="cover-topline">
+          <a class="cover-owner" href="#about">
+            <img src={portrait.src} width="42" height="42" alt={text.name} />
+            <span><strong>{text.name}</strong><small>{text.school}</small></span>
+          </a>
+          <p class="cover-focus">{text.focus}<span>{text.secondary}</span></p>
+        </div>
+        <div class="cover-scene">
+          <div class="isometric-canvas" data-isometric-canvas>
+            <div class="canvas-lettering"><h1 id="hero-title"><span>Yu</span><span>Yang</span></h1><p>INTELLIGENT SYSTEMS / SELECTED WORK</p></div>
+            {projects.map(project => (
+              <a class:list={['canvas-project', `canvas-${project.id}`]} href={projectUrl(project.slug)} data-preview-open={project.id} aria-label={english ? `Preview ${project.name.en}` : `预览${project.name.zh}`}>
+                <div class="canvas-object"><ProjectArtwork kind={project.id} /><span class="canvas-object-title"><span>{project.shortName[locale]}</span><span aria-hidden="true">↗</span></span></div>
+              </a>
+            ))}
+          </div>
+        </div>
+        <div class="cover-bottomline"><div><p>{text.intro}</p><a class="work-entry" href="#projects">{text.projects}<NavIcon name="arrow" /></a><a class="cover-about" href="#about">{text.about}</a></div><span class="cover-scroll">{english ? `${projects.length} PROJECTS / CLICK TO EXPLORE` : `${projects.length} 个作品 / 点击开始探索`} <span aria-hidden="true">↗</span></span></div>
+      </section>
+
+      <section class="portfolio-desk" id="projects" aria-labelledby="work-title" data-project-desk data-view="projects">
+        <a class="view-back" href="#top">← {english ? 'Back to canvas' : '回到画布'}</a>
+        <div class="work-heading"><div><h2 id="work-title">{text.workTitle}</h2><p>{text.workIntro}</p></div><span class="desk-hint">{text.dragHint}</span></div>
+        <div class="work-tools"><div class="project-filters" role="group" aria-label={text.nav}><button type="button" data-project-filter="all" aria-pressed="true">{text.all} <span>({projects.length})</span></button>{projectGroups.map(group => <button type="button" data-project-filter={group.kind} aria-pressed="false">{group.label[locale]}</button>)}</div><button class="reset-cards" type="button" data-reset-cards>{text.reset}<span aria-hidden="true">↺</span></button></div>
+        <div class="work-groups">
+          {projectGroups.map(group => (
+            <section class="work-group" id={group.id} data-project-group={group.kind} aria-labelledby={`${group.id}-title`}>
+              <h3 class="group-label" id={`${group.id}-title`}>{group.label[locale]}</h3>
+              <div class="work-group-cards">
+                {projects.filter(project => project.group === group.kind).map(project => (
+                  <article class="photo-card" data-project-card={project.id} style={`--card-tilt:${tilts[project.id]}`} aria-labelledby={`work-${project.id}-title`}>
+                    <div class="photo-card-meta"><span>{project.ownership[locale]}</span><button class="card-handle" type="button" data-card-handle aria-label={`${text.move}${project.name[locale]}`} aria-describedby="drag-instructions"><NavIcon name="grip" /></button></div>
+                    <a class="artwork-link" href={projectUrl(project.slug)} data-preview-open={project.id} aria-label={english ? `Preview ${project.name.en}` : `预览${project.name.zh}`}><ProjectArtwork kind={project.id} /><span class="artwork-preview-label">{english ? 'Quick look ↗' : '打开预览 ↗'}</span></a>
+                    <div class="photo-card-content"><h4 id={`work-${project.id}-title`}><a href={projectUrl(project.slug)}>{project.name[locale]}</a></h4><p class="card-summary">{project.summary[locale]}</p><ul class="project-tags" aria-label={english ? 'Technologies' : '技术重点'}>{project.tags.map(tag => <li>{tag}</li>)}</ul><div class="card-actions"><a class="case-link" href={projectUrl(project.slug)}>{text.case}<NavIcon name="arrow" /></a>{project.source && <a class="source-link" href={project.source} target="_blank" rel="noopener noreferrer">GitHub ↗</a>}</div><details class="card-evidence"><summary>{project.caseStudy ? (english ? 'Implementation & evidence' : '实现与工程证据') : text.evidence}<span aria-hidden="true">+</span></summary><div><p class="card-role"><b>{project.caseStudy ? (english ? 'Implementation scope' : '实现范围') : text.myRole}</b>{project.role[locale]}</p><ul>{project.proofs[locale].map(([title, proof]) => <li><strong>{title}</strong><span>{proof}</span></li>)}</ul>{project.id === 'travel' && <figure class="card-interface"><img src={travelInterface.src} width={travelInterface.width} height={travelInterface.height} loading="lazy" alt={text.interface} /><figcaption>{text.interface}</figcaption></figure>}</div></details></div>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
+        <p id="drag-instructions" class="visually-hidden">{english ? 'Drag the handle to reposition this card. With keyboard focus, use arrow keys to move and Home to reset. Card positions do not change project order.' : '拖动把手可移动卡片；把手获得键盘焦点后，方向键移动，Home 键归位。卡片摆放不会改变项目阅读顺序。'}</p>
+        <p class="visually-hidden" aria-live="polite" data-desk-status></p>
+      </section>
+
+      <section class="about-section" id="about" aria-labelledby="about-title" data-view="about">
+        <a class="view-back" href="#top">← {english ? 'Back to canvas' : '回到画布'}</a>
+        <div class="about-introduction"><div class="personal-letter"><span class="section-kicker">{english ? 'A LITTLE ABOUT ME' : '关于我 / ABOUT'}</span><h2 id="about-title">{text.aboutTitle}</h2><p>{text.aboutIntro}</p><p>{english ? 'I study Artificial Intelligence at UCAS. My work moves between Agents that make decisions and systems that perceive the physical world.' : '我在中国科学院大学学习人工智能。做过旅行规划与货运决策 Agent，也做过红外视觉、C++ 上位机和车内安全系统。'}</p><a href="https://github.com/IT-coder-Yy" target="_blank" rel="noopener noreferrer">github.com/IT-coder-Yy <span aria-hidden="true">↗</span></a></div><div class="personal-directions"><span class="section-kicker">{english ? 'TWO THREADS IN MY WORK' : '我的两个探索方向'}</span><a href="#ai-agent"><span>01 / AGENTS</span><h3>{english ? 'From intent to action.' : '从意图，到行动。'}</h3><p>{english ? 'Planning, tools and memory — making a decision traceable.' : '把规划、工具与记忆组织起来，让每一次决策有迹可循。'}</p><b>{english ? 'Explore Agent projects ↗' : '探索 Agent 作品 ↗'}</b></a><a href="#cv"><span>02 / PERCEPTION</span><h3>{english ? 'From signals to systems.' : '从信号，到系统。'}</h3><p>{english ? 'Vision, deployment and concurrency — bringing perception into an application.' : '把视觉算法、推理部署与并发处理接起来，让感知进入真实应用。'}</p><b>{english ? 'Explore vision projects ↗' : '探索视觉与 C++ 作品 ↗'}</b></a></div></div>
+        <div class="background-records"><div class="education-records"><article><img src={ucasEmblem.src} width="56" height="56" loading="lazy" alt={english ? 'UCAS official emblem' : '中国科学院大学官方校徽'} /><div><h3>{text.ucas}</h3><p>{text.ucasDegree}</p><strong>{text.ucasResult}</strong></div></article><article><img src={litEmblem.src} width="56" height="56" loading="lazy" alt={english ? 'LIT official emblem' : '洛阳理工学院官方校徽'} /><div><h3>{text.lit}</h3><p>{text.litDegree}</p><strong>{text.litResult}</strong></div></article></div><div class="honors-record"><h3>{text.honors}</h3><ul>{text.awardList.map(award => <li>{award}</li>)}</ul></div></div>
+        <details class="capability-ledger"><summary>{text.matrix}<span aria-hidden="true">+</span></summary><div class="capability-table" role="region" tabindex="0" aria-label={text.table}><table><thead><tr><th>{text.capability}</th><th>{text.primary}</th><th>{text.proof}</th></tr></thead><tbody>{capabilities[locale].map(([skill, project, proof]) => <tr><th scope="row">{skill}</th><td>{project}</td><td>{proof}</td></tr>)}</tbody></table></div></details>
+      </section>
+
+      <section class="method-section" id="method" aria-labelledby="method-title" data-view="about"><h2 id="method-title">{text.method}</h2><ol>{text.methods.map(([title, description], index) => <li><span class="method-step" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span><div><h3>{title}</h3><p>{description}</p></div></li>)}</ol></section>
+    </main>
+    <footer class="portfolio-footer" id="contact" data-view="about"><h2>{text.contact}</h2><p>{text.contactIntro}</p><div class="contact-actions"><a class="contact-email" href="mailto:yuyang24@mails.ucas.ac.cn">yuyang24@mails.ucas.ac.cn <span aria-hidden="true">↗</span></a><button type="button" data-copy-email data-copy-label={text.copy} data-copied-label={text.copied} data-error-label={text.copyError}>{text.copy}</button></div><p class="contact-status" aria-live="polite" data-copy-status></p><div class="footer-bottom"><span>Yu Yang · {new Date().getFullYear()}</span><a href="https://github.com/IT-coder-Yy" target="_blank" rel="noopener noreferrer">GitHub ↗</a><a href="#top">{english ? 'Back to the canvas ↑' : '回到空间画布 ↑'}</a></div></footer>
+    <ProjectPreview locale={locale} />
+    <script>
+      import '../scripts/portfolio';
+    </script>
+  </body>
+</html>
