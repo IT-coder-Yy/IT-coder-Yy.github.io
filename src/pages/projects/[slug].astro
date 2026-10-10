@@ -1,0 +1,11 @@
+---
+import RepositoryProject from '../../components/RepositoryProject.astro';
+import { repositoryProjects } from '../../data/repository-projects';
+
+export function getStaticPaths() {
+  return repositoryProjects.map(project => ({ params: { slug: project.slug }, props: { project } }));
+}
+
+const { project } = Astro.props;
+---
+<RepositoryProject project={project} locale="zh" />

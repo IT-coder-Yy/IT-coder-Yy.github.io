@@ -1,0 +1,299 @@
+---
+import { sitePath } from '../../lib/paths';
+import '../../styles/home.css';
+import '../../styles/project-detail.css';
+import '../../styles/freight-detail.css';
+import SiteNav from '../../components/SiteNav.astro';
+
+const chapters = [
+  ['问题', 'problem'],
+  ['职责', 'role'],
+  ['架构', 'architecture'],
+  ['沙盘', 'sandbox'],
+  ['决策', 'decisions'],
+  ['边界', 'reliability'],
+  ['证据', 'evidence'],
+  ['复盘', 'review'],
+];
+
+const workflow = [
+  ['01', '恢复状态', '读取司机当前状态、月度进度与正在生效的承诺，而不是把每一次找货视为孤立问题。'],
+  ['02', '编译约束', '把偏好、禁区、回家、休息、熟货与临时事务转为可执行的硬约束、软惩罚和时间边界。'],
+  ['03', '规划当天', '将可行动作放回今日计划与后续承诺中，判断其是否会挤压下一步选择。'],
+  ['04', '比较候选', '综合净收益、单位时间收益、空驶、运输时长、机会成本、偏好风险与过期风险。'],
+  ['05', '受控仲裁', '候选接近、承诺冲突或位置机会不清晰时，才请求模型在已验证的可行动作中仲裁。'],
+  ['06', '校验与记忆', '白名单和参数校验守住动作出口；成功模式、失败复盘与市场机会回写为后续策略。'],
+];
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="theme-color" content="#f4f0e8" />
+    <meta name="description" content="货运司机找货决策 Agent：于洋完成的规则优先、模型低频仲裁的长期找货决策系统。" />
+    <title>货运司机找货决策 Agent · 于洋项目档案</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#detail-content">跳至项目正文</a>
+
+    <SiteNav locale="zh" pathname="/projects/freight-decision-agent" detail />
+
+    <main id="detail-content" class="project-detail freight-detail">
+      <section class="detail-hero freight-detail-hero" aria-labelledby="project-title">
+        <div class="detail-hero-copy">
+          <p class="detail-index">项目 02 / AI Agent</p>
+          <h1 id="project-title">货运司机<br /><em>找货决策</em> Agent</h1>
+          <p class="detail-lede">在接单、等待、空驶之间持续权衡月度净收益、司机偏好、时间窗口与未来承诺；它不是货源平台，而是面向连续决策的受控混合 Agent。</p>
+          <dl class="project-facts">
+            <div><dt>项目类型</dt><dd>个人项目</dd></div>
+            <div><dt>个人职责</dt><dd>约束编译、长期计划、候选评分、Memory、模型仲裁与动作合法性控制</dd></div>
+            <div><dt>技术重点</dt><dd>Hybrid Agent · Constraint Compiler · Memory · Action Guard</dd></div>
+          </dl>
+          <div class="detail-actions">
+            <a class="detail-primary" href="#sandbox">进入决策沙盘 <span aria-hidden="true">↓</span></a>
+            <a class="detail-quiet" href={sitePath('/#projects')}>返回项目列表 <span aria-hidden="true">↑</span></a>
+          </div>
+        </div>
+
+        <figure class="freight-hero-board" aria-labelledby="freight-board-caption">
+          <div class="freight-board-column">
+            <p>司机状态</p>
+            <strong>月度计划</strong>
+            <span>回家 · 休息 · 熟货 · 临时承诺</span>
+          </div>
+          <div class="freight-board-column freight-board-core">
+            <p>规则主干</p>
+            <strong>约束 / 计划 / 候选</strong>
+            <span>先判断是否可行，再处理收益权衡</span>
+          </div>
+          <div class="freight-board-column">
+            <p>动作出口</p>
+            <strong>接单 / 等待 / 空驶</strong>
+            <span>白名单与参数校验</span>
+          </div>
+          <figcaption id="freight-board-caption">规则优先；只在真正存在权衡时让模型参与仲裁。</figcaption>
+        </figure>
+      </section>
+
+      <div class="detail-body">
+        <aside class="chapter-rail" aria-label="页内章节">
+          <p>阅读路径</p>
+          <ol>
+            {chapters.map(([label, id]) => <li><a href={'#' + id}>{label}</a></li>)}
+          </ol>
+        </aside>
+
+        <article class="detail-article">
+          <section id="problem" class="detail-section">
+            <p class="section-label">01 / 问题背景</p>
+            <h2>一笔高价货，不等于一个更好的连续决策。</h2>
+            <p>司机的找货决策会持续影响后续位置、休息、回家安排和可接订单。若每一步都交给模型，既会引入响应与成本，也可能绕过明确的业务边界。这个项目将确定性的约束、计划与候选比较留在规则主干中，只把难以量化的取舍交给低频模型仲裁。</p>
+          </section>
+
+          <section id="role" class="detail-section">
+            <p class="section-label">02 / 我的职责</p>
+            <div class="role-grid">
+              <article><span>约束与计划</span><p>设计从自然语言偏好到结构化边界的编译方式，并将当日决策放回月度计划和未来承诺中。</p></article>
+              <article><span>候选与 Memory</span><p>组织候选货源的长期评分，以及成功模式、失败反思、市场机会与进行中计划的记忆闭环。</p></article>
+              <article><span>仲裁与动作控制</span><p>实现规则优先的模型调用策略，并对模型建议的动作名称和参数进行合法性验证。</p></article>
+            </div>
+          </section>
+
+          <section id="architecture" class="detail-section architecture-section">
+            <p class="section-label">03 / 受控混合架构</p>
+            <h2>模型不接管流程，只在规则无法区分时参与判断。</h2>
+            <p class="architecture-note">以下是系统的静态决策路径。每一步都有明确输入和边界，不以虚构运价、收入或业务收益来包装项目能力。</p>
+            <ol class="workflow">
+              {workflow.map(([index, title, description]) => (
+                <li>
+                  <span>{index}</span>
+                  <div><strong>{title}</strong><p>{description}</p></div>
+                </li>
+              ))}
+            </ol>
+            <div class="architecture-footnote freight-footnote">
+              <span>规则层</span><i></i><span>Constraint Compiler / Planner / Candidate Engine</span>
+              <span>策略层</span><i></i><span>Memory Driven Policy / Model Decision Service</span>
+            </div>
+          </section>
+
+          <section id="sandbox" class="detail-section sandbox-section">
+            <p class="section-label">04 / 手动决策沙盘</p>
+            <h2>切换一个动作，查看它先要满足哪些边界。</h2>
+            <p>这是用于解释决策机制的定性沙盘，不接入真实司机、订单、运价或位置数据。可通过点击或键盘激活下方动作。</p>
+
+            <div class="sandbox-shell">
+              <div class="sandbox-context" aria-label="固定司机约束">
+                <p>当前上下文</p>
+                <ul>
+                  <li>存在回家承诺</li>
+                  <li>需要安排休息</li>
+                  <li>保留熟货倾向</li>
+                </ul>
+              </div>
+
+              <div class="sandbox-stage" aria-live="polite">
+                <p class="sandbox-stage-label">决策路径</p>
+                <div class="sandbox-lanes">
+                  <section>
+                    <p>规则门</p>
+                    <strong data-sandbox-gate>时窗、回家承诺与禁区先通过</strong>
+                  </section>
+                  <section>
+                    <p>候选比较</p>
+                    <strong data-sandbox-candidate>候选 A：在当前约束下可行</strong>
+                  </section>
+                  <section>
+                    <p>模型仲裁</p>
+                    <strong data-sandbox-model>差异明确：规则直接决策</strong>
+                  </section>
+                </div>
+                <div class="sandbox-outcome">
+                  <p data-sandbox-title>接单：先通过规则门，再比较候选。</p>
+                  <ul data-sandbox-list>
+                    <li>不以单笔高价替代长期计划。</li>
+                    <li>动作仍需经过白名单与参数校验。</li>
+                  </ul>
+                  <strong data-sandbox-action>动作：接单</strong>
+                </div>
+              </div>
+
+              <div class="sandbox-controls" role="group" aria-label="选择决策动作">
+                <p>选择动作</p>
+                <button type="button" class="is-active" data-decision="accept" aria-pressed="true">接单</button>
+                <button type="button" data-decision="wait" aria-pressed="false">等待</button>
+                <button type="button" data-decision="reposition" aria-pressed="false">空驶</button>
+              </div>
+              <p class="sandbox-note">此处的候选与动作均为说明性的定性状态，不代表真实订单结果或收益表现。</p>
+            </div>
+          </section>
+
+          <section id="decisions" class="detail-section">
+            <p class="section-label">05 / 三个关键技术决策</p>
+            <div class="decision-list">
+              <article>
+                <p>决定一</p>
+                <h3>先走确定性路径，把模型留给真正的权衡。</h3>
+                <dl>
+                  <div><dt>问题</dt><dd>所有步骤都请求模型，会放大响应、成本与不受约束动作的风险。</dd></div>
+                  <div><dt>选择</dt><dd>先由约束、计划、候选评分形成确定性动作；候选接近、承诺冲突或位置机会不清晰时再请求模型。</dd></div>
+                  <div><dt>边界</dt><dd>模型只能在已验证的候选和动作范围内仲裁，输出仍须通过动作校验。</dd></div>
+                </dl>
+              </article>
+              <article>
+                <p>决定二</p>
+                <h3>用月度净收益视角，替代只看一笔订单。</h3>
+                <dl>
+                  <div><dt>问题</dt><dd>高价订单可能带来空驶、耗时或后续位置损失，也可能冲突回家和休息安排。</dd></div>
+                  <div><dt>选择</dt><dd>候选比较同时纳入净收益、单位时间收益、空驶、运输时长、机会成本、偏好风险和过期风险。</dd></div>
+                  <div><dt>边界</dt><dd>评分是决策输入，不把启发式结果伪装成对真实市场的确定性预测。</dd></div>
+                </dl>
+              </article>
+              <article>
+                <p>决定三</p>
+                <h3>让 Memory 影响后续政策，而不只是保存历史。</h3>
+                <dl>
+                  <div><dt>问题</dt><dd>连续找货中，失败货源、成功位置与计划偏差如果不被复用，下一轮仍会重复试错。</dd></div>
+                  <div><dt>选择</dt><dd>MemoryStore 保存成功模式、市场机会、失败反思和进行中计划，并由策略层组织为下一轮决策上下文。</dd></div>
+                  <div><dt>边界</dt><dd>页面不展示任何真实司机画像、轨迹或订单历史；Memory 只说明机制与作用范围。</dd></div>
+                </dl>
+              </article>
+            </div>
+          </section>
+
+          <section id="reliability" class="detail-section">
+            <p class="section-label">06 / 可靠性与工程边界</p>
+            <h2>每一个动作都必须回到可验证的出口。</h2>
+            <ul class="reliability-list">
+              <li><strong>动作白名单</strong><span>系统只接受接单、等待、空驶等定义过的动作，不让模型自由生成业务指令。</span></li>
+              <li><strong>参数校验</strong><span>即使模型参与仲裁，动作参数仍需通过可行候选、时间与约束条件的验证。</span></li>
+              <li><strong>计划保护</strong><span>回家、休息、熟货、禁区和临时事务会在决策前进入结构化边界，而非作为生成文本后的提醒。</span></li>
+              <li><strong>隐私边界</strong><span>页面仅展示架构与定性沙盘，不公开真实司机、位置、订单、偏好原文或内部运行记录。</span></li>
+            </ul>
+          </section>
+
+          <section id="evidence" class="detail-section evidence-section">
+            <p class="section-label">07 / 结果与证据</p>
+            <h2>能被检查的是决策模块、测试覆盖与明确的展示边界。</h2>
+            <div class="evidence-ledger">
+              <article><span>核心模块</span><p>项目包含约束编译、长期规划、候选评分、记忆存储、策略协调与模型决策服务等职责分层。</p></article>
+              <article><span>决策测试</span><p>覆盖偏好编译、记忆衰减、熟货倾向、休息与回家约束、候选评分和模型仲裁等行为。</p></article>
+              <article><span>页面取舍</span><p>用手动定性沙盘解释机制，不虚构商业指标，不展示无法公开的真实业务数据或源代码链接。</p></article>
+            </div>
+          </section>
+
+          <section id="review" class="detail-section review-section">
+            <p class="section-label">08 / 复盘与下一步</p>
+            <p>这个项目的核心不是“让模型替司机做决定”，而是把长期收益、个人承诺与行动安全组织成一个可控的决策系统。后续可以继续补充可回放的决策评估与脱敏的离线场景集，用于比较规则、模型仲裁和 Memory 对长期策略的影响。</p>
+            <div class="detail-end-actions">
+              <a href={sitePath('/#projects')}>返回项目列表 <span aria-hidden="true">↑</span></a>
+              <a href="#sandbox">回到决策沙盘 <span aria-hidden="true">↑</span></a>
+            </div>
+          </section>
+        </article>
+      </div>
+    </main>
+
+    <script>
+      const decisions = {
+        accept: {
+          gate: '时窗、回家承诺与禁区先通过',
+          candidate: '候选 A：在当前约束下可行',
+          model: '差异明确：规则直接决策',
+          title: '接单：先通过规则门，再比较候选。',
+          notes: ['不以单笔高价替代长期计划。', '动作仍需经过白名单与参数校验。'],
+          action: '动作：接单',
+        },
+        wait: {
+          gate: '没有可行候选，且等待不破坏今日计划',
+          candidate: '当前候选：不满足既定边界',
+          model: '无需仲裁：规则直接保留等待',
+          title: '等待：没有可行候选时，等待也是受控动作。',
+          notes: ['休息和回家承诺继续保留在计划中。', '等待不等于无限停留，后续仍会重新比较候选。'],
+          action: '动作：等待',
+        },
+        reposition: {
+          gate: '目标位置必须符合禁区、承诺与偏好边界',
+          candidate: '当前位置机会不足，需要比较后续位置',
+          model: '位置机会不清晰：允许模型在边界内仲裁',
+          title: '空驶：服务于后续机会，而不是任意移动。',
+          notes: ['空驶选择仍要回到月度计划与后续承诺。', '模型只能在规则允许的动作和参数范围内参与判断。'],
+          action: '动作：空驶至规划位置',
+        },
+      };
+
+      const controls = document.querySelectorAll('[data-decision]');
+      const gate = document.querySelector('[data-sandbox-gate]');
+      const candidate = document.querySelector('[data-sandbox-candidate]');
+      const model = document.querySelector('[data-sandbox-model]');
+      const title = document.querySelector('[data-sandbox-title]');
+      const notes = document.querySelector('[data-sandbox-list]');
+      const action = document.querySelector('[data-sandbox-action]');
+
+      function selectDecision(key) {
+        const decision = decisions[key];
+        gate.textContent = decision.gate;
+        candidate.textContent = decision.candidate;
+        model.textContent = decision.model;
+        title.textContent = decision.title;
+        action.textContent = decision.action;
+        notes.replaceChildren(...decision.notes.map((note) => {
+          const item = document.createElement('li');
+          item.textContent = note;
+          return item;
+        }));
+        controls.forEach((control) => {
+          const selected = control.dataset.decision === key;
+          control.classList.toggle('is-active', selected);
+          control.setAttribute('aria-pressed', String(selected));
+        });
+      }
+
+      controls.forEach((control) => {
+        control.addEventListener('click', () => selectDecision(control.dataset.decision));
+      });
+    </script>
+  </body>
+</html>

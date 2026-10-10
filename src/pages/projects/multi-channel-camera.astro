@@ -1,0 +1,308 @@
+---
+import { sitePath } from '../../lib/paths';
+import '../../styles/home.css';
+import '../../styles/project-detail.css';
+import '../../styles/camera-detail.css';
+import SiteNav from '../../components/SiteNav.astro';
+
+const chapters = [
+  ['问题', 'problem'],
+  ['职责', 'role'],
+  ['架构', 'architecture'],
+  ['处理链', 'processing'],
+  ['决策', 'decisions'],
+  ['边界', 'reliability'],
+  ['证据', 'evidence'],
+  ['复盘', 'review'],
+];
+
+const workflow = [
+  ['01', '统一采集', '将工业相机、RTSP 与自定义原始流接入同一上位机，向后续模块提供可管理的多源输入。'],
+  ['02', '恢复红外帧', '解析 Raw header 与数据包，将原始流恢复为 16-bit 红外图像，而不是只保留面向显示的压缩画面。'],
+  ['03', '处理与候选', '通过动态范围处理、分位截断、差分、阈值、形态学与 ViBe 建立可解释的候选区域链路。'],
+  ['04', '部署推理', '在 ONNX Runtime 与 MNN 推理路径中承接模型输入，并将结果通过信号槽回传上位机。'],
+  ['05', '记录与控制', '将界面显示、录制、原始数据写盘与设备控制放入完整的工业监控闭环，而不把算法孤立出来。'],
+];
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="theme-color" content="#f4f0e8" />
+    <meta name="description" content="多通道红外相机与气体泄漏检测系统：于洋参与的 Windows Qt 工业红外监控与图像处理工程。" />
+    <title>多通道红外相机与气体泄漏检测系统 · 于洋项目档案</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#detail-content">跳至项目正文</a>
+
+    <SiteNav locale="zh" pathname="/projects/multi-channel-camera" detail />
+
+    <main id="detail-content" class="project-detail camera-detail">
+      <section class="detail-hero camera-detail-hero" aria-labelledby="project-title">
+        <div class="detail-hero-copy">
+          <p class="detail-index">项目 03 / Computer Vision · C++</p>
+          <h1 id="project-title">多通道红外相机<br /><em>与泄漏检测</em>系统</h1>
+          <p class="detail-lede">面向工业现场多源红外监控的 Windows Qt 上位机，将采集、显示、交互、录制、设备控制、图像处理与模型推理组织为一条可落地的工程闭环。</p>
+          <dl class="project-facts">
+            <div><dt>项目类型</dt><dd>团队项目</dd></div>
+            <div><dt>个人职责</dt><dd>视觉算法、C++ / Qt 上位机、多源视频链路与推理部署</dd></div>
+            <div><dt>技术重点</dt><dd>C++ / Qt · 16-bit Infrared · ONNX Runtime · MNN</dd></div>
+          </dl>
+          <div class="detail-actions">
+            <a class="detail-primary" href="#processing">查看处理链 <span aria-hidden="true">↓</span></a>
+            <a class="detail-quiet" href={sitePath('/#projects')}>返回项目列表 <span aria-hidden="true">↑</span></a>
+          </div>
+        </div>
+
+        <figure class="camera-hero-plate" aria-labelledby="camera-hero-caption">
+          <div class="camera-plate-ruler"><span>多源输入</span><span>16-bit 图像链</span><span>系统输出</span></div>
+          <div class="camera-signal-grid" aria-hidden="true">
+            <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <div class="camera-plate-flow">
+            <span>Raw frame</span><i></i><span>Normalize</span><i></i><span>Process</span><i></i><span>Deploy</span>
+          </div>
+          <figcaption id="camera-hero-caption">抽象信号图仅用于说明处理阶段；不替代真实现场帧，也不伪造检测结果。</figcaption>
+        </figure>
+      </section>
+
+      <div class="detail-body">
+        <aside class="chapter-rail" aria-label="页内章节">
+          <p>阅读路径</p>
+          <ol>
+            {chapters.map(([label, id]) => <li><a href={'#' + id}>{label}</a></li>)}
+          </ol>
+        </aside>
+
+        <article class="detail-article">
+          <section id="problem" class="detail-section">
+            <p class="section-label">01 / 问题背景</p>
+            <h2>看见红外图像只是开始；难的是让数据、算法与设备一起稳定工作。</h2>
+            <p>工业现场的输入并不只有一种相机或一种帧格式。上位机既要接住工业相机、RTSP 与原始流，也要在保持 16-bit 红外信息的前提下完成显示、处理、模型推理、录制和设备控制。单独调通一个算法并不能形成可使用的系统，关键在于每一段链路都能被工程系统稳定承接。</p>
+          </section>
+
+          <section id="role" class="detail-section">
+            <p class="section-label">02 / 我的职责</p>
+            <div class="role-grid">
+              <article><span>图像处理</span><p>参与 16-bit 红外图像的动态范围处理、分位截断、背景建模、阈值与形态学等可解释处理链路。</p></article>
+              <article><span>上位机与视频链</span><p>参与 C++ / Qt 多页面上位机，以及工业相机、RTSP、原始帧等多源视频链路的工程衔接。</p></article>
+              <article><span>推理部署</span><p>参与 ONNX Runtime、MNN 模型推理路径与 QThread 异步结果回传，避免推理阻塞界面和采集。</p></article>
+            </div>
+          </section>
+
+          <section id="architecture" class="detail-section architecture-section">
+            <p class="section-label">03 / 系统架构</p>
+            <h2>从多源帧到上位机反馈，处理链必须始终保留工程出口。</h2>
+            <p class="architecture-note">这是用于解释职责和数据流的静态路径。它不展示真实现场画面、账号、设备地址或检测框，也不把测试素材包装成线上结果。</p>
+            <ol class="workflow">
+              {workflow.map(([index, title, description]) => (
+                <li>
+                  <span>{index}</span>
+                  <div><strong>{title}</strong><p>{description}</p></div>
+                </li>
+              ))}
+            </ol>
+            <div class="architecture-footnote camera-footnote">
+              <span>采集层</span><i></i><span>工业相机 / RTSP / Raw stream</span>
+              <span>工程层</span><i></i><span>Qt UI / Threading / Recording / Device control</span>
+            </div>
+          </section>
+
+          <section id="processing" class="detail-section camera-processing-section">
+            <p class="section-label">04 / 手动处理链</p>
+            <h2>每次只查看一个阶段，理解它保护了什么信息。</h2>
+            <p>这是基于项目实际处理顺序的抽象交互。切换步骤会展示输入、处理目标、输出类型与工程约束；不接入真实帧，也不会生成虚构的泄漏区域或检测结论。</p>
+
+            <div class="processing-shell">
+              <div class="processing-controls" role="group" aria-label="选择红外处理阶段">
+                <p>处理阶段</p>
+                <button type="button" class="is-active" data-process="raw" aria-pressed="true"><span>01</span>原始 16-bit 帧</button>
+                <button type="button" data-process="normalize" aria-pressed="false"><span>02</span>归一化</button>
+                <button type="button" data-process="background" aria-pressed="false"><span>03</span>背景建模</button>
+                <button type="button" data-process="candidate" aria-pressed="false"><span>04</span>候选区域</button>
+                <button type="button" data-process="inference" aria-pressed="false"><span>05</span>模型推理</button>
+                <button type="button" data-process="alert" aria-pressed="false"><span>06</span>上位机反馈</button>
+              </div>
+
+              <div class="processing-stage" data-processing-stage="raw" aria-live="polite">
+                <div class="abstract-frame" aria-hidden="true">
+                  <div class="abstract-frame-axis"><span>低</span><span>原始强度</span><span>高</span></div>
+                  <div class="abstract-frame-columns"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+                  <div class="abstract-frame-caption"><span>说明性信号</span><span data-process-graphic>保留原始强度层级</span></div>
+                </div>
+
+                <div class="processing-copy">
+                  <p data-process-index>阶段 01</p>
+                  <h3 data-process-title>从原始流恢复 16-bit 红外信息。</h3>
+                  <dl>
+                    <div><dt>输入</dt><dd data-process-input>RTSP 原始流或工业相机帧。</dd></div>
+                    <div><dt>目标</dt><dd data-process-goal>解析帧结构并保留像素强度信息，为显示和算法提供共同基础。</dd></div>
+                    <div><dt>输出</dt><dd data-process-output>可供后续处理的 16-bit 红外图像数据。</dd></div>
+                    <div><dt>约束</dt><dd data-process-constraint>不将面向显示的压缩图像误当作算法输入。</dd></div>
+                  </dl>
+                </div>
+              </div>
+              <p class="processing-note">所有图形均为抽象信号，不代表某台设备、某次测试或任何气体泄漏检测结果。</p>
+            </div>
+          </section>
+
+          <section id="decisions" class="detail-section">
+            <p class="section-label">05 / 三个关键技术决策</p>
+            <div class="decision-list">
+              <article>
+                <p>决定一</p>
+                <h3>保留 16-bit 数据链，而不是只优化一张“看起来正常”的图。</h3>
+                <dl>
+                  <div><dt>问题</dt><dd>RTSP 原始流、工业相机与显示图像的格式不同；若过早压缩或固定映射，后续处理会丢失可用强度信息。</dd></div>
+                  <div><dt>选择</dt><dd>通过原始帧解析恢复 16-bit 数据，并采用动态范围处理与分位截断兼顾可视化和后续算法链路。</dd></div>
+                  <div><dt>边界</dt><dd>页面说明数据链的处理原则，不展示真实现场帧、相机参数或任何可能识别设备环境的信息。</dd></div>
+                </dl>
+              </article>
+              <article>
+                <p>决定二</p>
+                <h3>用可解释处理链生成候选，而不是让黑盒模型独占判断。</h3>
+                <dl>
+                  <div><dt>问题</dt><dd>工业红外场景会受动态范围、背景变化和噪声影响；仅依赖一次模型输出，难以回看处理过程。</dd></div>
+                  <div><dt>选择</dt><dd>将 ViBe 背景建模、差分、阈值与形态学处理组织为候选区域链路，再与部署推理协同工作。</dd></div>
+                  <div><dt>边界</dt><dd>候选区域是系统内部的处理阶段，页面不伪造具体框选、泄漏位置或检测准确率。</dd></div>
+                </dl>
+              </article>
+              <article>
+                <p>决定三</p>
+                <h3>将采集、推理、界面与写盘拆开，保护现场响应。</h3>
+                <dl>
+                  <div><dt>问题</dt><dd>高频帧输入、模型推理和原始数据写盘会相互争抢时间，任意一项阻塞都可能拖慢界面和采集。</dd></div>
+                  <div><dt>选择</dt><dd>使用 QThread 与信号槽回传组织异步推理；录制和写盘采用限长队列与批量 flush 管理积压。</dd></div>
+                  <div><dt>边界</dt><dd>队列治理的目标是保持可控，不将未给出测试条件的吞吐或帧率表述为项目成果。</dd></div>
+                </dl>
+              </article>
+            </div>
+          </section>
+
+          <section id="reliability" class="detail-section">
+            <p class="section-label">06 / 可靠性与工程边界</p>
+            <h2>算法是闭环的一环，不能占用整个现场。</h2>
+            <ul class="reliability-list">
+              <li><strong>多源适配</strong><span>工业相机、RTSP、原始数据流与设备协议在上位机中通过明确的采集与解析链路接入。</span></li>
+              <li><strong>异步隔离</strong><span>推理结果通过线程和信号槽回传，界面、采集、推理与写盘不在同一个阻塞链路中竞争。</span></li>
+              <li><strong>录制治理</strong><span>截图、多源录制、原始数据写盘与限长队列、批量 flush 共同应对高帧率下的 I/O 压力。</span></li>
+              <li><strong>设备闭环</strong><span>设备发现、寄存器读写、PTZ、TEC 与参数下发属于系统控制面，页面不公开设备地址、会话或控制参数。</span></li>
+            </ul>
+          </section>
+
+          <section id="evidence" class="detail-section evidence-section">
+            <p class="section-label">07 / 结果与证据</p>
+            <h2>项目证据是完整链路，而不是一张脱离上下文的算法截图。</h2>
+            <div class="evidence-ledger">
+              <article><span>多源输入</span><p>工程包含 RTSP 接入、原始帧恢复、工业相机发现、数据包接收与组帧相关实现。</p></article>
+              <article><span>算法与部署</span><p>工程包含 16-bit 红外处理、ViBe 背景建模、ONNX Runtime YOLOv8，以及 MNN 推理路径。</p></article>
+              <article><span>上位机工程</span><p>工程包含 Qt 界面、多线程、信号槽、录制、截图、原始数据写盘、设备控制与 CMake 构建组织。</p></article>
+            </div>
+          </section>
+
+          <section id="review" class="detail-section review-section">
+            <p class="section-label">08 / 复盘与下一步</p>
+            <p>这套系统让我更明确地看到：图像算法在现场价值取决于它能否被采集、线程、I/O、界面与设备控制共同承接。后续可以在脱敏条件下补充可回放的处理样例和测试场景，以便更系统地检查不同输入、处理参数与部署路径的表现。</p>
+            <div class="detail-end-actions">
+              <a href={sitePath('/projects/freight-decision-agent')}>上一项目：货运决策 <span aria-hidden="true">←</span></a>
+              <a href={sitePath('/#projects')}>返回项目列表 <span aria-hidden="true">↑</span></a>
+            </div>
+          </section>
+        </article>
+      </div>
+    </main>
+
+    <script>
+      const processStates = {
+        raw: {
+          index: '阶段 01',
+          title: '从原始流恢复 16-bit 红外信息。',
+          input: 'RTSP 原始流或工业相机帧。',
+          goal: '解析帧结构并保留像素强度信息，为显示和算法提供共同基础。',
+          output: '可供后续处理的 16-bit 红外图像数据。',
+          constraint: '不将面向显示的压缩图像误当作算法输入。',
+          graphic: '保留原始强度层级',
+        },
+        normalize: {
+          index: '阶段 02',
+          title: '把宽动态范围转换为可比较的处理视图。',
+          input: '已恢复的 16-bit 红外图像数据。',
+          goal: '通过动态范围处理与分位截断处理极值，让显示与后续判断使用更稳定的范围。',
+          output: '归一化后的处理图像。',
+          constraint: '归一化服务于观察和处理，不覆盖原始信息的保存链路。',
+          graphic: '收敛显示与处理范围',
+        },
+        background: {
+          index: '阶段 03',
+          title: '用背景建模分离持续变化与瞬时扰动。',
+          input: '归一化后的处理图像。',
+          goal: '利用 ViBe 背景模型持续更新参考背景，为后续差异分析提供可解释基线。',
+          output: '背景模型与前景差异信息。',
+          constraint: '背景不是静态模板，必须随场景变化受控更新。',
+          graphic: '建立可更新的背景参考',
+        },
+        candidate: {
+          index: '阶段 04',
+          title: '把差异信号整理为可检查的候选区域。',
+          input: '背景差异与图像处理结果。',
+          goal: '通过阈值、形态学等步骤整理候选，降低零散噪声对后续模块的干扰。',
+          output: '供后续模块消费的候选区域描述。',
+          constraint: '候选只是处理中间态，不等同于已经确认的检测结论。',
+          graphic: '组织可检查的候选信息',
+        },
+        inference: {
+          index: '阶段 05',
+          title: '将部署模型放进独立的异步推理路径。',
+          input: '处理后的图像或候选信息。',
+          goal: '通过 ONNX Runtime 或 MNN 承接模型推理，并将结果交回上位机处理。',
+          output: '结构化推理反馈。',
+          constraint: '推理过程不阻塞界面、采集或录制线程。',
+          graphic: '在独立路径中完成推理',
+        },
+        alert: {
+          index: '阶段 06',
+          title: '让处理结果进入上位机的可控反馈闭环。',
+          input: '处理与推理模块的结构化反馈。',
+          goal: '将界面显示、录制、截图和设备控制组织为后续可追溯的工程动作。',
+          output: '上位机状态与受控反馈。',
+          constraint: '页面不展示设备地址、会话、控制指令或真实现场告警。',
+          graphic: '回到界面、记录与设备控制',
+        },
+      };
+
+      const processControls = document.querySelectorAll('[data-process]');
+      const processStage = document.querySelector('[data-processing-stage]');
+      const processIndex = document.querySelector('[data-process-index]');
+      const processTitle = document.querySelector('[data-process-title]');
+      const processInput = document.querySelector('[data-process-input]');
+      const processGoal = document.querySelector('[data-process-goal]');
+      const processOutput = document.querySelector('[data-process-output]');
+      const processConstraint = document.querySelector('[data-process-constraint]');
+      const processGraphic = document.querySelector('[data-process-graphic]');
+
+      function selectProcess(key) {
+        const state = processStates[key];
+        processStage.dataset.processingStage = key;
+        processIndex.textContent = state.index;
+        processTitle.textContent = state.title;
+        processInput.textContent = state.input;
+        processGoal.textContent = state.goal;
+        processOutput.textContent = state.output;
+        processConstraint.textContent = state.constraint;
+        processGraphic.textContent = state.graphic;
+        processControls.forEach((control) => {
+          const selected = control.dataset.process === key;
+          control.classList.toggle('is-active', selected);
+          control.setAttribute('aria-pressed', String(selected));
+        });
+      }
+
+      processControls.forEach((control) => {
+        control.addEventListener('click', () => selectProcess(control.dataset.process));
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,270 @@
+---
+import { sitePath } from '../../lib/paths';
+import '../../styles/home.css';
+import '../../styles/project-detail.css';
+import '../../styles/safety-detail.css';
+import SiteNav from '../../components/SiteNav.astro';
+
+const chapters = [
+  ['问题', 'problem'],
+  ['职责', 'role'],
+  ['架构', 'architecture'],
+  ['双链路', 'dual-path'],
+  ['决策', 'decisions'],
+  ['边界', 'reliability'],
+  ['证据', 'evidence'],
+  ['复盘', 'review'],
+];
+
+const workflow = [
+  ['01', '视觉输入', '从摄像头或本地视频获取驾驶员画面，进入基于 OpenCV 与 Dlib 的关键点检测路径。'],
+  ['02', '疲劳判断', '通过眼部纵横比、嘴部纵横比、头部姿态和连续帧统计形成更稳定的疲劳状态判断。'],
+  ['03', '环境采集', '由 CO2 模块、人体红外等传感器采集车内环境与活动信号，进入嵌入式任务链。'],
+  ['04', '任务协作', '在 STM32 与 RT-Thread Nano 中用线程、信号量和消息队列协调采集、判断、通信与上报。'],
+  ['05', '远程闭环', '通过 CAT1 与 MQTT 上报状态、接收云端 JSON 指令，并将阈值控制回到本地判断链路。'],
+  ['06', '安全状态', '两条链路在车内安全状态层汇合，为本地提示和远程提醒提供受控的状态入口。'],
+];
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="theme-color" content="#f4f0e8" />
+    <meta name="description" content="汽车行止安全智能监控系统：于洋参与的驾驶员疲劳视觉检测与车内环境嵌入式安全闭环。" />
+    <title>汽车行止安全智能监控系统 · 于洋项目档案</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#detail-content">跳至项目正文</a>
+
+    <SiteNav locale="zh" pathname="/projects/car-safety-monitoring" detail />
+
+    <main id="detail-content" class="project-detail safety-detail">
+      <section class="detail-hero safety-detail-hero" aria-labelledby="project-title">
+        <div class="detail-hero-copy">
+          <p class="detail-index">项目 04 / Computer Vision · Embedded IoT</p>
+          <h1 id="project-title">汽车行止安全<br /><em>智能监控</em>系统</h1>
+          <p class="detail-lede">将驾驶员疲劳视觉检测与车内环境嵌入式监控并置，形成从感知、边缘判断到云端提醒的双链路安全闭环。</p>
+          <dl class="project-facts">
+            <div><dt>项目类型</dt><dd>团队项目</dd></div>
+            <div><dt>个人职责</dt><dd>疲劳检测算法，以及嵌入式与物联网链路开发</dd></div>
+            <div><dt>技术重点</dt><dd>OpenCV / Dlib · STM32 · RT-Thread · CAT1 / MQTT</dd></div>
+          </dl>
+          <div class="detail-actions">
+            <a class="detail-primary" href="#dual-path">查看双链路 <span aria-hidden="true">↓</span></a>
+            <a class="detail-quiet" href={sitePath('/#projects')}>返回项目列表 <span aria-hidden="true">↑</span></a>
+          </div>
+        </div>
+
+        <figure class="safety-hero-board" aria-labelledby="safety-hero-caption">
+          <div class="safety-hero-path">
+            <p>视觉判断</p>
+            <span>摄像头</span><i></i><span>关键点</span><i></i><span>连续帧</span>
+          </div>
+          <div class="safety-hero-merge"><strong>车内<br />安全状态</strong><span>本地判断 / 远程提醒</span></div>
+          <div class="safety-hero-path">
+            <p>环境监控</p>
+            <span>CO2 / 人体红外</span><i></i><span>RT-Thread</span><i></i><span>CAT1 / MQTT</span>
+          </div>
+          <figcaption id="safety-hero-caption">两条链路使用抽象节点说明系统关系，不展示真实车内画面、传感器数据或告警结果。</figcaption>
+        </figure>
+      </section>
+
+      <div class="detail-body">
+        <aside class="chapter-rail" aria-label="页内章节">
+          <p>阅读路径</p>
+          <ol>
+            {chapters.map(([label, id]) => <li><a href={'#' + id}>{label}</a></li>)}
+          </ol>
+        </aside>
+
+        <article class="detail-article">
+          <section id="problem" class="detail-section">
+            <p class="section-label">01 / 问题背景</p>
+            <h2>安全状态不应只依赖一帧画面，也不应只依赖一个传感器。</h2>
+            <p>驾驶疲劳视觉判断需要面对表情瞬变、姿态变化和个体差异；车内环境监控又有自己的采集、通信和阈值管理问题。这个项目将视觉侧的连续帧判断与嵌入式侧的环境状态并置，让两类不同来源的信号进入同一个可追溯的安全闭环，而不是分别输出互不关联的提示。</p>
+          </section>
+
+          <section id="role" class="detail-section">
+            <p class="section-label">02 / 我的职责</p>
+            <div class="role-grid">
+              <article><span>疲劳视觉算法</span><p>参与基于人脸关键点的眼部、嘴部与头部姿态分析，并用连续帧统计组织疲劳状态判断。</p></article>
+              <article><span>嵌入式任务</span><p>参与 STM32 与 RT-Thread Nano 下的传感器采集、状态判断、线程协作与串口链路开发。</p></article>
+              <article><span>物联网闭环</span><p>参与 CAT1 初始化、MQTT 发布订阅、自动重连、云端 JSON 指令解析与阈值控制的工程衔接。</p></article>
+            </div>
+          </section>
+
+          <section id="architecture" class="detail-section architecture-section">
+            <p class="section-label">03 / 系统架构</p>
+            <h2>视觉与环境各自判断，再汇成同一安全状态。</h2>
+            <p class="architecture-note">以下路径用于说明系统职责与状态汇合关系。页面不虚构驾驶员行为、环境数值、报警截图或远端消息内容。</p>
+            <ol class="workflow">
+              {workflow.map(([index, title, description]) => (
+                <li>
+                  <span>{index}</span>
+                  <div><strong>{title}</strong><p>{description}</p></div>
+                </li>
+              ))}
+            </ol>
+            <div class="architecture-footnote safety-footnote">
+              <span>视觉侧</span><i></i><span>Keypoints / EAR / MAR / Head pose / Consecutive frames</span>
+              <span>设备侧</span><i></i><span>Sensors / RTOS tasks / CAT1 / MQTT</span>
+            </div>
+          </section>
+
+          <section id="dual-path" class="detail-section dual-path-section">
+            <p class="section-label">04 / 手动双链路</p>
+            <h2>分别查看两条判断链如何进入同一安全状态。</h2>
+            <p>选择视觉识别或车内环境链路，查看该路径的输入、处理方式、状态输出与部署边界。交互只展示机制，不接入摄像头、传感器、云端或真实车辆数据。</p>
+
+            <div class="dual-path-shell">
+              <div class="dual-path-controls" role="group" aria-label="选择安全监控链路">
+                <p>选择链路</p>
+                <button type="button" class="is-active" data-safety-path="vision" aria-pressed="true">视觉识别</button>
+                <button type="button" data-safety-path="device" aria-pressed="false">车内环境</button>
+              </div>
+
+              <div class="dual-path-stage" data-safety-stage="vision" aria-live="polite">
+                <div class="dual-path-diagram" aria-hidden="true">
+                  <div class="path-vision-node"><span>摄像头</span><i></i><span>68 点关键点</span><i></i><span>EAR / MAR / 姿态</span><i></i><span>连续帧状态</span></div>
+                  <div class="path-device-node"><span>CO2 / 人体红外</span><i></i><span>RT-Thread 任务</span><i></i><span>CAT1 / MQTT</span></div>
+                  <div class="path-state-node"><strong>车内安全状态</strong><span data-safety-focus>当前查看：视觉识别链路</span></div>
+                </div>
+
+                <div class="dual-path-copy">
+                  <p data-safety-index>链路 A / 视觉识别</p>
+                  <h3 data-safety-title>用连续帧状态，避免让单次表情直接变成结论。</h3>
+                  <dl>
+                    <div><dt>输入</dt><dd data-safety-input>摄像头或本地视频中的驾驶员画面。</dd></div>
+                    <div><dt>处理</dt><dd data-safety-process>基于 68 点关键点计算 EAR、MAR 与头部姿态，并在连续帧中统计状态变化。</dd></div>
+                    <div><dt>输出</dt><dd data-safety-output>进入安全状态层的疲劳相关判断。</dd></div>
+                    <div><dt>边界</dt><dd data-safety-boundary>阈值与个体差异需要通过实际部署继续校准；页面不推断任何真实驾驶行为。</dd></div>
+                  </dl>
+                </div>
+              </div>
+              <p class="dual-path-note">图中节点、状态名称与连接关系均为项目机制说明，不代表实时安全等级、云端状态或实际告警。</p>
+            </div>
+          </section>
+
+          <section id="decisions" class="detail-section">
+            <p class="section-label">05 / 三个关键技术决策</p>
+            <div class="decision-list">
+              <article>
+                <p>决定一</p>
+                <h3>让 EAR、MAR 与姿态分担不同的观察任务。</h3>
+                <dl>
+                  <div><dt>问题</dt><dd>闭眼、张嘴和低头并不是同一种状态，单一特征很难覆盖驾驶疲劳的不同外显信号。</dd></div>
+                  <div><dt>选择</dt><dd>基于人脸关键点分别计算眼部纵横比、嘴部纵横比与头部姿态，再将这些信号交给连续帧统计。</dd></div>
+                  <div><dt>边界</dt><dd>特征用于辅助形成判断；阈值、光照、姿态和个体差异不能被一段演示文案抹平。</dd></div>
+                </dl>
+              </article>
+              <article>
+                <p>决定二</p>
+                <h3>把“持续状态”放在单帧判断之前。</h3>
+                <dl>
+                  <div><dt>问题</dt><dd>一次眨眼、张嘴或短暂转头可能只是瞬时动作，直接报警会放大误报风险。</dd></div>
+                  <div><dt>选择</dt><dd>通过连续帧统计组织疲劳状态，使视觉链路输出的是过程中的状态变化，而非对单帧的绝对结论。</dd></div>
+                  <div><dt>边界</dt><dd>页面说明判断结构，不提供未经统一测试条件验证的识别率、告警次数或安全收益。</dd></div>
+                </dl>
+              </article>
+              <article>
+                <p>决定三</p>
+                <h3>用 RTOS 任务协作，把环境感知接入远程闭环。</h3>
+                <dl>
+                  <div><dt>问题</dt><dd>传感器采集、状态判断、串口通信与网络上报有不同的执行节奏，串行堆叠会让系统难以维护。</dd></div>
+                  <div><dt>选择</dt><dd>在 RT-Thread Nano 中组织线程、信号量与消息队列；通过 CAT1 / MQTT 处理状态上报、订阅、自动重连与远端阈值指令。</dd></div>
+                  <div><dt>边界</dt><dd>远端控制必须回到本地的命令解析与阈值边界，页面不公开设备身份、主题、地址或消息内容。</dd></div>
+                </dl>
+              </article>
+            </div>
+          </section>
+
+          <section id="reliability" class="detail-section">
+            <p class="section-label">06 / 可靠性与工程边界</p>
+            <h2>安全提示必须承认感知条件与部署条件的差异。</h2>
+            <ul class="reliability-list">
+              <li><strong>连续帧保护</strong><span>视觉侧用连续帧统计处理状态变化，避免让一次瞬时表情直接决定最终提醒。</span></li>
+              <li><strong>任务隔离</strong><span>采集、判断、通信和上报在 RT-Thread 任务模型中协作，减少单一阻塞路径对整体状态的影响。</span></li>
+              <li><strong>通信恢复</strong><span>CAT1 / MQTT 链路包含初始化、发布订阅与自动重连；网络可用性不被假定为恒定条件。</span></li>
+              <li><strong>隐私与控制</strong><span>页面不公开人脸画面、车内环境数据、设备标识、云端凭证或远程指令内容。</span></li>
+            </ul>
+          </section>
+
+          <section id="evidence" class="detail-section evidence-section">
+            <p class="section-label">07 / 结果与证据</p>
+            <h2>可核验的是双链路的组成与工程职责，而不是一段漂亮的报警演示。</h2>
+            <div class="evidence-ledger">
+              <article><span>视觉模块</span><p>工程包含 OpenCV、Dlib 68 点关键点、EAR、MAR、头部姿态、连续帧统计及可调参数界面。</p></article>
+              <article><span>嵌入式模块</span><p>工程包含 STM32、RT-Thread Nano、CO2、人体红外、串口接收、线程、信号量与消息队列。</p></article>
+              <article><span>物联网链路</span><p>工程包含 CAT1 初始化、MQTT 发布订阅、自动重连、云端 JSON 命令解析与阈值控制。</p></article>
+            </div>
+          </section>
+
+          <section id="review" class="detail-section review-section">
+            <p class="section-label">08 / 复盘与下一步</p>
+            <p>这个项目强调的不是用一个视觉模型代替全部安全判断，而是让视觉、环境感知、嵌入式任务与通信链路共同形成可追溯的状态闭环。下一步可以在严格脱敏和明确测试条件下，补充不同光照、姿态、环境与网络状态下的回放评估，进一步校准阈值和误报边界。</p>
+            <div class="detail-end-actions">
+              <a href={sitePath('/projects/multi-channel-camera')}>上一项目：红外相机 <span aria-hidden="true">←</span></a>
+              <a href={sitePath('/#projects')}>返回项目列表 <span aria-hidden="true">↑</span></a>
+            </div>
+          </section>
+        </article>
+      </div>
+    </main>
+
+    <script>
+      const safetyStates = {
+        vision: {
+          index: '链路 A / 视觉识别',
+          title: '用连续帧状态，避免让单次表情直接变成结论。',
+          input: '摄像头或本地视频中的驾驶员画面。',
+          process: '基于 68 点关键点计算 EAR、MAR 与头部姿态，并在连续帧中统计状态变化。',
+          output: '进入安全状态层的疲劳相关判断。',
+          boundary: '阈值与个体差异需要通过实际部署继续校准；页面不推断任何真实驾驶行为。',
+          focus: '当前查看：视觉识别链路',
+        },
+        device: {
+          index: '链路 B / 车内环境',
+          title: '让传感器、任务与通信链路各自按合适的节奏工作。',
+          input: 'CO2 模块、人体红外传感器与串口接收数据。',
+          process: '在 RT-Thread Nano 中以线程、信号量和消息队列组织采集、判断、通信与上报。',
+          output: '进入安全状态层的环境状态与受控远程反馈。',
+          boundary: '网络异常、远程命令和阈值更新必须经过本地任务与解析边界；页面不展示真实设备数据。',
+          focus: '当前查看：车内环境链路',
+        },
+      };
+
+      const safetyControls = document.querySelectorAll('[data-safety-path]');
+      const safetyStage = document.querySelector('[data-safety-stage]');
+      const safetyIndex = document.querySelector('[data-safety-index]');
+      const safetyTitle = document.querySelector('[data-safety-title]');
+      const safetyInput = document.querySelector('[data-safety-input]');
+      const safetyProcess = document.querySelector('[data-safety-process]');
+      const safetyOutput = document.querySelector('[data-safety-output]');
+      const safetyBoundary = document.querySelector('[data-safety-boundary]');
+      const safetyFocus = document.querySelector('[data-safety-focus]');
+
+      function selectSafetyPath(key) {
+        const state = safetyStates[key];
+        safetyStage.dataset.safetyStage = key;
+        safetyIndex.textContent = state.index;
+        safetyTitle.textContent = state.title;
+        safetyInput.textContent = state.input;
+        safetyProcess.textContent = state.process;
+        safetyOutput.textContent = state.output;
+        safetyBoundary.textContent = state.boundary;
+        safetyFocus.textContent = state.focus;
+        safetyControls.forEach((control) => {
+          const selected = control.dataset.safetyPath === key;
+          control.classList.toggle('is-active', selected);
+          control.setAttribute('aria-pressed', String(selected));
+        });
+      }
+
+      safetyControls.forEach((control) => {
+        control.addEventListener('click', () => selectSafetyPath(control.dataset.safetyPath));
+      });
+    </script>
+  </body>
+</html>

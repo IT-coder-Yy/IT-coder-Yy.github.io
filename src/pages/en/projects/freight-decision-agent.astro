@@ -1,0 +1,85 @@
+---
+import { sitePath } from '../../../lib/paths';
+import SiteNav from '../../../components/SiteNav.astro';
+import '../../../styles/home.css';
+import '../../../styles/project-detail.css';
+import '../../../styles/freight-detail.css';
+
+const chapters = [
+  ['Problem', 'problem'], ['Role', 'role'], ['Architecture', 'architecture'], ['Sandbox', 'sandbox'],
+  ['Decisions', 'decisions'], ['Boundaries', 'reliability'], ['Evidence', 'evidence'], ['Review', 'review'],
+];
+const workflow = [
+  ['01', 'Restore state', 'Read the driver’s current state, monthly progress and active commitments instead of treating each search as isolated.'],
+  ['02', 'Compile constraints', 'Turn preferences, no-go areas, home plans, rest, familiar cargo and temporary obligations into executable boundaries.'],
+  ['03', 'Plan the day', 'Put each possible move back into the day plan and later commitments before comparing it.'],
+  ['04', 'Compare candidates', 'Consider net return, time efficiency, deadhead distance, duration, opportunity cost, preference risk and expiry risk.'],
+  ['05', 'Arbitrate selectively', 'Call the model only when candidates are close, commitments conflict or location opportunity is unclear.'],
+  ['06', 'Validate and remember', 'Whitelist and parameter checks guard the action exit; outcomes and reflections become later decision context.'],
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="theme-color" content="#f4f0e8" />
+    <meta name="description" content="Freight Decision Agent: a rule-first, long-horizon decision system with selective model arbitration." />
+    <title>Freight Decision Agent · Yu Yang</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#detail-content">Skip to project details</a>
+    <SiteNav locale="en" pathname="/en/projects/freight-decision-agent" detail />
+    <main id="detail-content" class="project-detail freight-detail">
+      <section class="detail-hero freight-detail-hero" aria-labelledby="project-title">
+        <div class="detail-hero-copy">
+          <p class="detail-index">Project 02 / AI Agent</p>
+          <h1 id="project-title">Freight <em>Decision</em> Agent</h1>
+          <p class="detail-lede">A controlled hybrid Agent for continuous freight sourcing. It balances monthly net return, driver preferences, time windows and future commitments across accepting, waiting and repositioning.</p>
+          <dl class="project-facts"><div><dt>Project type</dt><dd>Personal project</dd></div><div><dt>My role</dt><dd>Constraint compilation, long-term planning, candidate scoring, memory, model arbitration and action legality</dd></div><div><dt>Focus</dt><dd>Hybrid Agent · Constraint compiler · Memory · Action guard</dd></div></dl>
+          <div class="detail-actions"><a class="detail-primary" href="#sandbox">Open decision sandbox <span aria-hidden="true">↓</span></a><a class="detail-quiet" href={sitePath('/en#projects')}>Back to projects <span aria-hidden="true">↑</span></a></div>
+        </div>
+        <figure class="freight-hero-board" aria-labelledby="freight-board-caption">
+          <div class="freight-board-column"><p>Driver context</p><strong>Monthly plan</strong><span>Home · Rest · Familiar cargo · Commitments</span></div>
+          <div class="freight-board-column freight-board-core"><p>Rule backbone</p><strong>Constraints / Plan / Candidates</strong><span>Establish feasibility before weighing return</span></div>
+          <div class="freight-board-column"><p>Action exit</p><strong>Accept / Wait / Reposition</strong><span>Whitelist and parameter validation</span></div>
+          <figcaption id="freight-board-caption">Rules lead. The model participates only when the remaining tradeoff is real.</figcaption>
+        </figure>
+      </section>
+
+      <div class="detail-body">
+        <aside class="chapter-rail" aria-label="On-page sections"><p>Reading path</p><ol>{chapters.map(([label, id]) => <li><a href={'#' + id}>{label}</a></li>)}</ol></aside>
+        <article class="detail-article">
+          <section id="problem" class="detail-section"><p class="section-label">01 / Context</p><h2>One high-paying load is not necessarily the better continuous decision.</h2><p>Freight choices change the next location, rest, home plans and future options. Giving every step to a model adds latency and cost while risking explicit business boundaries. This project keeps deterministic constraints, planning and candidate comparison in the rule backbone, reserving model input for hard-to-quantify tradeoffs.</p></section>
+          <section id="role" class="detail-section"><p class="section-label">02 / My role</p><div class="role-grid"><article><span>Constraints and planning</span><p>Designed the path from natural-language preference to structured boundaries, then placed daily moves back into monthly commitments.</p></article><article><span>Candidates and memory</span><p>Organized long-horizon candidate scoring alongside successful patterns, failure reflections, market opportunities and active plans.</p></article><article><span>Arbitration and action control</span><p>Implemented a rule-first model policy and legal validation for model-suggested action names and parameters.</p></article></div></section>
+          <section id="architecture" class="detail-section architecture-section"><p class="section-label">03 / Controlled hybrid architecture</p><h2>The model does not own the flow; it joins only when rules cannot separate the options.</h2><p class="architecture-note">This static path explains inputs and boundaries. It does not invent rates, revenues or operational outcomes.</p><ol class="workflow">{workflow.map(([index, title, description]) => <li><span>{index}</span><div><strong>{title}</strong><p>{description}</p></div></li>)}</ol><div class="architecture-footnote freight-footnote"><span>Rule layer</span><i></i><span>Constraint compiler / Planner / Candidate engine</span><span>Policy layer</span><i></i><span>Memory-driven policy / Model decision service</span></div></section>
+          <section id="sandbox" class="detail-section sandbox-section">
+            <p class="section-label">04 / Manual decision sandbox</p><h2>Switch an action to see the boundaries it must satisfy first.</h2><p>This is a qualitative explanation of the decision mechanism. It contains no real driver, order, rate or location data. The controls work with both pointer and keyboard input.</p>
+            <div class="sandbox-shell">
+              <div class="sandbox-context" aria-label="Fixed driver constraints"><p>Current context</p><ul><li>A home commitment exists</li><li>Rest must be planned</li><li>Familiar cargo is preferred</li></ul></div>
+              <div class="sandbox-stage" aria-live="polite"><p class="sandbox-stage-label">Decision path</p><div class="sandbox-lanes"><section><p>Rule gate</p><strong data-sandbox-gate>Time window, home commitment and no-go areas pass first</strong></section><section><p>Candidate comparison</p><strong data-sandbox-candidate>Candidate A: feasible under the active constraints</strong></section><section><p>Model arbitration</p><strong data-sandbox-model>Difference is clear: rules decide directly</strong></section></div><div class="sandbox-outcome"><p data-sandbox-title>Accept: clear the rule gate, then compare candidates.</p><ul data-sandbox-list><li>Do not substitute one high price for the long-horizon plan.</li><li>The action still passes whitelist and parameter checks.</li></ul><strong data-sandbox-action>Action: accept</strong></div></div>
+              <div class="sandbox-controls" role="group" aria-label="Choose a decision action"><p>Choose action</p><button type="button" class="is-active" data-decision="accept" aria-pressed="true">Accept</button><button type="button" data-decision="wait" aria-pressed="false">Wait</button><button type="button" data-decision="reposition" aria-pressed="false">Reposition</button></div>
+              <p class="sandbox-note">Candidates and actions here are illustrative qualitative states, not real order results or performance claims.</p>
+            </div>
+          </section>
+          <section id="decisions" class="detail-section"><p class="section-label">05 / Key decisions</p><div class="decision-list"><article><p>Decision one</p><h3>Run the deterministic path first and save the model for a genuine tradeoff.</h3><dl><div><dt>Problem</dt><dd>Calling a model at every step increases latency, cost and the risk of unconstrained actions.</dd></div><div><dt>Choice</dt><dd>Constraints, plans and candidate scores create the first action; the model is called only for close candidates, conflicts or unclear location opportunity.</dd></div><div><dt>Boundary</dt><dd>The model can arbitrate only within verified candidates and actions, and its output is validated again.</dd></div></dl></article><article><p>Decision two</p><h3>Optimize from a monthly net-return perspective, not a single order price.</h3><dl><div><dt>Problem</dt><dd>A high price can bring deadhead travel, duration or later-position losses, and may conflict with home or rest.</dd></div><div><dt>Choice</dt><dd>Candidate comparison considers net return, time efficiency, deadhead, duration, opportunity cost, preference risk and expiry risk.</dd></div><div><dt>Boundary</dt><dd>Scores are decision inputs, not claimed certainty about the real market.</dd></div></dl></article><article><p>Decision three</p><h3>Let memory shape later policy instead of merely storing history.</h3><dl><div><dt>Problem</dt><dd>Without reuse, failed cargo choices, successful positions and plan deviations simply repeat next time.</dd></div><div><dt>Choice</dt><dd>Memory stores successful patterns, opportunities, reflections and active plans for the policy layer to reuse.</dd></div><div><dt>Boundary</dt><dd>No real driver profile, route or order history is exposed on this page.</dd></div></dl></article></div></section>
+          <section id="reliability" class="detail-section"><p class="section-label">06 / Reliability and boundaries</p><h2>Every action must return to a verifiable exit.</h2><ul class="reliability-list"><li><strong>Action whitelist</strong><span>Only defined actions such as accept, wait and reposition are allowed.</span></li><li><strong>Parameter checks</strong><span>Even after arbitration, parameters must still satisfy feasible candidates, time and constraints.</span></li><li><strong>Plan protection</strong><span>Home, rest, familiar cargo, no-go areas and temporary obligations enter the decision boundary before text is generated.</span></li><li><strong>Privacy boundary</strong><span>The page shows architecture and qualitative states only, never real driver, order, location or internal run data.</span></li></ul></section>
+          <section id="evidence" class="detail-section evidence-section"><p class="section-label">07 / Evidence</p><h2>The inspectable proof is the decision structure, its tests and its display boundary.</h2><div class="evidence-ledger"><article><span>Core responsibilities</span><p>The project separates constraint compilation, planning, candidate scoring, memory, policy coordination and model decision services.</p></article><article><span>Decision tests</span><p>Tests cover preference compilation, memory decay, familiar cargo, rest and home commitments, candidate scoring and model arbitration.</p></article><article><span>Display choice</span><p>A manual qualitative sandbox explains the mechanism without fabricating business metrics or exposing non-public source data.</p></article></div></section>
+          <section id="review" class="detail-section review-section"><p class="section-label">08 / Review and next step</p><p>The point is not to let a model decide for a driver. It is to organize long-horizon return, personal commitments and action safety into a controllable decision system. A next iteration can add replayable evaluation and de-identified offline scenarios to study the effect of rules, arbitration and memory.</p><div class="detail-end-actions"><a href={sitePath('/en#projects')}>Back to projects <span aria-hidden="true">↑</span></a><a href="#sandbox">Back to sandbox <span aria-hidden="true">↑</span></a></div></section>
+        </article>
+      </div>
+    </main>
+    <script>
+      const decisions = {
+        accept: { gate: 'Time window, home commitment and no-go areas pass first', candidate: 'Candidate A: feasible under the active constraints', model: 'Difference is clear: rules decide directly', title: 'Accept: clear the rule gate, then compare candidates.', notes: ['Do not substitute one high price for the long-horizon plan.', 'The action still passes whitelist and parameter checks.'], action: 'Action: accept' },
+        wait: { gate: 'No feasible candidate exists, and waiting does not break today’s plan', candidate: 'Current candidates: outside the active boundary', model: 'No arbitration needed: rules retain waiting', title: 'Wait: when no candidate is feasible, waiting is also a controlled action.', notes: ['Rest and home commitments remain in the plan.', 'Waiting is not indefinite; candidates are compared again later.'], action: 'Action: wait' },
+        reposition: { gate: 'The target area must respect no-go areas, commitments and preferences', candidate: 'Current opportunity is weak, so future position is compared', model: 'Location opportunity is unclear: model arbitration is allowed within bounds', title: 'Reposition: serve a later opportunity rather than move at random.', notes: ['Repositioning still returns to the monthly plan and later commitments.', 'The model acts only within the permitted action and parameter range.'], action: 'Action: reposition to the planned area' },
+      };
+      const controls = document.querySelectorAll('[data-decision]');
+      const gate = document.querySelector('[data-sandbox-gate]'); const candidate = document.querySelector('[data-sandbox-candidate]'); const model = document.querySelector('[data-sandbox-model]'); const title = document.querySelector('[data-sandbox-title]'); const notes = document.querySelector('[data-sandbox-list]'); const action = document.querySelector('[data-sandbox-action]');
+      function selectDecision(key) { const decision = decisions[key]; gate.textContent = decision.gate; candidate.textContent = decision.candidate; model.textContent = decision.model; title.textContent = decision.title; action.textContent = decision.action; notes.replaceChildren(...decision.notes.map((note) => { const item = document.createElement('li'); item.textContent = note; return item; })); controls.forEach((control) => { const selected = control.dataset.decision === key; control.classList.toggle('is-active', selected); control.setAttribute('aria-pressed', String(selected)); }); }
+      controls.forEach((control) => control.addEventListener('click', () => selectDecision(control.dataset.decision)));
+    </script>
+  </body>
+</html>

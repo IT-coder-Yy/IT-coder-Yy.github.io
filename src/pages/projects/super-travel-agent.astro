@@ -1,0 +1,173 @@
+---
+import { sitePath } from '../../lib/paths';
+import travelInterface from '../../assets/images/super-travel-agent-interface.png';
+import SiteNav from '../../components/SiteNav.astro';
+import '../../styles/home.css';
+import '../../styles/project-detail.css';
+
+const chapters = [
+  ['问题', 'problem'],
+  ['职责', 'role'],
+  ['架构', 'architecture'],
+  ['决策', 'decisions'],
+  ['边界', 'reliability'],
+  ['证据', 'evidence'],
+  ['复盘', 'review'],
+];
+
+const workflow = [
+  ['01', '需求分析', '提取目标、偏好与约束，判断任务复杂度。'],
+  ['02', '任务分解', '将旅行问题拆为可规划、可查询、可验证的子任务。'],
+  ['03', '路径规划', '组织依赖关系与执行顺序，而非直接生成最终答案。'],
+  ['04', '工具执行', '通过统一工具层查询本地能力与 MCP 服务。'],
+  ['05', '结果观察', '记录工具结果、状态变化和失败信号，决定是否继续。'],
+  ['06', '任务总结', '在已核验的信息边界内组织可读的旅行方案。'],
+];
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="theme-color" content="#f4f0e8" />
+    <meta name="description" content="Super Travel Agent：于洋独立完成的多智能体旅行规划与工具编排系统。" />
+    <title>Super Travel Agent · 于洋项目档案</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#detail-content">跳至项目正文</a>
+
+    <SiteNav locale="zh" pathname="/projects/super-travel-agent" detail />
+
+    <main id="detail-content" class="project-detail">
+      <section class="detail-hero" aria-labelledby="project-title">
+        <div class="detail-hero-copy">
+          <p class="detail-index">项目 01 / AI Agent</p>
+          <h1 id="project-title">Super <em>Travel</em> Agent</h1>
+          <p class="detail-lede">把复杂旅行需求转化为可追踪的分析、分解、规划、执行、观察与总结流程，而非一次性生成一段看似完整的回答。</p>
+          <dl class="project-facts">
+            <div><dt>项目类型</dt><dd>个人项目</dd></div>
+            <div><dt>个人职责</dt><dd>产品设计、Agent 编排、工具体系、后端服务与工程化实现</dd></div>
+            <div><dt>技术重点</dt><dd>Multi-Agent · Tool Calling · MCP · RAG · FastAPI · React</dd></div>
+          </dl>
+          <div class="detail-actions">
+            <a class="detail-primary" href="https://github.com/IT-coder-Yy/SuperTravel-Agent" target="_blank" rel="noreferrer">查看公开源码 <span aria-hidden="true">↗</span></a>
+            <a class="detail-quiet" href="#architecture">查看系统架构 <span aria-hidden="true">↓</span></a>
+          </div>
+        </div>
+
+        <figure class="detail-product-shot">
+          <img src={travelInterface.src} alt="Super Travel Agent 的真实旅行规划产品界面" />
+          <figcaption><span>真实产品界面</span><span>流式状态 · 工具执行 · 行程工作台</span></figcaption>
+        </figure>
+      </section>
+
+      <div class="detail-body">
+        <aside class="chapter-rail" aria-label="页内章节">
+          <p>阅读路径</p>
+          <ol>
+            {chapters.map(([label, id]) => <li><a href={'#' + id}>{label}</a></li>)}
+          </ol>
+        </aside>
+
+        <article class="detail-article">
+          <section id="problem" class="detail-section">
+            <p class="section-label">01 / 问题背景</p>
+            <h2>复杂旅行规划，缺的不是一段文字，而是可验证的执行过程。</h2>
+            <p>多城市、交通、预算、偏好和实时变化会相互牵连。若只依赖单轮问答，模型难以说明信息来自哪里、何时需要查询工具，也无法把中间状态反馈给用户。这个项目将规划拆为可观察的阶段，并把实时结论留在工具核验之后。</p>
+          </section>
+
+          <section id="role" class="detail-section">
+            <p class="section-label">02 / 我的职责</p>
+            <div class="role-grid">
+              <article><span>产品与任务流</span><p>定义旅行规划从需求澄清到结果交付的状态与用户反馈方式。</p></article>
+              <article><span>Agent 编排</span><p>组织分析、分解、规划、执行、观察与总结的多阶段执行链。</p></article>
+              <article><span>工具与服务</span><p>完成本地工具、MCP 接入、流式后端接口与前端工作台的工程化衔接。</p></article>
+            </div>
+          </section>
+
+          <section id="architecture" class="detail-section architecture-section">
+            <p class="section-label">03 / 系统架构</p>
+            <h2>让模型负责判断，让工具负责事实。</h2>
+            <p class="architecture-note">这是用于理解系统边界的静态执行流。它不代表一段自动播放的演示，也不以虚构旅行案例替代真实界面。</p>
+            <ol class="workflow">
+              {workflow.map(([index, title, description]) => (
+                <li>
+                  <span>{index}</span>
+                  <div><strong>{title}</strong><p>{description}</p></div>
+                </li>
+              ))}
+            </ol>
+            <div class="architecture-footnote">
+              <span>上下文</span><i></i><span>旅行知识 / 用户偏好 / 任务状态</span>
+              <span>工具层</span><i></i><span>本地工具 / MCP stdio / MCP SSE</span>
+            </div>
+          </section>
+
+          <section id="decisions" class="detail-section">
+            <p class="section-label">04 / 三个关键技术决策</p>
+            <div class="decision-list">
+              <article>
+                <p>决定一</p>
+                <h3>用统一工具边界接入本地能力与 MCP。</h3>
+                <dl>
+                  <div><dt>问题</dt><dd>工具来源不同，模型侧却需要稳定的函数描述、参数与结果结构。</dd></div>
+                  <div><dt>选择</dt><dd>通过 ToolBase / ToolManager 统一注册、发现和执行；MCP 同时覆盖 stdio 与 SSE 接入。</dd></div>
+                  <div><dt>边界</dt><dd>页面只展示系统能力，不暴露工具实现代码或密钥配置。</dd></div>
+                </dl>
+              </article>
+              <article>
+                <p>决定二</p>
+                <h3>实时票务与库存结论必须先查询，再组织回答。</h3>
+                <dl>
+                  <div><dt>问题</dt><dd>把时刻、余票或库存当作模型常识，会制造无法核验的“实时信息”。</dd></div>
+                  <div><dt>选择</dt><dd>将实时查询交给工具；数据模型要求具体班次、时刻和可用性来自已核验的数据源。</dd></div>
+                  <div><dt>边界</dt><dd>没有可靠实时库存时，系统明确将酒店或交通建议标注为参考，而不是伪装成可下单结果。</dd></div>
+                </dl>
+              </article>
+              <article>
+                <p>决定三</p>
+                <h3>长任务用流式状态而不是无反馈等待。</h3>
+                <dl>
+                  <div><dt>问题</dt><dd>多阶段工具调用的等待时间不可忽略，用户需要知道任务是否还在推进。</dd></div>
+                  <div><dt>选择</dt><dd>后端通过 SSE 输出过程状态；前端工作台承接流式内容与行程处理状态。</dd></div>
+                  <div><dt>边界</dt><dd>流式输出是反馈通道，不等于所有中间推理都应直接暴露给用户。</dd></div>
+                </dl>
+              </article>
+            </div>
+          </section>
+
+          <section id="reliability" class="detail-section">
+            <p class="section-label">05 / 可靠性与工程边界</p>
+            <h2>把“能调用”推进到“调用过程可控”。</h2>
+            <ul class="reliability-list">
+              <li><strong>执行保护</strong><span>控制器覆盖流式与非流式流程，并处理循环、失败与 token 统计等执行状态。</span></li>
+              <li><strong>请求治理</strong><span>地图类请求具备作用域预算、归一化缓存与并发去重，避免同一查询被重复消耗。</span></li>
+              <li><strong>契约校验</strong><span>对实时结论、结构化结果与接口流进行测试和校验，避免把测试快照误写为真实出行建议。</span></li>
+              <li><strong>信息边界</strong><span>页面不展示真实用户案例、完整配置、访问密钥或无法公开的运行数据。</span></li>
+            </ul>
+          </section>
+
+          <section id="evidence" class="detail-section evidence-section">
+            <p class="section-label">06 / 结果与证据</p>
+            <h2>可核验的不是一句“做过 Agent”，而是产品、执行边界与测试约束。</h2>
+            <div class="evidence-ledger">
+              <article><span>产品界面</span><p>真实 React 工作台承载旅行规划、流式反馈与工具执行状态。</p></article>
+              <article><span>服务接口</span><p>FastAPI 提供聊天流、工具、MCP、旅行知识检索和行程处理相关能力。</p></article>
+              <article><span>工程验证</span><p>项目包含流式事件、工具调用、地图请求治理与旅行数据契约相关测试。</p></article>
+            </div>
+          </section>
+
+          <section id="review" class="detail-section review-section">
+            <p class="section-label">07 / 复盘与下一步</p>
+            <p>当前页面选择展示真实界面与静态系统图，而不虚构一段旅行案例或自动播放长流程。下一步会继续围绕真实 Provider 的稳定性、可追踪的来源展示，以及复杂规划的评估与回放能力深化。</p>
+            <div class="detail-end-actions">
+              <a href={sitePath('/#projects')}>返回项目列表 <span aria-hidden="true">↑</span></a>
+              <a href="https://github.com/IT-coder-Yy/SuperTravel-Agent" target="_blank" rel="noreferrer">在 GitHub 查看源码 <span aria-hidden="true">↗</span></a>
+            </div>
+          </section>
+        </article>
+      </div>
+    </main>
+  </body>
+</html>
