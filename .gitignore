@@ -1,0 +1,34 @@
+# Only publish the website source, runtime assets and deployment configuration.
+# Existing tracked files are not removed by these rules; publish from a clean history.
+/*
+!/.gitignore
+!/astro.config.mjs
+!/package.json
+!/package-lock.json
+!/tsconfig.json
+!/src/
+!/public/
+!/.github/
+
+/.github/*
+!/.github/workflows/
+/.github/workflows/*
+!/.github/workflows/deploy.yml
+
+# Generated files, credentials and local backups, wherever they appear.
+node_modules/
+dist/
+.astro/
+.env
+.env.*
+*.log
+*.bak
+*.tmp
+*.orig
+*.rej
+.DS_Store
+Thumbs.db
+
+# Original/duplicate artwork; the site imports the transparent version.
+/src/assets/images/lit-official-emblem-source.jpg
+/src/assets/images/lit-official-emblem.jpg
