@@ -1,4 +1,5 @@
 ---
+import { ClientRouter } from 'astro:transitions';
 import { sitePath } from '../../lib/paths';
 import '../../styles/home.css';
 import '../../styles/project-detail.css';
@@ -29,8 +30,9 @@ const workflow = [
 <!doctype html>
 <html lang="zh-CN">
   <head>
+    <ClientRouter fallback="swap" />
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#f4f0e8" />
     <meta name="description" content="汽车行止安全智能监控系统：于洋参与的驾驶员疲劳视觉检测与车内环境嵌入式安全闭环。" />
     <title>汽车行止安全智能监控系统 · 于洋项目档案</title>
@@ -214,6 +216,9 @@ const workflow = [
     </main>
 
     <script>
+    import { onPageLoad } from '../../lib/page-lifecycle';
+    onPageLoad((signal) => {
+      if(document.documentElement.lang.startsWith('en') !== false) return;
       const safetyStates = {
         vision: {
           index: '链路 A / 视觉识别',
@@ -265,6 +270,8 @@ const workflow = [
       safetyControls.forEach((control) => {
         control.addEventListener('click', () => selectSafetyPath(control.dataset.safetyPath));
       });
-    </script>
+
+    });
+  </script>
   </body>
 </html>

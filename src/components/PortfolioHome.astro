@@ -1,4 +1,5 @@
 ---
+import { ClientRouter } from 'astro:transitions';
 import portrait from '../assets/images/yu-yang-portrait.jpg';
 import litEmblem from '../assets/images/lit-official-emblem-transparent.png';
 import ucasEmblem from '../assets/images/ucas-official-emblem.png';
@@ -71,8 +72,9 @@ const tilts: Record<Artwork, string> = {
 <!doctype html>
 <html lang={english ? 'en' : 'zh-CN'}>
   <head>
+    <ClientRouter fallback="swap" />
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="description" content={english ? 'Yu Yang’s portfolio: AI Agents, AI applications, computer vision and C++ engineering.' : '于洋的个人作品集：AI Agent、AI 应用开发、计算机视觉与 C++ 工程实践。'} />
     <meta name="theme-color" content="#f7f7f5" />
     <link rel="icon" type="image/svg+xml" href={sitePath('/favicon.svg')} />

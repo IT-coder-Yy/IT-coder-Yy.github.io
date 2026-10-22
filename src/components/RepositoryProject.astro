@@ -1,4 +1,5 @@
 ---
+import { ClientRouter } from 'astro:transitions';
 import SiteNav from './SiteNav.astro';
 import ProjectArtwork from './ProjectArtwork.astro';
 import { projectGroups, type Locale } from '../data/portfolio';
@@ -21,8 +22,9 @@ const chapters = en
 <!doctype html>
 <html lang={en ? 'en' : 'zh-CN'}>
   <head>
+    <ClientRouter fallback="swap" />
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#f7f7f5" />
     <meta name="description" content={project.summary[locale]} />
     <link rel="icon" type="image/svg+xml" href={sitePath('/favicon.svg')} />

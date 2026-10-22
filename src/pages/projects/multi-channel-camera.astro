@@ -1,4 +1,5 @@
 ---
+import { ClientRouter } from 'astro:transitions';
 import { sitePath } from '../../lib/paths';
 import '../../styles/home.css';
 import '../../styles/project-detail.css';
@@ -28,8 +29,9 @@ const workflow = [
 <!doctype html>
 <html lang="zh-CN">
   <head>
+    <ClientRouter fallback="swap" />
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#f4f0e8" />
     <meta name="description" content="多通道红外相机与气体泄漏检测系统：于洋参与的 Windows Qt 工业红外监控与图像处理工程。" />
     <title>多通道红外相机与气体泄漏检测系统 · 于洋项目档案</title>
@@ -216,6 +218,9 @@ const workflow = [
     </main>
 
     <script>
+    import { onPageLoad } from '../../lib/page-lifecycle';
+    onPageLoad((signal) => {
+      if(document.documentElement.lang.startsWith('en') !== false) return;
       const processStates = {
         raw: {
           index: '阶段 01',
@@ -303,6 +308,8 @@ const workflow = [
       processControls.forEach((control) => {
         control.addEventListener('click', () => selectProcess(control.dataset.process));
       });
-    </script>
+
+    });
+  </script>
   </body>
 </html>

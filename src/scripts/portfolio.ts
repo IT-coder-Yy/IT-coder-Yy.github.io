@@ -1,3 +1,7 @@
+import { onPageLoad } from '../lib/page-lifecycle';
+
+onPageLoad((signal) => {
+if (!document.querySelector('.portfolio-home')) return;
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const coarsePointer = window.matchMedia('(pointer: coarse)');
 const mobile = window.matchMedia('(max-width: 600px)');
@@ -8,6 +12,13 @@ const clamp = (value: number, min: number, max: number) => Math.min(max, Math.ma
 const views = Array.from(document.querySelectorAll<HTMLElement>('[data-view]'));
 const viewLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-view-link]'));
 const projectGroupByHash = new Map(Array.from(document.querySelectorAll<HTMLElement>('[data-project-group]')).map(group => [group.id, group.dataset.projectGroup!]));
+// 首页视图依赖原生 hashchange；同页锚点不经过 ClientRouter 的 pushState。
+document.querySelectorAll<HTMLAnchorElement>('a[href]').forEach(link => {
+  const target = new URL(link.href);
+  if (target.origin === location.origin && target.pathname === location.pathname && target.search === location.search && target.hash) {
+    link.dataset.astroReload = '';
+  }
+});
 let currentView = '';
 const viewPositions = new Map<string, number>();
 const showView = (initial = false) => {
@@ -33,7 +44,7 @@ const showView = (initial = false) => {
   currentView = nextView;
 };
 showView(true);
-window.addEventListener('hashchange', () => showView());
+window.addEventListener('hashchange', () => showView(), { signal });
 
 // 原生模态框保留作品桌面的位置和筛选；关闭后焦点返回原入口。
 const preview = document.querySelector<HTMLDialogElement>('[data-project-preview]');
@@ -58,6 +69,7 @@ if (preview) {
       renderPreview(entries.findIndex(entry => entry.dataset.previewProject === link.dataset.previewOpen));
       preview.showModal();
       document.body.classList.add('preview-is-open');
+      document.dispatchEvent(new Event('portfolio:preview-open'));
     });
   });
   preview.querySelector('[data-preview-close]')?.addEventListener('click', () => preview.close());
@@ -89,7 +101,8 @@ if (cover && canvas) {
     canvas.style.removeProperty('--pointer-pitch');
   };
   cover.addEventListener('pointerleave', resetView);
-  reducedMotion.addEventListener('change', resetView);
+  reducedMotion.addEventListener('change', resetView, { signal });
+  signal.addEventListener('abort', resetView, { once: true });
 }
 
 const desk = document.querySelector<HTMLElement>('[data-project-desk]');
@@ -114,7 +127,7 @@ if (desk) {
     if (group) selectGroup(group);
     if (link.hash === '#projects') selectGroup('all');
   }));
-  window.addEventListener('hashchange', revealHashTarget);
+  window.addEventListener('hashchange', revealHashTarget, { signal });
   revealHashTarget();
 
   const resets: (() => void)[] = [];
@@ -196,8 +209,9 @@ if (desk) {
     });
     const reset = () => { vx = vy = 0; settle(0, 0); };
     resets.push(reset);
-    mobile.addEventListener('change', () => { if (mobile.matches) { stop(); x = y = 0; render(); } });
-    reducedMotion.addEventListener('change', () => { stop(); vx = vy = 0; });
+    mobile.addEventListener('change', () => { if (mobile.matches) { stop(); x = y = 0; render(); } }, { signal });
+    reducedMotion.addEventListener('change', () => { stop(); vx = vy = 0; }, { signal });
+    signal.addEventListener('abort', stop, { once: true });
   });
   desk.querySelector('[data-reset-cards]')?.addEventListener('click', () => {
     resets.forEach(reset => reset());
@@ -209,6 +223,7 @@ const copy = document.querySelector<HTMLButtonElement>('[data-copy-email]');
 const copyStatus = document.querySelector<HTMLElement>('[data-copy-status]');
 if (copy) {
   let resetTimer = 0;
+  signal.addEventListener('abort', () => clearTimeout(resetTimer), { once: true });
   copy.addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText('yuyang24@mails.ucas.ac.cn');
@@ -221,3 +236,5 @@ if (copy) {
     }
   });
 }
+
+});

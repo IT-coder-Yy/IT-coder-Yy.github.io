@@ -1,4 +1,5 @@
 ---
+import { ClientRouter } from 'astro:transitions';
 import { sitePath } from '../../../lib/paths';
 import SiteNav from '../../../components/SiteNav.astro';
 import '../../../styles/home.css';
@@ -20,7 +21,8 @@ const workflow = [
 
 <!doctype html>
 <html lang="en">
-  <head><meta charset="utf-8" /><meta name="viewport" content="width=device-width" /><meta name="theme-color" content="#f4f0e8" /><meta name="description" content="Multi-channel infrared camera and gas-leak detection: a Windows Qt industrial monitoring system." /><title>Multi-channel Infrared Camera · Yu Yang</title></head>
+  <head>
+    <ClientRouter fallback="swap" /><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" /><meta name="theme-color" content="#f4f0e8" /><meta name="description" content="Multi-channel infrared camera and gas-leak detection: a Windows Qt industrial monitoring system." /><title>Multi-channel Infrared Camera · Yu Yang</title></head>
   <body>
     <a class="skip-link" href="#detail-content">Skip to project details</a>
     <SiteNav locale="en" pathname="/en/projects/multi-channel-camera" detail />
@@ -44,6 +46,9 @@ const workflow = [
       </div>
     </main>
     <script>
+    import { onPageLoad } from '../../../lib/page-lifecycle';
+    onPageLoad((signal) => {
+      if(document.documentElement.lang.startsWith('en') !== true) return;
       const processStates = {
         raw: { index: 'Stage 01', title: 'Recover 16-bit infrared information from the raw stream.', input: 'Raw RTSP stream or industrial-camera frames.', goal: 'Parse frame structure and retain intensity information for both display and algorithms.', output: '16-bit infrared image data for later stages.', constraint: 'Do not mistake a display-oriented image for the algorithm input.', graphic: 'Preserve raw intensity levels' },
         normalize: { index: 'Stage 02', title: 'Turn a wide dynamic range into a comparable working view.', input: 'Recovered 16-bit infrared image data.', goal: 'Use dynamic-range handling and percentile clipping to manage extremes for a more stable display and processing range.', output: 'A normalized processing image.', constraint: 'Normalization supports inspection and processing; it does not overwrite the preserved raw path.', graphic: 'Converge the display and working range' },
@@ -55,6 +60,8 @@ const workflow = [
       const controls = document.querySelectorAll('[data-process]'); const stage = document.querySelector('[data-processing-stage]'); const index = document.querySelector('[data-process-index]'); const title = document.querySelector('[data-process-title]'); const input = document.querySelector('[data-process-input]'); const goal = document.querySelector('[data-process-goal]'); const output = document.querySelector('[data-process-output]'); const constraint = document.querySelector('[data-process-constraint]'); const graphic = document.querySelector('[data-process-graphic]');
       function selectProcess(key) { const state = processStates[key]; stage.dataset.processingStage = key; index.textContent = state.index; title.textContent = state.title; input.textContent = state.input; goal.textContent = state.goal; output.textContent = state.output; constraint.textContent = state.constraint; graphic.textContent = state.graphic; controls.forEach((control) => { const selected = control.dataset.process === key; control.classList.toggle('is-active', selected); control.setAttribute('aria-pressed', String(selected)); }); }
       controls.forEach((control) => control.addEventListener('click', () => selectProcess(control.dataset.process)));
-    </script>
+
+    });
+  </script>
   </body>
 </html>

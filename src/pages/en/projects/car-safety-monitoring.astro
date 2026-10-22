@@ -1,4 +1,5 @@
 ---
+import { ClientRouter } from 'astro:transitions';
 import { sitePath } from '../../../lib/paths';
 import SiteNav from '../../../components/SiteNav.astro';
 import '../../../styles/home.css';
@@ -21,7 +22,8 @@ const workflow = [
 
 <!doctype html>
 <html lang="en">
-  <head><meta charset="utf-8" /><meta name="viewport" content="width=device-width" /><meta name="theme-color" content="#f4f0e8" /><meta name="description" content="In-vehicle safety monitoring that combines fatigue vision with embedded cabin sensing." /><title>In-vehicle Safety Monitoring · Yu Yang</title></head>
+  <head>
+    <ClientRouter fallback="swap" /><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" /><meta name="theme-color" content="#f4f0e8" /><meta name="description" content="In-vehicle safety monitoring that combines fatigue vision with embedded cabin sensing." /><title>In-vehicle Safety Monitoring · Yu Yang</title></head>
   <body>
     <a class="skip-link" href="#detail-content">Skip to project details</a>
     <SiteNav locale="en" pathname="/en/projects/car-safety-monitoring" detail />
@@ -45,6 +47,9 @@ const workflow = [
       </div>
     </main>
     <script>
+    import { onPageLoad } from '../../../lib/page-lifecycle';
+    onPageLoad((signal) => {
+      if(document.documentElement.lang.startsWith('en') !== true) return;
       const safetyStates = {
         vision: { index: 'Path A / Vision assessment', title: 'Use a consecutive-frame state so one expression does not become a conclusion.', input: 'Driver imagery from a camera or local video.', process: 'Compute EAR, MAR and head pose from 68 facial landmarks, then observe state changes across consecutive frames.', output: 'A fatigue-related judgment entering the shared safety-state layer.', boundary: 'Thresholds and individual differences need deployment calibration; this page infers no real driving behavior.', focus: 'Viewing: vision assessment' },
         device: { index: 'Path B / Cabin sensing', title: 'Let sensors, tasks and communication each run at an appropriate rhythm.', input: 'CO2, passive infrared and serial-reception data.', process: 'Use RT-Thread Nano threads, semaphores and message queues to organize acquisition, judgment, communication and reporting.', output: 'Cabin state and controlled remote feedback entering the shared safety-state layer.', boundary: 'Network exceptions, remote commands and threshold updates remain within local task and parsing boundaries; no real device data is shown.', focus: 'Viewing: cabin sensing' },
@@ -52,6 +57,8 @@ const workflow = [
       const controls = document.querySelectorAll('[data-safety-path]'); const stage = document.querySelector('[data-safety-stage]'); const index = document.querySelector('[data-safety-index]'); const title = document.querySelector('[data-safety-title]'); const input = document.querySelector('[data-safety-input]'); const process = document.querySelector('[data-safety-process]'); const output = document.querySelector('[data-safety-output]'); const boundary = document.querySelector('[data-safety-boundary]'); const focus = document.querySelector('[data-safety-focus]');
       function selectSafetyPath(key) { const state = safetyStates[key]; stage.dataset.safetyStage = key; index.textContent = state.index; title.textContent = state.title; input.textContent = state.input; process.textContent = state.process; output.textContent = state.output; boundary.textContent = state.boundary; focus.textContent = state.focus; controls.forEach((control) => { const selected = control.dataset.safetyPath === key; control.classList.toggle('is-active', selected); control.setAttribute('aria-pressed', String(selected)); }); }
       controls.forEach((control) => control.addEventListener('click', () => selectSafetyPath(control.dataset.safetyPath)));
-    </script>
+
+    });
+  </script>
   </body>
 </html>

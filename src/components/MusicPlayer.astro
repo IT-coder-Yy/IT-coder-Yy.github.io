@@ -1,0 +1,63 @@
+---
+import '../styles/music-player.css';
+import { musicTracks } from '../data/music';
+interface Props { locale: 'zh' | 'en' }
+const { locale } = Astro.props;
+const en = locale === 'en';
+---
+<!--
+  THESIS: 左下角的一枚唱片，展开为随浏览同行的横向随身听。
+  OWN-WORLD: 灰白工作台、黑胶沟槽、白色外壳与蓝色当前歌词。
+  STORY: 点击播放，三行歌词同步滚动，歌单和音量按需展开。
+  FIRST VIEWPORT: 唱片融入长条左端；控制居中，三行歌词在右，避开首页 Dock。
+  FORM: 用户确认 B 的唱片一体外形与 C 的三行歌词；手机收为紧凑两段。
+-->
+<aside id="music-player" class="music-player" data-music-player data-open="false" transition:persist="site-music" hidden>
+  <audio data-music-audio preload="none"></audio>
+  <button class="music-launcher" type="button" data-music-open aria-expanded="false" aria-controls="music-panel" aria-label={en ? 'Open music player' : '打开音乐播放器'}>
+    <span class="music-record" aria-hidden="true"><span class="music-record-label"><img data-music-cover src={musicTracks[0]?.cover} alt="" width="32" height="32" /></span></span>
+    <span class="music-launcher-dot" aria-hidden="true"></span>
+  </button>
+  <section id="music-panel" class="music-panel" role="dialog" aria-labelledby="music-heading" hidden>
+    <h2 id="music-heading" class="music-sr-only" data-music-i18n="heading">随身听</h2>
+    <div class="music-main">
+      <div class="music-now">
+        <p class="music-track-title" data-music-title></p>
+        <p class="music-artist" data-music-artist></p>
+        <span class="music-demo" data-music-demo data-music-i18n="demo">演示音轨</span>
+      </div>
+      <div class="music-controls">
+        <button class="music-icon-button" type="button" data-music-prev data-music-label="previous" aria-label={en ? 'Previous track' : '上一首'}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14"/><path d="m18 5-10 7 10 7Z" class="music-filled"/></svg></button>
+        <button class="music-play-button" type="button" data-music-toggle aria-label={en ? 'Play music' : '播放音乐'}><svg class="music-play-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7Z"/></svg><svg class="music-pause-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></button>
+        <button class="music-icon-button" type="button" data-music-next data-music-label="next" aria-label={en ? 'Next track' : '下一首'}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 5v14"/><path d="M6 5v14l10-7Z" class="music-filled"/></svg></button>
+      </div>
+      <div class="music-seek">
+        <span data-music-elapsed>0:00</span>
+        <input type="range" min="0" max="0" step="0.1" value="0" data-music-seek data-music-label="seek" aria-label={en ? 'Playback position' : '播放进度'} />
+        <span data-music-duration>0:00</span>
+      </div>
+    </div>
+    <div class="music-lyrics-pane">
+      <div class="music-lyrics" data-music-lyrics role="list" tabindex="0" aria-label={en ? 'Synced lyrics; click to seek' : '同步歌词，点击跳转'} data-music-label="synced"></div>
+      <div class="music-lyrics-state" data-music-lyrics-state><p data-music-lyrics-message></p><button type="button" data-music-lyrics-retry data-music-i18n="retry" hidden>重试</button></div>
+    </div>
+    <div class="music-tools">
+      <button class="music-icon-button" type="button" data-music-close data-music-label="close" aria-label={en ? 'Close player' : '收起播放器'}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5-6 7 6 7M20 5v14"/></svg></button>
+      <button class="music-icon-button" type="button" data-music-popover-toggle aria-expanded="false" aria-controls="music-list-popover" data-music-label="playlist" aria-label={en ? 'Playlist' : '歌单'}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h15M4 11h15M4 16h8M16 15v5l5-2.5Z"/></svg></button>
+      <button class="music-icon-button" type="button" data-music-popover-toggle aria-expanded="false" aria-controls="music-volume-popover" data-music-label="volume" aria-label={en ? 'Volume' : '音量'}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m11 5-5 4H3v6h3l5 4ZM16 8a6 6 0 0 1 0 8M19 5a10 10 0 0 1 0 14"/></svg></button>
+    </div>
+    <section id="music-list-popover" class="music-popover music-list-popover" aria-label={en ? 'Playlist' : '歌单'} data-music-label="playlist" hidden>
+      <div class="music-popover-heading"><strong data-music-i18n="playlist">歌单</strong><span data-music-i18n="order">顺序循环</span></div>
+      <ol class="music-list" data-music-list></ol>
+    </section>
+    <section id="music-volume-popover" class="music-popover music-volume-popover" aria-label={en ? 'Volume' : '音量'} data-music-label="volume" hidden>
+      <label for="music-volume" data-music-i18n="volume">音量</label>
+      <input id="music-volume" type="range" min="0" max="1" step="0.01" value="0.25" data-music-volume data-music-label="volume" aria-label={en ? 'Volume' : '音量'} />
+    </section>
+    <p class="music-notice" data-music-notice role="status" aria-live="polite"></p>
+    <p class="music-sr-only" data-music-state></p>
+  </section>
+</aside>
+<script>
+  import '../scripts/music-player';
+</script>

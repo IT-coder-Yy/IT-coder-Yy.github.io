@@ -1,4 +1,5 @@
 ---
+import { ClientRouter } from 'astro:transitions';
 import SiteNav from '../../components/SiteNav.astro';
 import SeoHead from '../../components/SeoHead.astro';
 import BlogSearch from '../../components/blog/BlogSearch.astro';
@@ -16,8 +17,9 @@ const featuredCount = posts.filter((post) => post.data.featured).length;
 <!doctype html>
 <html lang="zh-CN">
   <head>
+    <ClientRouter fallback="swap" />
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <SeoHead
       title="技术博客｜于洋"
       description="于洋的中文技术博客，系统记录 AI Agent、红外视觉、C++ 与 Qt、多模型部署等可复现的工程实践。"

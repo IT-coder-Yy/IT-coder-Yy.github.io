@@ -35,6 +35,8 @@ const { categories, postCount } = Astro.props;
 </section>
 
 <script>
+    import { onPageLoad } from '../../lib/page-lifecycle';
+    onPageLoad((signal) => {
   const searchRoot = document.querySelector<HTMLElement>('[data-blog-search]');
 
   if (searchRoot && !searchRoot.dataset.ready) {
@@ -74,7 +76,7 @@ const { categories, postCount } = Astro.props;
       else url.searchParams.delete('q');
       if (activeCategory) url.searchParams.set('category', activeCategory);
       else url.searchParams.delete('category');
-      window.history.replaceState({}, '', url);
+      window.history.replaceState(window.history.state, '', url);
     };
 
     const params = new URLSearchParams(window.location.search);
@@ -110,8 +112,10 @@ const { categories, postCount } = Astro.props;
         event.preventDefault();
         input?.focus();
       }
-    });
+    }, { signal });
 
     render();
   }
-</script>
+
+    });
+  </script>

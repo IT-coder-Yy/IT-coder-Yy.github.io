@@ -1,4 +1,5 @@
 ---
+import { ClientRouter } from 'astro:transitions';
 import type { MarkdownHeading } from 'astro';
 import type { BlogPost } from '../lib/blog';
 import { estimateReadingTime, getAdjacentPosts } from '../lib/blog';
@@ -42,8 +43,9 @@ const jsonLd = {
 <!doctype html>
 <html lang="zh-CN">
   <head>
+    <ClientRouter fallback="swap" />
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <SeoHead
       title={`${post.data.title}｜于洋技术博客`}
       description={post.data.description}
@@ -112,6 +114,8 @@ const jsonLd = {
     </footer>
 
     <script>
+    import { onPageLoad } from '../lib/page-lifecycle';
+    onPageLoad((signal) => {
       const article = document.querySelector<HTMLElement>('[data-article-prose]');
 
       article?.querySelectorAll<HTMLAnchorElement>('a[href^="http"]').forEach((link) => {
@@ -174,8 +178,11 @@ const jsonLd = {
           },
           { rootMargin: '-16% 0px -72%', threshold: [0, 1] },
         );
+        signal.addEventListener('abort', () => observer.disconnect(), { once: true });
         sections.forEach((section) => observer.observe(section));
       }
-    </script>
+
+    });
+  </script>
   </body>
 </html>

@@ -7,6 +7,7 @@ interface Props {
   spatial?: boolean;
 }
 
+import MusicPlayer from './MusicPlayer.astro';
 import { sitePath } from '../lib/paths';
 
 const { locale, pathname, detail = false, showLanguageSwitch = true, spatial = false } = Astro.props;
@@ -72,8 +73,11 @@ const markClass = isBlog ? 'blog-mark' : detail ? 'detail-mark' : 'wordmark-mark
     </div>}
   </nav>
 </header>
+<MusicPlayer locale={locale} />
 
 <script>
+    import { onPageLoad } from '../lib/page-lifecycle';
+    onPageLoad((signal) => {
   const header = document.querySelector<HTMLElement>('[data-site-header]');
 
   if (header && !header.dataset.ready) {
@@ -105,7 +109,7 @@ const markClass = isBlog ? 'blog-mark' : detail ? 'detail-mark' : 'wordmark-mark
         setMenu(false);
         toggle?.focus();
       }
-    });
+    }, { signal });
   }
 
   const chapterLinks = Array.from(
@@ -127,6 +131,9 @@ const markClass = isBlog ? 'blog-mark' : detail ? 'detail-mark' : 'wordmark-mark
       },
       { rootMargin: '-18% 0px -70%', threshold: 0 },
     );
+    signal.addEventListener('abort', () => chapterObserver.disconnect(), { once: true });
     chapterSections.forEach((section) => chapterObserver.observe(section));
   }
-</script>
+
+    });
+  </script>

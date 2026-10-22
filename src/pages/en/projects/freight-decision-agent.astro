@@ -1,4 +1,5 @@
 ---
+import { ClientRouter } from 'astro:transitions';
 import { sitePath } from '../../../lib/paths';
 import SiteNav from '../../../components/SiteNav.astro';
 import '../../../styles/home.css';
@@ -22,8 +23,9 @@ const workflow = [
 <!doctype html>
 <html lang="en">
   <head>
+    <ClientRouter fallback="swap" />
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#f4f0e8" />
     <meta name="description" content="Freight Decision Agent: a rule-first, long-horizon decision system with selective model arbitration." />
     <title>Freight Decision Agent · Yu Yang</title>
@@ -71,6 +73,9 @@ const workflow = [
       </div>
     </main>
     <script>
+    import { onPageLoad } from '../../../lib/page-lifecycle';
+    onPageLoad((signal) => {
+      if(document.documentElement.lang.startsWith('en') !== true) return;
       const decisions = {
         accept: { gate: 'Time window, home commitment and no-go areas pass first', candidate: 'Candidate A: feasible under the active constraints', model: 'Difference is clear: rules decide directly', title: 'Accept: clear the rule gate, then compare candidates.', notes: ['Do not substitute one high price for the long-horizon plan.', 'The action still passes whitelist and parameter checks.'], action: 'Action: accept' },
         wait: { gate: 'No feasible candidate exists, and waiting does not break today’s plan', candidate: 'Current candidates: outside the active boundary', model: 'No arbitration needed: rules retain waiting', title: 'Wait: when no candidate is feasible, waiting is also a controlled action.', notes: ['Rest and home commitments remain in the plan.', 'Waiting is not indefinite; candidates are compared again later.'], action: 'Action: wait' },
@@ -80,6 +85,8 @@ const workflow = [
       const gate = document.querySelector('[data-sandbox-gate]'); const candidate = document.querySelector('[data-sandbox-candidate]'); const model = document.querySelector('[data-sandbox-model]'); const title = document.querySelector('[data-sandbox-title]'); const notes = document.querySelector('[data-sandbox-list]'); const action = document.querySelector('[data-sandbox-action]');
       function selectDecision(key) { const decision = decisions[key]; gate.textContent = decision.gate; candidate.textContent = decision.candidate; model.textContent = decision.model; title.textContent = decision.title; action.textContent = decision.action; notes.replaceChildren(...decision.notes.map((note) => { const item = document.createElement('li'); item.textContent = note; return item; })); controls.forEach((control) => { const selected = control.dataset.decision === key; control.classList.toggle('is-active', selected); control.setAttribute('aria-pressed', String(selected)); }); }
       controls.forEach((control) => control.addEventListener('click', () => selectDecision(control.dataset.decision)));
-    </script>
+
+    });
+  </script>
   </body>
 </html>

@@ -1,4 +1,5 @@
 ---
+import { ClientRouter } from 'astro:transitions';
 import { sitePath } from '../../../lib/paths';
 import travelInterface from '../../../assets/images/super-travel-agent-interface.png';
 import SiteNav from '../../../components/SiteNav.astro';
@@ -22,8 +23,9 @@ const workflow = [
 <!doctype html>
 <html lang="en">
   <head>
+    <ClientRouter fallback="swap" />
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#f4f0e8" />
     <meta name="description" content="Super Travel Agent: a multi-agent travel-planning system with controlled tool orchestration." />
     <title>Super Travel Agent · Yu Yang</title>
