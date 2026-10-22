@@ -117,6 +117,7 @@ function renderLyrics() {
     return row;
   }));
   renderLyricsState();
+  lyricBox.scrollTop = 0;
   syncLyrics(true);
 }
 
