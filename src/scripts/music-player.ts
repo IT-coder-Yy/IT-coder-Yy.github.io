@@ -326,6 +326,7 @@ document.addEventListener('portfolio:preview-open', () => { setOpen(false, false
 document.addEventListener('astro:before-swap', () => { setOpen(false, false); save(); });
 document.addEventListener('astro:page-load', pageChanged);
 window.addEventListener('pagehide', save);
+new ResizeObserver(() => syncLyrics(true)).observe(lyricBox);
 document.addEventListener('visibilitychange', () => { if (document.hidden) save(); });
 root.hidden = false;
 if (!tracks.length) root.querySelectorAll<HTMLButtonElement | HTMLInputElement>('[data-music-toggle],[data-music-prev],[data-music-next],[data-music-seek],[data-music-volume]').forEach(el => { el.disabled = true; });

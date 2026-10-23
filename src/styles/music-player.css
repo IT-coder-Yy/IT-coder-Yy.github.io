@@ -2,6 +2,7 @@
   --music-ink: #252724;
   --music-muted: #656c65;
   --music-accent: #445bd4;
+  --music-lyric-row: 44px;
   --music-bottom: max(24px, env(safe-area-inset-bottom));
   position: fixed; left: max(24px, env(safe-area-inset-left)); bottom: var(--music-bottom); z-index: 150;
   color: var(--music-ink); font: 14px/1.5 'DM Sans', 'Noto Sans SC', system-ui, sans-serif; text-align: left;
@@ -55,10 +56,10 @@
 .music-player[data-playing='true'] .music-pause-icon { display: block; }
 .music-seek { display: grid; grid-template-columns: auto minmax(0,1fr) auto; gap: 4px; align-items: center; color: var(--music-muted); font: 9px/1.5 'DM Mono', monospace; font-variant-numeric: tabular-nums; }
 .music-player input[type='range'] { display: block; width: 100%; min-width: 0; height: 44px; margin: 0; accent-color: var(--music-accent); cursor: pointer; }
-.music-lyrics-pane { min-width: 0; height: 132px; position: relative; border-left: 1px solid #e5e7e2; padding-left: 8px; }
-.music-lyrics { position: relative; height: 100%; padding-block: 44px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; }
+.music-lyrics-pane { min-width: 0; height: calc(3 * var(--music-lyric-row)); position: relative; border-left: 1px solid #e5e7e2; padding-left: 8px; }
+.music-lyrics { position: relative; height: 100%; padding-block: var(--music-lyric-row); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; }
 .music-lyrics::-webkit-scrollbar { display: none; }
-.music-player .music-lyrics button { display: block; width: 100%; height: 44px; padding: 0 4px; border: 0; border-radius: 4px; background: none; color: var(--music-muted); font-size: 12px; line-height: 44px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color .2s ease-out; }
+.music-player .music-lyrics button { display: block; width: 100%; height: var(--music-lyric-row); padding: 0 4px; border: 0; border-radius: 4px; background: none; color: var(--music-muted); font-size: 12px; line-height: var(--music-lyric-row); text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color .2s ease-out; }
 .music-player .music-lyrics button:hover { background: #f5f6f3; }
 .music-player .music-lyrics button[aria-current='true'] { color: var(--music-accent); font-weight: 650; }
 .music-lyrics-state { position: absolute; inset: 0 0 0 8px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; }
@@ -88,6 +89,21 @@
 @keyframes music-reveal { from { opacity: .4; transform: translateX(-8px) scaleX(.97); } to { opacity: 1; transform: none; } }
 @media (max-width: 1500px) { .portfolio-home:lang(en) .music-player[data-open='true'] { --music-bottom: calc(92px + env(safe-area-inset-bottom)); } }
 @media (max-width: 1420px) { .portfolio-home .music-player[data-open='true'] { --music-bottom: calc(92px + env(safe-area-inset-bottom)); } }
+@media (min-width: 721px) {
+  .music-panel { width: 640px; grid-template-columns: 248px minmax(0,1fr) 88px; padding-block: 8px; border-radius: 16px; }
+  .music-main { grid-template-columns: minmax(0,1fr) 132px; grid-template-rows: repeat(2,44px); column-gap: 8px; align-self: center; }
+  .music-seek { grid-column: 1 / -1; }
+  .music-tools { grid-template-columns: repeat(2,44px); grid-template-rows: repeat(2,44px); align-self: center; }
+  .music-tools [data-music-close] { grid-column: 2; }
+  .music-player[data-open='true'] .music-launcher { top: calc(50% - 40px); }
+  .music-popover { max-height: calc(100dvh - var(--music-bottom) - 176px); }
+}
+@media (min-width: 721px) and (pointer: fine) {
+  .music-player { --music-lyric-row: 32px; }
+  .music-popover { max-height: calc(100dvh - var(--music-bottom) - 140px); }
+}
+@media (min-width: 721px) and (max-width: 1760px) { .portfolio-home .music-player[data-open='true'] { --music-bottom: calc(92px + env(safe-area-inset-bottom)); } }
+@media (min-width: 721px) and (max-width: 1840px) { .portfolio-home:lang(en) .music-player[data-open='true'] { --music-bottom: calc(92px + env(safe-area-inset-bottom)); } }
 @media (max-width: 720px) {
   .music-player { left: max(16px, env(safe-area-inset-left)); --music-bottom: max(16px, env(safe-area-inset-bottom)); }
   .portfolio-home .music-player { --music-bottom: calc(92px + env(safe-area-inset-bottom)); }
