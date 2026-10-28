@@ -1,7 +1,8 @@
 ---
 import { ClientRouter } from 'astro:transitions';
 import SiteNav from './SiteNav.astro';
-import ProjectArtwork from './ProjectArtwork.astro';
+import ProjectCover from './ProjectCover.astro';
+import ProjectVideo from './ProjectVideo.astro';
 import { projectGroups, type Locale } from '../data/portfolio';
 import type { repositoryProjects } from '../data/repository-projects';
 import { sitePath } from '../lib/paths';
@@ -50,9 +51,12 @@ const chapters = en
           </div>
         </div>
         <figure class="repository-artwork">
-          <ProjectArtwork kind={project.id} />
-          <figcaption>{en ? 'Project concept illustration' : '项目概念示意'}</figcaption>
+          <ProjectCover kind={project.id} locale={locale} eager />
+          <figcaption>{en ? 'Project film cover' : '项目视频封面'}</figcaption>
         </figure>
+      </section>
+      <section class="detail-film" aria-label={en ? 'Project film' : '项目视频'}>
+        <ProjectVideo kind={project.id} locale={locale} />
       </section>
       <div class="detail-body">
         <aside class="chapter-rail" aria-label={en ? 'On this page' : '页内章节'}>
@@ -93,7 +97,7 @@ const chapters = en
 <style>
   .repository-project h1 { max-width: 13ch; overflow-wrap: anywhere; font-size: clamp(2.8rem, 5vw, 5rem); line-height: 1.06; letter-spacing: -.035em; }
   .repository-artwork { margin: 0; align-self: center; }
-  .repository-artwork :global(svg) { display: block; width: 100%; height: auto; }
+  .repository-artwork :global(img) { display: block; width: 100%; height: auto; }
   .repository-artwork figcaption { margin-top: 12px; color: var(--detail-soft); font-size: 12px; }
   .repository-workflow { margin: 28px 0 0; padding: 0; list-style: none; }
   .repository-workflow li { display: grid; grid-template-columns: 2.5rem minmax(0, 1fr); gap: 16px; padding: 24px 0; border-top: 1px solid var(--detail-line); }

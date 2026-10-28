@@ -1,5 +1,6 @@
 ---
 import { ClientRouter } from 'astro:transitions';
+import ProjectVideo from '../../../components/ProjectVideo.astro';
 import { sitePath } from '../../../lib/paths';
 import SiteNav from '../../../components/SiteNav.astro';
 import '../../../styles/home.css';
@@ -32,6 +33,10 @@ const workflow = [
         <div class="detail-hero-copy"><p class="detail-index">Project 04 / Computer Vision · Embedded IoT</p><h1 id="project-title">In-vehicle safety <em>monitoring</em></h1><p class="detail-lede">A dual safety loop that combines driver-fatigue vision with embedded cabin monitoring, from sensing and edge judgment through to cloud notification.</p><dl class="project-facts"><div><dt>Project type</dt><dd>Team project</dd></div><div><dt>My role</dt><dd>Fatigue-detection algorithms and the embedded / IoT path</dd></div><div><dt>Focus</dt><dd>OpenCV / Dlib · STM32 · RT-Thread · CAT1 / MQTT</dd></div></dl><div class="detail-actions"><a class="detail-primary" href="#dual-path">Explore the dual path <span aria-hidden="true">↓</span></a><a class="detail-quiet" href={sitePath('/en#projects')}>Back to projects <span aria-hidden="true">↑</span></a></div></div>
         <figure class="safety-hero-board" aria-labelledby="safety-hero-caption"><div class="safety-hero-path"><p>Vision assessment</p><span>Camera</span><i></i><span>Landmarks</span><i></i><span>Consecutive frames</span></div><div class="safety-hero-merge"><strong>In-cabin<br />safety state</strong><span>Local judgment / Remote notice</span></div><div class="safety-hero-path"><p>Cabin sensing</p><span>CO2 / PIR</span><i></i><span>RT-Thread</span><i></i><span>CAT1 / MQTT</span></div><figcaption id="safety-hero-caption">The abstract nodes explain the two system paths. They do not show real cabin imagery, sensor data or alerts.</figcaption></figure>
       </section>
+      <section class="detail-film" aria-label="Project film">
+        <ProjectVideo kind="safety" locale="en" />
+      </section>
+
       <div class="detail-body">
         <aside class="chapter-rail" aria-label="On-page sections"><p>Reading path</p><ol>{chapters.map(([label, id]) => <li><a href={'#' + id}>{label}</a></li>)}</ol></aside>
         <article class="detail-article">

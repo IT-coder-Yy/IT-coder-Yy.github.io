@@ -97,8 +97,8 @@ body.portfolio-home{margin:0;min-width:320px;background:#f7f7f5;color:#252724;ov
 .card-handle:hover{background:#f0f1ed;color:#252724}
 .card-handle:active{cursor:grabbing}
 .card-handle svg{width:19px;height:19px}
-.artwork-link{display:block;width:100%;aspect-ratio:640/460;overflow:hidden;border-radius:2px;background:#e5e8e4}
-.artwork-link .project-artwork{transition:transform .55s cubic-bezier(.2,.8,.2,1)}
+.artwork-link{display:block;width:100%;overflow:hidden;border-radius:2px;background:#e5e8e4}
+.artwork-link .project-artwork{height:auto;transition:transform .55s cubic-bezier(.2,.8,.2,1)}
 .artwork-link:hover .project-artwork{transform:scale(1.035)}
 .photo-card-content{padding:23px 11px 13px}
 .photo-card-content h4{font-size:clamp(24px,2.8vw,39px);letter-spacing:-.055em;line-height:1.1}
@@ -259,7 +259,7 @@ body.portfolio-home{margin:0;min-width:320px;background:#f7f7f5;color:#252724;ov
 .preview-topbar button{width:32px;height:32px;display:grid;place-items:center;border:1px solid #d9ddd4;border-radius:50%;background:#fff;font-size:23px;line-height:1;color:#4f584c}
 .preview-topbar button:hover{background:#e9ede4}
 .preview-layout{display:grid;grid-template-columns:1fr 1.05fr;gap:35px;padding:32px}
-.preview-visual{align-self:start;background:#fff;padding:10px;border:1px solid #e2e5de;border-radius:5px;box-shadow:3px 5px 0 #e9ece4,0 12px 24px #2028200c;transform:rotate(-1.5deg)}
+.preview-visual{align-self:start;min-width:0;background:#fff;padding:10px;border:1px solid #e2e5de;border-radius:5px;box-shadow:3px 5px 0 #e9ece4,0 12px 24px #2028200c}
 .preview-visual .project-artwork{aspect-ratio:640/460;height:auto}
 .preview-visual>span{display:block;padding:12px 2px 4px;font:500 9px/1.5 'DM Mono','Noto Sans SC',monospace;color:#626b5f}
 .preview-copy h2{font:700 clamp(25px,3vw,38px)/1.13 'Space Grotesk','Noto Sans SC',sans-serif;letter-spacing:-.045em;margin-top:13px}

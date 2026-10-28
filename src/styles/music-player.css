@@ -84,7 +84,6 @@
 .music-player .music-notice { position: absolute; left: 0; right: 0; bottom: calc(100% + 12px); margin: 0; padding: 10px 14px; border-radius: 10px; background: #fff; box-shadow: 0 8px 24px #2527241f; color: #8d3a1d; font-size: 11px; line-height: 1.6; }
 .music-player .music-notice:empty { display: none; }
 .music-panel:has(.music-popover:not([hidden])) .music-notice { display: none; }
-.preview-topbar .music-preview-toggle { width: auto; height: 44px; min-width: 44px; padding: 0 12px; margin-left: auto; margin-right: 8px; border-radius: 8px; font-size: 12px; }
 @keyframes music-spin { to { transform: rotate(360deg); } }
 @keyframes music-reveal { from { opacity: .4; transform: translateX(-8px) scaleX(.97); } to { opacity: 1; transform: none; } }
 @media (max-width: 1500px) { .portfolio-home:lang(en) .music-player[data-open='true'] { --music-bottom: calc(92px + env(safe-area-inset-bottom)); } }

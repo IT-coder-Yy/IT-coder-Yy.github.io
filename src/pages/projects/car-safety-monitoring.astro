@@ -1,5 +1,6 @@
 ---
 import { ClientRouter } from 'astro:transitions';
+import ProjectVideo from '../../components/ProjectVideo.astro';
 import { sitePath } from '../../lib/paths';
 import '../../styles/home.css';
 import '../../styles/project-detail.css';
@@ -71,6 +72,10 @@ const workflow = [
           </div>
           <figcaption id="safety-hero-caption">两条链路使用抽象节点说明系统关系，不展示真实车内画面、传感器数据或告警结果。</figcaption>
         </figure>
+      </section>
+
+      <section class="detail-film" aria-label="项目视频">
+        <ProjectVideo kind="safety" locale="zh" />
       </section>
 
       <div class="detail-body">

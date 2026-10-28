@@ -52,7 +52,9 @@ if (preview) {
   const entries = Array.from(preview.querySelectorAll<HTMLElement>('[data-preview-project]'));
   let current = 0;
   let opener: HTMLElement | null = null;
+  const pausePreview = () => preview.querySelectorAll('video').forEach(video => video.pause());
   const renderPreview = (index: number) => {
+    pausePreview();
     current = (index + entries.length) % entries.length;
     entries.forEach((entry, i) => entry.hidden = i !== current);
     const heading = entries[current].querySelector('h2');
@@ -76,7 +78,8 @@ if (preview) {
   preview.querySelector('[data-preview-prev]')?.addEventListener('click', () => renderPreview(current - 1));
   preview.querySelector('[data-preview-next]')?.addEventListener('click', () => renderPreview(current + 1));
   preview.addEventListener('click', event => { if (event.target === preview) { const box = preview.getBoundingClientRect(); if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) preview.close(); } });
-  preview.addEventListener('close', () => { document.body.classList.remove('preview-is-open'); opener?.focus({ preventScroll: true }); });
+  preview.addEventListener('close', () => { pausePreview(); document.body.classList.remove('preview-is-open'); opener?.focus({ preventScroll: true }); });
+  signal.addEventListener('abort', () => { pausePreview(); document.body.classList.remove('preview-is-open'); }, { once: true });
 }
 
 // 视角只响应画布中的指针；静止时不运行帧循环。

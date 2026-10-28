@@ -1,5 +1,6 @@
 ---
 import { ClientRouter } from 'astro:transitions';
+import ProjectVideo from '../../../components/ProjectVideo.astro';
 import { sitePath } from '../../../lib/paths';
 import travelInterface from '../../../assets/images/super-travel-agent-interface.png';
 import SiteNav from '../../../components/SiteNav.astro';
@@ -54,6 +55,10 @@ const workflow = [
           <img src={travelInterface.src} alt="The actual Super Travel Agent planning interface" />
           <figcaption><span>Actual product interface</span><span>Streaming state · Tool execution · Itinerary workspace</span></figcaption>
         </figure>
+      </section>
+
+      <section class="detail-film" aria-label="Project film">
+        <ProjectVideo kind="travel" locale="en" />
       </section>
 
       <div class="detail-body">

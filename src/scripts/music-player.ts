@@ -15,7 +15,7 @@ const copy = {
   zh: {
     heading: '随身听', close: '收起播放器', open: '打开音乐播放器', lyrics: '歌词', playlist: '歌单',
     order: '顺序循环', content: '播放器内容', synced: '同步歌词，点击跳转', seek: '播放进度', volume: '音量',
-    previous: '上一首', next: '下一首', play: '播放音乐', pause: '暂停音乐', resume: '继续音乐', retry: '重试',
+    previous: '上一首', next: '下一首', play: '播放音乐', pause: '暂停音乐', retry: '重试',
     demo: '演示音轨', playing: '正在播放', paused: '已暂停 · 点击继续', ready: '点击播放，让音乐陪你逛逛',
     loading: '正在加载音乐…', lyricLoading: '正在加载歌词…', lyricError: '歌词暂不可用',
     lyricEmpty: '这首歌暂未提供同步歌词', allFailed: '歌曲暂时都无法播放，请点击播放重试。',
@@ -25,7 +25,7 @@ const copy = {
   en: {
     heading: 'On the record', close: 'Close player', open: 'Open music player', lyrics: 'Lyrics', playlist: 'Playlist',
     order: 'Repeat playlist', content: 'Player content', synced: 'Synced lyrics; click to seek', seek: 'Playback position', volume: 'Volume',
-    previous: 'Previous track', next: 'Next track', play: 'Play music', pause: 'Pause music', resume: 'Resume music', retry: 'Retry',
+    previous: 'Previous track', next: 'Next track', play: 'Play music', pause: 'Pause music', retry: 'Retry',
     demo: 'Demo audio', playing: 'Now playing', paused: 'Paused · click to resume', ready: 'Press play and stay a little longer',
     loading: 'Loading music…', lyricLoading: 'Loading lyrics…', lyricError: 'Lyrics unavailable',
     lyricEmpty: 'No synced lyrics for this track yet', allFailed: 'No tracks could be played. Press play to retry.',
@@ -69,11 +69,6 @@ function renderState() {
   root.querySelector<HTMLButtonElement>('[data-music-toggle]')!.setAttribute('aria-label', playing ? text.pause : text.play);
   put('[data-music-state]', !tracks.length ? text.empty : loading && wanted ? text.loading : playing ? text.playing : (pendingTime ?? audio.currentTime) > 0 ? text.paused : text.ready);
   put('[data-music-notice]', notice ? text[notice] + (notice === 'skipped' ? skippedTitle : '') : '');
-  document.querySelectorAll<HTMLButtonElement>('[data-music-preview-toggle]').forEach(button => {
-    button.textContent = playing ? text.pause : text.resume;
-    button.disabled = !tracks.length;
-    button.setAttribute('aria-label', playing ? text.pause : text.resume);
-  });
   root.querySelectorAll<HTMLButtonElement>('[data-music-track]').forEach(button => {
     const current = Number(button.dataset.musicTrack) === index;
     button.setAttribute('aria-current', current ? 'true' : 'false');
@@ -303,15 +298,15 @@ audio.addEventListener('loadedmetadata', () => {
   updateTime();
 });
 audio.addEventListener('timeupdate', () => { updateTime(); if (Date.now() - lastSave > 1000) { save(); lastSave = Date.now(); } });
-audio.addEventListener('play', renderState);
+audio.addEventListener('play', () => {
+  document.querySelectorAll<HTMLVideoElement>('[data-project-video]').forEach(video => video.pause());
+  renderState();
+});
 audio.addEventListener('playing', () => { loading = false; renderState(); });
 audio.addEventListener('pause', () => { renderState(); save(); });
 audio.addEventListener('waiting', () => { loading = true; renderState(); });
 audio.addEventListener('error', () => { if (wanted && audio.error) failTrack(); });
 audio.addEventListener('ended', () => selectTrack(nextPlayable(index, tracks.length, failed), true, false));
-document.addEventListener('click', event => {
-  if ((event.target as Element).closest('[data-music-preview-toggle]')) toggle();
-});
 document.addEventListener('pointerdown', event => {
   if (!panel.hidden && !root.contains(event.target as Node)) setOpen(false, false);
 });
@@ -323,6 +318,9 @@ document.addEventListener('keydown', event => {
   else setOpen(false);
 });
 document.addEventListener('portfolio:preview-open', () => { setOpen(false, false); renderState(); });
+document.addEventListener('portfolio:video-play', () => {
+  ++playVersion; wanted = false; loading = false; audio.pause(); renderState(); save();
+});
 document.addEventListener('astro:before-swap', () => { setOpen(false, false); save(); });
 document.addEventListener('astro:page-load', pageChanged);
 window.addEventListener('pagehide', save);

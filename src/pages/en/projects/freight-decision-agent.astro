@@ -1,5 +1,6 @@
 ---
 import { ClientRouter } from 'astro:transitions';
+import ProjectVideo from '../../../components/ProjectVideo.astro';
 import { sitePath } from '../../../lib/paths';
 import SiteNav from '../../../components/SiteNav.astro';
 import '../../../styles/home.css';
@@ -48,6 +49,10 @@ const workflow = [
           <div class="freight-board-column"><p>Action exit</p><strong>Accept / Wait / Reposition</strong><span>Whitelist and parameter validation</span></div>
           <figcaption id="freight-board-caption">Rules lead. The model participates only when the remaining tradeoff is real.</figcaption>
         </figure>
+      </section>
+
+      <section class="detail-film" aria-label="Project film">
+        <ProjectVideo kind="freight" locale="en" />
       </section>
 
       <div class="detail-body">

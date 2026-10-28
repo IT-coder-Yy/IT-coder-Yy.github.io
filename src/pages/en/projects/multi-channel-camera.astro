@@ -1,5 +1,6 @@
 ---
 import { ClientRouter } from 'astro:transitions';
+import ProjectVideo from '../../../components/ProjectVideo.astro';
 import { sitePath } from '../../../lib/paths';
 import SiteNav from '../../../components/SiteNav.astro';
 import '../../../styles/home.css';
@@ -31,6 +32,10 @@ const workflow = [
         <div class="detail-hero-copy"><p class="detail-index">Project 03 / Computer Vision · C++</p><h1 id="project-title">Multi-channel infrared camera and <em>leak detection</em></h1><p class="detail-lede">A Windows Qt desktop application for industrial multi-source infrared monitoring, bringing acquisition, display, recording, device control, image processing and model inference into one engineering loop.</p><dl class="project-facts"><div><dt>Project type</dt><dd>Team project</dd></div><div><dt>My role</dt><dd>Vision algorithms, C++ / Qt desktop software, multi-source video paths and inference deployment</dd></div><div><dt>Focus</dt><dd>C++ / Qt · 16-bit infrared · ONNX Runtime · MNN</dd></div></dl><div class="detail-actions"><a class="detail-primary" href="#processing">Explore processing <span aria-hidden="true">↓</span></a><a class="detail-quiet" href={sitePath('/en#projects')}>Back to projects <span aria-hidden="true">↑</span></a></div></div>
         <figure class="camera-hero-plate" aria-labelledby="camera-hero-caption"><div class="camera-plate-ruler"><span>Multi-source input</span><span>16-bit image path</span><span>System output</span></div><div class="camera-signal-grid" aria-hidden="true">{Array.from({ length: 16 }).map(() => <span></span>)}</div><div class="camera-plate-flow"><span>Raw frame</span><i></i><span>Normalize</span><i></i><span>Process</span><i></i><span>Deploy</span></div><figcaption id="camera-hero-caption">This abstract signal plate describes processing stages only. It is not a real field frame or a detection result.</figcaption></figure>
       </section>
+      <section class="detail-film" aria-label="Project film">
+        <ProjectVideo kind="camera" locale="en" />
+      </section>
+
       <div class="detail-body">
         <aside class="chapter-rail" aria-label="On-page sections"><p>Reading path</p><ol>{chapters.map(([label, id]) => <li><a href={'#' + id}>{label}</a></li>)}</ol></aside>
         <article class="detail-article">

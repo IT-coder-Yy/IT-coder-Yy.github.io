@@ -1,0 +1,23 @@
+---
+import { projects, type Artwork, type Locale } from '../data/portfolio';
+import { projectMedia } from '../data/project-media';
+import { sitePath } from '../lib/paths';
+
+interface Props { kind: Artwork; locale: Locale; eager?: boolean; }
+const { kind, locale, eager = false } = Astro.props;
+const media = projectMedia[kind];
+const project = projects.find(project => project.id === kind)!;
+---
+<img
+  class="project-artwork"
+  src={sitePath(media.poster)}
+  width={media.width}
+  height={media.height}
+  alt={`${project.shortName[locale]} · ${locale === 'en' ? 'Project preview' : '项目预览图'}`}
+  loading={eager ? 'eager' : 'lazy'}
+  decoding="async"
+/>
+
+<style>
+  img { display: block; width: 100%; height: auto; object-fit: contain; }
+</style>

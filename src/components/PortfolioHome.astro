@@ -5,7 +5,7 @@ import litEmblem from '../assets/images/lit-official-emblem-transparent.png';
 import ucasEmblem from '../assets/images/ucas-official-emblem.png';
 import travelInterface from '../assets/images/super-travel-agent-interface.png';
 import SiteNav from './SiteNav.astro';
-import ProjectArtwork from './ProjectArtwork.astro';
+import ProjectCover from './ProjectCover.astro';
 import ProjectPreview from './ProjectPreview.astro';
 import NavIcon from './NavIcon.astro';
 import { projects, projectGroups, capabilities, type Artwork, type Locale } from '../data/portfolio';
@@ -104,7 +104,7 @@ const tilts: Record<Artwork, string> = {
             <div class="canvas-lettering"><h1 id="hero-title"><span>Yu</span><span>Yang</span></h1><p>INTELLIGENT SYSTEMS / SELECTED WORK</p></div>
             {projects.map(project => (
               <a class:list={['canvas-project', `canvas-${project.id}`]} href={projectUrl(project.slug)} data-preview-open={project.id} aria-label={english ? `Preview ${project.name.en}` : `预览${project.name.zh}`}>
-                <div class="canvas-object"><ProjectArtwork kind={project.id} /><span class="canvas-object-title"><span>{project.shortName[locale]}</span><span aria-hidden="true">↗</span></span></div>
+                <div class="canvas-object"><ProjectCover kind={project.id} locale={locale} eager /><span class="canvas-object-title"><span>{project.shortName[locale]}</span><span aria-hidden="true">↗</span></span></div>
               </a>
             ))}
           </div>
@@ -124,7 +124,7 @@ const tilts: Record<Artwork, string> = {
                 {projects.filter(project => project.group === group.kind).map(project => (
                   <article class="photo-card" data-project-card={project.id} style={`--card-tilt:${tilts[project.id]}`} aria-labelledby={`work-${project.id}-title`}>
                     <div class="photo-card-meta"><span>{project.ownership[locale]}</span><button class="card-handle" type="button" data-card-handle aria-label={`${text.move}${project.name[locale]}`} aria-describedby="drag-instructions"><NavIcon name="grip" /></button></div>
-                    <a class="artwork-link" href={projectUrl(project.slug)} data-preview-open={project.id} aria-label={english ? `Preview ${project.name.en}` : `预览${project.name.zh}`}><ProjectArtwork kind={project.id} /><span class="artwork-preview-label">{english ? 'Quick look ↗' : '打开预览 ↗'}</span></a>
+                    <a class="artwork-link" href={projectUrl(project.slug)} data-preview-open={project.id} aria-label={english ? `Preview ${project.name.en}` : `预览${project.name.zh}`}><ProjectCover kind={project.id} locale={locale} /><span class="artwork-preview-label">{english ? 'Watch film ↗' : '观看短片 ↗'}</span></a>
                     <div class="photo-card-content"><h4 id={`work-${project.id}-title`}><a href={projectUrl(project.slug)}>{project.name[locale]}</a></h4><p class="card-summary">{project.summary[locale]}</p><ul class="project-tags" aria-label={english ? 'Technologies' : '技术重点'}>{project.tags.map(tag => <li>{tag}</li>)}</ul><div class="card-actions"><a class="case-link" href={projectUrl(project.slug)}>{text.case}<NavIcon name="arrow" /></a>{project.source && <a class="source-link" href={project.source} target="_blank" rel="noopener noreferrer">GitHub ↗</a>}</div><details class="card-evidence"><summary>{project.caseStudy ? (english ? 'Implementation & evidence' : '实现与工程证据') : text.evidence}<span aria-hidden="true">+</span></summary><div><p class="card-role"><b>{project.caseStudy ? (english ? 'Implementation scope' : '实现范围') : text.myRole}</b>{project.role[locale]}</p><ul>{project.proofs[locale].map(([title, proof]) => <li><strong>{title}</strong><span>{proof}</span></li>)}</ul>{project.id === 'travel' && <figure class="card-interface"><img src={travelInterface.src} width={travelInterface.width} height={travelInterface.height} loading="lazy" alt={text.interface} /><figcaption>{text.interface}</figcaption></figure>}</div></details></div>
                   </article>
                 ))}

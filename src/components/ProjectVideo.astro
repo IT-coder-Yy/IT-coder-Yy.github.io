@@ -1,0 +1,60 @@
+---
+import { projects, type Artwork, type Locale } from '../data/portfolio';
+import { projectMedia } from '../data/project-media';
+import { sitePath } from '../lib/paths';
+
+interface Props { kind: Artwork; locale: Locale; }
+const { kind, locale } = Astro.props;
+const media = projectMedia[kind];
+const project = projects.find(project => project.id === kind)!;
+const en = locale === 'en';
+---
+<figure class="project-film">
+  <video
+    data-project-video={kind}
+    controls
+    playsinline
+    preload="none"
+    poster={sitePath(media.poster)}
+    width="1920"
+    height="1080"
+    aria-label={`${project.shortName[locale]} · ${en ? 'Project film' : '项目短片'}`}
+  >
+    <source src={sitePath(media.video)} type="video/mp4" />
+    <a href={sitePath(media.video)}>{en ? 'Open video' : '打开视频'}</a>
+  </video>
+  <figcaption>
+    <span>{en ? 'Project film · 15 seconds · With music' : '项目短片 · 15 秒 · 含配乐'}</span>
+    <a href={sitePath(media.video)} target="_blank" rel="noopener noreferrer">{en ? 'Open video' : '打开视频'} ↗</a>
+  </figcaption>
+  <p class="video-error" data-video-error hidden role="status">{en ? 'The video could not load. Try opening it directly using the link above.' : '视频暂时无法加载，请通过上方链接直接打开重试。'}</p>
+</figure>
+
+<script>
+  import { onPageLoad } from '../lib/page-lifecycle';
+
+  onPageLoad(signal => {
+    const videos = Array.from(document.querySelectorAll<HTMLVideoElement>('[data-project-video]'));
+    videos.forEach(video => {
+      const error = video.closest('figure')!.querySelector<HTMLElement>('[data-video-error]')!;
+      video.addEventListener('play', () => {
+        videos.forEach(other => { if (other !== video) other.pause(); });
+        document.dispatchEvent(new Event('portfolio:video-play'));
+      }, { signal });
+      video.addEventListener('error', () => { error.hidden = false; }, { signal });
+      video.querySelector('source')?.addEventListener('error', () => { error.hidden = false; }, { signal });
+      video.addEventListener('loadeddata', () => { error.hidden = true; }, { signal });
+    });
+    signal.addEventListener('abort', () => videos.forEach(video => video.pause()), { once: true });
+  });
+</script>
+
+<style>
+  .project-film { margin: 0; width: 100%; min-width: 0; }
+  video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: contain; background: #171917; border-radius: 6px; }
+  video:focus-visible, a:focus-visible { outline: 3px solid #445bd4; outline-offset: 4px; }
+  figcaption { display: flex; align-items: center; flex-wrap: wrap; justify-content: space-between; gap: 4px 16px; color: #626b5f; font: 400 12px/1.6 var(--font-sans, sans-serif); }
+  figcaption a { display: inline-flex; align-items: center; min-height: 44px; color: inherit; text-underline-offset: 4px; }
+  .video-error { margin: 0; color: #9a3028; font-size: 13px; line-height: 1.6; }
+  :global(.detail-film) { width: 100%; max-width: var(--detail-max); margin: 0 auto clamp(48px, 7vw, 96px); padding-inline: clamp(1.15rem, 4vw, 4.5rem); }
+</style>
