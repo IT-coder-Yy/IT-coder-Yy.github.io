@@ -62,10 +62,11 @@ export const musicTracks: MusicTrack[] = [
     cover: 'https://p2.music.126.net/QoYAmdyE7FL_vc9rwNeS9w==/64871186055842.jpg',
   },
   {
-    id: 'netease-27646205', title: '安和桥', artist: '宋冬野',
-    audio: 'https://music.163.com/song/media/outer/url?id=27646205.mp3',
-    lyrics: sitePath('/music/netease-27646205.lrc'),
-    cover: 'https://p1.music.126.net/B8XyAbneWgxRcD95SGMBbA==/109951173825645527.jpg',
+    // 保留原有存储键，换录音后访客仍能续播这首歌。
+    id: 'netease-27646205', title: '安和桥（合辑版）', artist: '宋冬野',
+    audio: 'https://music.163.com/song/media/outer/url?id=28053527.mp3',
+    lyrics: sitePath('/music/anheqiao-heji.lrc'),
+    cover: 'https://p2.music.126.net/NtKikdu386doPBEbj29LLQ==/5788928720312004.jpg',
   },
   {
     id: 'netease-465921195', title: '还是分开', artist: '张叶蕾',
