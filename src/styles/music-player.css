@@ -52,8 +52,8 @@
 .music-player .music-play-button:hover { background: var(--music-accent); }
 .music-player .music-play-button svg { fill: currentColor; stroke: none; }
 .music-player .music-pause-icon { display: none; }
-.music-player[data-playing='true'] .music-play-icon { display: none; }
-.music-player[data-playing='true'] .music-pause-icon { display: block; }
+.music-player[data-can-pause] .music-play-icon { display: none; }
+.music-player[data-can-pause] .music-pause-icon { display: block; }
 .music-seek { display: grid; grid-template-columns: auto minmax(0,1fr) auto; gap: 4px; align-items: center; color: var(--music-muted); font: 9px/1.5 'DM Mono', monospace; font-variant-numeric: tabular-nums; }
 .music-player input[type='range'] { display: block; width: 100%; min-width: 0; height: 44px; margin: 0; accent-color: var(--music-accent); cursor: pointer; }
 .music-lyrics-pane { min-width: 0; height: calc(3 * var(--music-lyric-row)); position: relative; border-left: 1px solid #e5e7e2; padding-left: 8px; }

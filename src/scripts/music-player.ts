@@ -11,6 +11,9 @@ const lyricBox = root.querySelector<HTMLElement>('[data-music-lyrics]')!;
 const lyricState = root.querySelector<HTMLElement>('[data-music-lyrics-state]')!;
 const lyricRetry = root.querySelector<HTMLButtonElement>('[data-music-lyrics-retry]')!;
 const storageKey = 'meridian.music.v1';
+const bufferTimeoutMs = 10_000;
+const retryDelayMs = 800;
+const consecutiveFailureLimit = 2;
 const copy = {
   zh: {
     heading: '随身听', close: '收起播放器', open: '打开音乐播放器', lyrics: '歌词', playlist: '歌单',
@@ -18,7 +21,8 @@ const copy = {
     previous: '上一首', next: '下一首', play: '播放音乐', pause: '暂停音乐', retry: '重试',
     demo: '演示音轨', playing: '正在播放', paused: '已暂停 · 点击继续', ready: '点击播放，让音乐陪你逛逛',
     loading: '正在加载音乐…', lyricLoading: '正在加载歌词…', lyricError: '歌词暂不可用',
-    lyricEmpty: '这首歌暂未提供同步歌词', allFailed: '歌曲暂时都无法播放，请点击播放重试。',
+    lyricEmpty: '这首歌暂未提供同步歌词', retrying: '音频暂时未加载，正在重试…',
+    unavailable: '暂时连不上音源，已暂停。点击播放可重试这首歌。',
     skipped: '暂时无法播放，已跳过：', blocked: '浏览器未允许播放，请再次点击播放。', jump: '跳到',
     demoLyrics: '纯音乐演示 · 下方为同步测试字幕', empty: '歌单还在准备中',
   },
@@ -28,7 +32,8 @@ const copy = {
     previous: 'Previous track', next: 'Next track', play: 'Play music', pause: 'Pause music', retry: 'Retry',
     demo: 'Demo audio', playing: 'Now playing', paused: 'Paused · click to resume', ready: 'Press play and stay a little longer',
     loading: 'Loading music…', lyricLoading: 'Loading lyrics…', lyricError: 'Lyrics unavailable',
-    lyricEmpty: 'No synced lyrics for this track yet', allFailed: 'No tracks could be played. Press play to retry.',
+    lyricEmpty: 'No synced lyrics for this track yet', retrying: 'Reconnecting to the track…',
+    unavailable: 'Playback paused. Press play to try this track again.',
     skipped: 'Unavailable; skipped: ', blocked: 'Playback was blocked. Please press play again.', jump: 'Seek to',
     demoLyrics: 'Instrumental demo · synced test captions below', empty: 'The playlist is on its way',
   },
@@ -42,6 +47,9 @@ let pendingTime: number | undefined = saved.time;
 let wanted = false;
 let loading = false;
 let playVersion = 0;
+let playbackTimer: number | undefined;
+let waitingAt = 0;
+let retried = false;
 let lines: LyricLine[] = [];
 let lineIndex = -1;
 let lyricStatus: 'idle' | 'loading' | 'ready' | 'error' | 'empty' = 'idle';
@@ -65,8 +73,10 @@ function save() {
 
 function renderState() {
   const playing = !audio.paused && !audio.ended;
+  const canPause = wanted || playing;
   root.dataset.playing = String(playing);
-  root.querySelector<HTMLButtonElement>('[data-music-toggle]')!.setAttribute('aria-label', playing ? text.pause : text.play);
+  root.toggleAttribute('data-can-pause', canPause);
+  root.querySelector<HTMLButtonElement>('[data-music-toggle]')!.setAttribute('aria-label', canPause ? text.pause : text.play);
   put('[data-music-state]', !tracks.length ? text.empty : loading && wanted ? text.loading : playing ? text.playing : (pendingTime ?? audio.currentTime) > 0 ? text.paused : text.ready);
   put('[data-music-notice]', notice ? text[notice] + (notice === 'skipped' ? skippedTitle : '') : '');
   root.querySelectorAll<HTMLButtonElement>('[data-music-track]').forEach(button => {
@@ -191,44 +201,90 @@ function renderTrack() {
   if (!panel.hidden) void loadLyrics();
 }
 
+function clearPlaybackTimer() {
+  window.clearTimeout(playbackTimer);
+  playbackTimer = undefined;
+}
+
+function pausePlayback() {
+  ++playVersion;
+  clearPlaybackTimer();
+  wanted = false;
+  loading = false;
+  if (notice === 'retrying') notice = '';
+  audio.pause();
+  renderState();
+  save();
+}
+
+function waitForAudio() {
+  if (!wanted || !audio.hasAttribute('src') || playbackTimer !== undefined) return;
+  const version = playVersion;
+  waitingAt = audio.currentTime;
+  loading = true;
+  playbackTimer = window.setTimeout(() => {
+    if (wanted && version === playVersion) failTrack();
+  }, bufferTimeoutMs);
+  renderState();
+}
+
 function failTrack() {
-  if (failed.has(index)) return;
-  failed.add(index);
-  skippedTitle = tracks[index].title;
-  const next = nextPlayable(index, tracks.length, failed);
-  if (next < 0) {
-    wanted = false; loading = false; audio.pause(); notice = 'allFailed'; renderState(); save();
-  } else {
-    notice = 'skipped'; selectTrack(next, true, false);
+  if (!wanted || !audio.hasAttribute('src')) return;
+  const version = ++playVersion;
+  clearPlaybackTimer();
+  pendingTime ??= audio.currentTime;
+  audio.removeAttribute('src');
+  audio.load();
+
+  if (!retried) {
+    retried = true;
+    loading = true;
+    notice = 'retrying';
+    renderState();
+    playbackTimer = window.setTimeout(() => {
+      if (wanted && version === playVersion) play(false);
+    }, retryDelayMs);
+    return;
   }
+
+  failed.add(index);
+  const next = nextPlayable(index, tracks.length, failed);
+  if (failed.size >= consecutiveFailureLimit || next < 0) {
+    notice = 'unavailable';
+    pausePlayback();
+    return;
+  }
+  skippedTitle = tracks[index].title;
+  notice = 'skipped';
+  selectTrack(next, true, false);
 }
 
 function play(manual = true) {
   if (!tracks.length) return;
-  if (manual) { failed.clear(); notice = ''; }
-  wanted = true; loading = true;
+  if (manual) { failed.clear(); retried = false; notice = ''; }
+  clearPlaybackTimer();
+  wanted = true;
   const version = ++playVersion;
   if (!audio.getAttribute('src') || audio.error) audio.src = tracks[index].audio;
-  renderState();
-  void audio.play().then(() => {
-    if (version !== playVersion) return;
-    loading = false; renderState();
-  }).catch((error: DOMException) => {
+  waitForAudio();
+  void audio.play().catch((error: DOMException) => {
     if (version !== playVersion) return;
     if (error.name === 'NotAllowedError') {
-      wanted = false; loading = false; notice = 'blocked'; renderState();
+      notice = 'blocked';
+      pausePlayback();
     } else if (error.name !== 'AbortError') failTrack();
   });
 }
 
 function toggle() {
-  if (!audio.paused || wanted) {
-    ++playVersion; wanted = false; loading = false; audio.pause(); renderState(); save();
-  } else play();
+  if (!audio.paused || wanted) pausePlayback();
+  else play();
 }
 
 function selectTrack(next: number, autoplay: boolean, manual = true) {
   if (next < 0 || !tracks[next]) return;
+  clearPlaybackTimer();
+  retried = false;
   ++playVersion; wanted = false; audio.pause();
   audio.removeAttribute('src'); audio.load();
   index = next; pendingTime = 0; loading = false;
@@ -297,14 +353,28 @@ audio.addEventListener('loadedmetadata', () => {
   }
   updateTime();
 });
-audio.addEventListener('timeupdate', () => { updateTime(); if (Date.now() - lastSave > 1000) { save(); lastSave = Date.now(); } });
+audio.addEventListener('seeking', () => { waitingAt = audio.currentTime; });
+audio.addEventListener('timeupdate', () => {
+  // 部分浏览器先报告 playing，等进度真正前进再解除超时和连续失败状态。
+  if (loading && wanted && !audio.paused && !audio.seeking && audio.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA && audio.currentTime > waitingAt) {
+    clearPlaybackTimer();
+    loading = false;
+    failed.clear();
+    if (notice === 'retrying') notice = '';
+    renderState();
+  }
+  updateTime();
+  if (Date.now() - lastSave > 1000) { save(); lastSave = Date.now(); }
+});
 audio.addEventListener('play', () => {
   document.querySelectorAll<HTMLVideoElement>('[data-project-video]').forEach(video => video.pause());
   renderState();
 });
-audio.addEventListener('playing', () => { loading = false; renderState(); });
-audio.addEventListener('pause', () => { renderState(); save(); });
-audio.addEventListener('waiting', () => { loading = true; renderState(); });
+audio.addEventListener('pause', () => {
+  if (wanted && audio.paused && !audio.ended && !audio.error && audio.hasAttribute('src')) pausePlayback();
+  else { renderState(); save(); }
+});
+audio.addEventListener('waiting', waitForAudio);
 audio.addEventListener('error', () => { if (wanted && audio.error) failTrack(); });
 audio.addEventListener('ended', () => selectTrack(nextPlayable(index, tracks.length, failed), true, false));
 document.addEventListener('pointerdown', event => {
@@ -318,9 +388,7 @@ document.addEventListener('keydown', event => {
   else setOpen(false);
 });
 document.addEventListener('portfolio:preview-open', () => { setOpen(false, false); renderState(); });
-document.addEventListener('portfolio:video-play', () => {
-  ++playVersion; wanted = false; loading = false; audio.pause(); renderState(); save();
-});
+document.addEventListener('portfolio:video-play', pausePlayback);
 document.addEventListener('astro:before-swap', () => { setOpen(false, false); save(); });
 document.addEventListener('astro:page-load', pageChanged);
 window.addEventListener('pagehide', save);
