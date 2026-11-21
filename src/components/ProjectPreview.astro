@@ -17,14 +17,21 @@ const notes: Record<Artwork, [string, string][]> = {
   git: [['agent-tool-system', '从 Tool Schema 到安全执行器']],
   random: [],
 };
+const splitProjectTitle = (title: string): [string, string] => {
+  const index = title.indexOf(' · ');
+  return index === -1 ? [title, ''] : [title.slice(0, index), title.slice(index + 3)];
+};
 ---
 <dialog class="project-preview" aria-labelledby="project-preview-title" data-project-preview>
   <div class="preview-topbar"><span id="project-preview-title">{en ? 'PROJECT / QUICK LOOK' : '作品 / 快速预览'}</span><button type="button" data-preview-close aria-label={en ? 'Close preview' : '关闭预览'}>×</button></div>
-  {projects.map((project,index) => <article data-preview-project={project.id} hidden>
-    <div class="preview-layout"><div class="preview-visual"><ProjectVideo kind={project.id} locale={locale} /><span>{project.ownership[locale]} · {project.tags.join(' / ')}</span></div><div class="preview-copy"><span class="section-kicker">{String(index+1).padStart(2,'0')} / SELECTED WORK</span><h2>{project.name[locale]}</h2><p class="preview-summary">{project.summary[locale]}</p><div class="preview-role"><h3>{project.caseStudy ? (en ? 'Implementation scope' : '实现范围') : (en ? 'My contribution' : '我负责什么')}</h3><p>{project.role[locale]}</p></div><a class="preview-case" href={sitePath(`${en?'/en':''}/projects/${project.slug}`)}>{en ? 'Read the full case study' : '进入完整项目案例'} <span aria-hidden="true">↗</span></a>{project.source && <a class="preview-source" href={project.source} target="_blank" rel="noopener noreferrer">GitHub ↗</a>}</div></div>
-    <div class="preview-evidence">{project.proofs[locale].map(([title,proof])=><div><h3>{title}</h3><p>{proof}</p></div>)}</div>
-    {notes[project.id].length > 0 && <div class="preview-connections"><span>{en ? 'FOLLOW THE THREAD' : '沿着这个问题，继续看'}</span>{notes[project.id].map(([slug,title])=><a href={sitePath(`/blog/${slug}`)}>{title}{en ? ' · 中文' : ''} ↗</a>)}</div>}
-    {project.id === 'safety' && <div class="preview-connections"><span>{en ? 'FOLLOW THE THREAD' : '沿着这个问题，继续看'}</span><a href={sitePath(`${en?'/en':''}/projects/multi-channel-camera`)}>{en ? 'Another vision system: infrared monitoring' : '另一个视觉系统：多通道红外监控'} ↗</a></div>}
-  </article>)}
+  {projects.map((project,index) => {
+    const [mainTitle, subTitle] = splitProjectTitle(project.name[locale]);
+    return <article data-preview-project={project.id} hidden>
+      <div class="preview-layout"><div class="preview-visual"><ProjectVideo kind={project.id} locale={locale} /><span>{project.ownership[locale]} · {project.tags.join(' / ')}</span></div><div class="preview-copy"><span class="section-kicker">{String(index+1).padStart(2,'0')} / SELECTED WORK</span><h2><span class="preview-title-main">{mainTitle}</span>{subTitle && <span class="preview-title-sub">{subTitle}</span>}</h2><p class="preview-summary">{project.summary[locale]}</p><div class="preview-role"><h3>{project.caseStudy ? (en ? 'Implementation scope' : '实现范围') : (en ? 'My contribution' : '我负责什么')}</h3><p>{project.role[locale]}</p></div><a class="preview-case" href={sitePath(`${en?'/en':''}/projects/${project.slug}`)}>{en ? 'Read the full case study' : '进入完整项目案例'} <span aria-hidden="true">↗</span></a>{project.source && <a class="preview-source" href={project.source} target="_blank" rel="noopener noreferrer">GitHub ↗</a>}</div></div>
+      <div class="preview-evidence">{project.proofs[locale].map(([title,proof])=><div><h3>{title}</h3><p>{proof}</p></div>)}</div>
+      {notes[project.id].length > 0 && <div class="preview-connections"><span>{en ? 'FOLLOW THE THREAD' : '沿着这个问题，继续看'}</span>{notes[project.id].map(([slug,title])=><a href={sitePath(`/blog/${slug}`)}>{title}{en ? ' · 中文' : ''} ↗</a>)}</div>}
+      {project.id === 'safety' && <div class="preview-connections"><span>{en ? 'FOLLOW THE THREAD' : '沿着这个问题，继续看'}</span><a href={sitePath(`${en?'/en':''}/projects/multi-channel-camera`)}>{en ? 'Another vision system: infrared monitoring' : '另一个视觉系统：多通道红外监控'} ↗</a></div>}
+    </article>;
+  })}
   <div class="preview-browse"><button type="button" data-preview-prev>← {en ? 'Previous' : '上一个作品'}</button><span data-preview-count aria-live="polite"></span><button type="button" data-preview-next>{en ? 'Next' : '下一个作品'} →</button></div>
 </dialog>
