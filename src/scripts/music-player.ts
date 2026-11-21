@@ -389,6 +389,9 @@ document.addEventListener('keydown', event => {
 });
 document.addEventListener('portfolio:preview-open', () => { setOpen(false, false); renderState(); });
 document.addEventListener('portfolio:video-play', pausePlayback);
+document.addEventListener('site:bgm-start', () => {
+  if (tracks.length && audio.paused && !wanted) play(true);
+});
 document.addEventListener('astro:before-swap', () => { setOpen(false, false); save(); });
 document.addEventListener('astro:page-load', pageChanged);
 window.addEventListener('pagehide', save);
