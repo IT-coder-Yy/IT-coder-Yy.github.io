@@ -6,17 +6,19 @@
   display: grid;
   grid-template-columns: 1fr 1.25fr 1fr;
   margin: 0;
-  border-top: 1px solid var(--detail-ink);
-  border-bottom: 1px solid var(--detail-ink);
+  border: 1px solid var(--detail-line);
+  background: var(--detail-surface);
+  box-shadow: var(--shadow-card-md);
 }
 
 .freight-board-column {
   display: flex;
-  min-height: 18rem;
-  padding: clamp(1rem, 2.3vw, 1.6rem);
+  min-height: 16rem;
+  padding: clamp(1.1rem, 2.3vw, 1.65rem);
   flex-direction: column;
   justify-content: space-between;
-  border-right: 1px solid var(--detail-line);
+  background: var(--detail-surface);
+  border-right: 1px dashed var(--detail-line);
 }
 
 .freight-board-column:last-of-type {
@@ -30,43 +32,68 @@
 .sandbox-controls > p {
   margin: 0;
   color: var(--detail-red);
-  font: 700 0.64rem/1.35 var(--font-data);
-  letter-spacing: 0.1em;
+  font: 700 0.78rem/1.4 var(--font-mono, var(--font-data));
+  letter-spacing: 0.08em;
 }
 
 .freight-board-column strong {
-  max-width: 8ch;
-  font-size: clamp(1.4rem, 2.2vw, 2.35rem);
-  line-height: 1.05;
-  letter-spacing: -0.045em;
+  max-width: none;
+  color: var(--detail-ink);
+  font-size: clamp(1.25rem, 1.85vw, 1.65rem);
+  line-height: 1.25;
+  letter-spacing: -0.02em;
 }
 
 .freight-board-column span {
   color: var(--detail-soft);
-  font-size: 0.76rem;
-  line-height: 1.6;
+  font-size: 0.88rem;
+  line-height: 1.65;
 }
 
 .freight-board-core {
-  color: #fff;
-  background: var(--detail-ink);
+  color: #f6f5f1;
+  background: #161616;
+  border-right-color: rgba(255, 255, 255, 0.14);
+}
+
+.freight-board-core strong {
+  color: #f6f5f1;
 }
 
 .freight-board-core p {
-  color: #efb3a9;
+  color: #ff8a5c;
 }
 
 .freight-board-core span {
-  color: #d9cdc0;
+  color: #d6d0c5;
+}
+
+[data-theme="dark"] .freight-board-core {
+  background: #241b17;
+  color: #f3efe6;
+  border-inline: 1px solid color-mix(in srgb, var(--accent) 42%, transparent);
+}
+
+[data-theme="dark"] .freight-board-core strong {
+  color: #f3efe6;
+}
+
+[data-theme="dark"] .freight-board-core p {
+  color: #ff8a5c;
+}
+
+[data-theme="dark"] .freight-board-core span {
+  color: #d2cbc0;
 }
 
 .freight-hero-board figcaption {
   grid-column: 1 / -1;
-  padding: 0.8rem clamp(1rem, 2.3vw, 1.6rem);
-  border-top: 1px solid var(--detail-ink);
+  padding: 0.85rem clamp(1rem, 2.3vw, 1.6rem);
+  border-top: 1px dashed var(--detail-line);
+  background: var(--detail-paper-deep);
   color: var(--detail-soft);
-  font-size: 0.76rem;
-  line-height: 1.6;
+  font-size: 0.84rem;
+  line-height: 1.65;
 }
 
 .freight-footnote {
@@ -77,21 +104,24 @@
   max-width: none;
 }
 
-.sandbox-section > p:not(.section-label) {
-  max-width: 42rem;
+.sandbox-section > p:not(.section-label):not(.section-subhead) {
+  max-width: 46rem;
 }
 
 .sandbox-shell {
   display: grid;
   margin-top: clamp(2rem, 4vw, 3.3rem);
-  border-top: 1px solid var(--detail-ink);
-  border-bottom: 1px solid var(--detail-ink);
-  grid-template-columns: minmax(9rem, 0.72fr) minmax(0, 1.45fr) minmax(8.5rem, 0.58fr);
+  border: 1px solid var(--detail-line);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--detail-surface);
+  box-shadow: var(--shadow-card-sm);
+  grid-template-columns: minmax(10rem, 0.72fr) minmax(0, 1.45fr) minmax(9rem, 0.58fr);
 }
 
 .sandbox-context,
 .sandbox-controls {
-  padding: 1.2rem 1rem;
+  padding: 1.2rem 1.05rem;
   background: var(--detail-paper-deep);
 }
 
@@ -101,81 +131,86 @@
 
 .sandbox-context ul {
   display: grid;
-  gap: 0.55rem;
-  margin: 1.25rem 0 0;
+  gap: 0.6rem;
+  margin: 1.15rem 0 0;
   padding: 0;
   list-style: none;
 }
 
 .sandbox-context li {
   position: relative;
-  padding-left: 0.7rem;
+  padding-left: 0.8rem;
   color: var(--detail-soft);
-  font-size: 0.77rem;
-  line-height: 1.55;
+  font-size: 0.88rem;
+  line-height: 1.62;
 }
 
 .sandbox-context li::before {
   position: absolute;
-  top: 0.55rem;
+  top: 0.62rem;
   left: 0;
-  width: 0.25rem;
-  height: 0.25rem;
+  width: 0.28rem;
+  height: 0.28rem;
+  border-radius: 999px;
   background: var(--detail-red);
   content: '';
 }
 
 .sandbox-stage {
   min-width: 0;
-  padding: 1.2rem clamp(1rem, 2.4vw, 1.75rem);
+  padding: 1.25rem clamp(1rem, 2.4vw, 1.75rem);
+  background: var(--detail-surface);
+  color: var(--detail-ink);
 }
 
 .sandbox-lanes {
   display: grid;
-  gap: 0.8rem;
+  gap: 0.85rem;
   margin-top: 1.2rem;
 }
 
 .sandbox-lanes section {
   display: grid;
-  grid-template-columns: 5.5rem minmax(0, 1fr);
-  gap: 0.85rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid var(--detail-line);
+  grid-template-columns: 6rem minmax(0, 1fr);
+  gap: 0.9rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px dashed var(--detail-line);
 }
 
 .sandbox-lanes strong {
-  font-size: 0.84rem;
-  font-weight: 600;
-  line-height: 1.55;
+  color: var(--detail-ink);
+  font-size: 0.94rem;
+  font-weight: 650;
+  line-height: 1.62;
 }
 
 .sandbox-outcome {
-  margin-top: 1.1rem;
+  margin-top: 1.15rem;
 }
 
 .sandbox-outcome > p {
   margin: 0;
-  font-size: clamp(1rem, 1.65vw, 1.28rem);
+  color: var(--detail-ink);
+  font-size: clamp(1.05rem, 1.45vw, 1.22rem);
   font-weight: 700;
   line-height: 1.45;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.015em;
 }
 
 .sandbox-outcome ul {
   display: grid;
-  gap: 0.34rem;
+  gap: 0.4rem;
   margin: 0.75rem 0 0;
   padding: 0;
   color: var(--detail-soft);
   list-style: none;
-  font-size: 0.76rem;
-  line-height: 1.55;
+  font-size: 0.9rem;
+  line-height: 1.65;
 }
 
 .sandbox-outcome li {
   position: relative;
-  padding-left: 0.75rem;
+  padding-left: 0.95rem;
 }
 
 .sandbox-outcome li::before {
@@ -187,29 +222,29 @@
 
 .sandbox-outcome > strong {
   display: block;
-  margin-top: 0.85rem;
-  color: var(--detail-red-deep);
-  font: 700 0.69rem/1.4 var(--font-data);
-  letter-spacing: 0.06em;
+  margin-top: 0.9rem;
+  color: var(--detail-ink);
+  font: 700 0.84rem/1.5 var(--font-mono, var(--font-data));
+  letter-spacing: 0.04em;
 }
 
 .sandbox-controls {
   display: flex;
-  gap: 0.45rem;
+  gap: 0.5rem;
   flex-direction: column;
   border-left: 1px solid var(--detail-line);
 }
 
 .sandbox-controls button {
-  min-height: 2.2rem;
-  padding: 0.48rem 0.55rem;
+  min-height: 2.4rem;
+  padding: 0.52rem 0.65rem;
   border: 1px solid var(--detail-line);
-  border-radius: 0;
+  border-radius: 8px;
   color: var(--detail-ink);
-  background: transparent;
+  background: var(--detail-surface);
   cursor: pointer;
-  font: 700 0.68rem/1 var(--font-data);
-  letter-spacing: 0.055em;
+  font: 700 0.82rem/1.2 var(--font-data);
+  letter-spacing: 0.04em;
   text-align: left;
   transition: background 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
 }
@@ -220,33 +255,35 @@
 
 .sandbox-controls button:hover {
   border-color: var(--detail-red);
-  color: var(--detail-red-deep);
+  background: var(--accent-subtle);
+  color: var(--detail-red);
   transform: translateX(2px);
 }
 
 .sandbox-controls button.is-active {
-  border-color: var(--detail-red);
-  color: #fff;
-  background: var(--detail-red);
+  border-color: #d4410d;
+  color: #ffffff;
+  background: #d4410d;
 }
 
 .sandbox-note {
   grid-column: 1 / -1;
   margin: 0;
-  padding: 0.75rem 1rem;
-  border-top: 1px solid var(--detail-line);
-  color: var(--detail-soft);
-  font-size: 0.72rem;
-  line-height: 1.55;
+  padding: 0.8rem 1.05rem;
+  border-top: 1px dashed var(--detail-line);
+  background: var(--detail-paper-deep);
+  color: var(--detail-muted);
+  font-size: 0.84rem;
+  line-height: 1.62;
 }
 
 @media (max-width: 860px) {
   .freight-hero-board {
-    max-width: 48rem;
+    max-width: 60rem;
   }
 
   .sandbox-shell {
-    grid-template-columns: minmax(0, 1fr) minmax(8rem, 0.38fr);
+    grid-template-columns: minmax(0, 1fr) minmax(8.5rem, 0.38fr);
   }
 
   .sandbox-context {
@@ -258,7 +295,7 @@
   .sandbox-context ul {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.45rem 1rem;
+    gap: 0.5rem 1.1rem;
     margin-top: 0.75rem;
   }
 }
@@ -271,16 +308,21 @@
   .freight-board-column {
     min-height: 9rem;
     border-right: 0;
-    border-bottom: 1px solid var(--detail-line);
+    border-bottom: 1px dashed var(--detail-line);
   }
 
   .freight-board-column strong {
     max-width: none;
-    font-size: 1.5rem;
+    font-size: 1.35rem;
   }
 
   .freight-board-core {
-    border-bottom-color: var(--detail-ink);
+    border-bottom-color: var(--detail-line);
+  }
+
+  [data-theme="dark"] .freight-board-core {
+    border-inline: 0;
+    border-block: 1px solid color-mix(in srgb, var(--accent) 42%, transparent);
   }
 
   .freight-hero-board figcaption {
@@ -306,7 +348,7 @@
   }
 
   .sandbox-controls button {
-    min-height: 2.45rem;
+    min-height: 2.5rem;
     text-align: center;
   }
 
