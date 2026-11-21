@@ -287,7 +287,7 @@ onPageLoad((signal) => {
       if (syncHash) {
         const nextHash = showCanvas ? '#projects' : `#${hashByProjectGroup.get(kind) ?? 'projects'}`;
         if (location.hash !== nextHash) {
-          history.replaceState(null, '', nextHash);
+          history.replaceState(history.state, '', nextHash);
           syncLanguageLinks(nextHash);
         }
       }
