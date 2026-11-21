@@ -424,15 +424,6 @@ html.intro-locking body {
   padding-inline: 20px;
 }
 
-.intro-keypad .intro-txt .intro-hint {
-  opacity: 0;
-  transition: opacity 0.6s var(--ease, cubic-bezier(0.23, 1, 0.32, 1));
-}
-
-.intro-keypad.ready .intro-txt .intro-hint {
-  opacity: 1;
-}
-
 .intro-keypad .intro-loader {
   position: relative;
   z-index: 1;
