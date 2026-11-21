@@ -1,0 +1,147 @@
+---
+import '../styles/intro.css';
+import type { Locale } from '../data/portfolio';
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = 'zh' } = Astro.props;
+const english = locale === 'en';
+
+type IconKey = 'robot' | 'camera' | 'film' | 'git' | 'spark' | 'term' | 'head' | 'chip';
+type KeyAccent = 'cream' | 'blue' | 'peach';
+
+const iconPaths: Record<IconKey, string> = {
+  robot: '<rect x="5" y="8" width="14" height="11" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9.5 16.5h5"/>',
+  camera: '<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
+  film: '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 4v16M16 4v16M4 9h4M4 15h4M16 9h4M16 15h4"/>',
+  git: '<circle cx="6" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="8" r="2"/><path d="M6 8v8M18 10c0 4-6 3.5-11 6.5"/>',
+  spark: '<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/>',
+  term: '<rect x="3" y="4" width="18" height="16" rx="3"/><path d="M7 9l3 3-3 3M12 15h5"/>',
+  head: '<path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/>',
+  chip: '<rect x="7" y="7" width="10" height="10" rx="2"/><path d="M10 3v4M14 3v4M10 17v4M14 17v4M3 10h4M3 14h4M17 10h4M17 14h4"/>',
+};
+
+const isIconKey = (value: string): value is IconKey => value in iconPaths;
+
+// 18 个普通键：名字字母与 2px 描边线性图标交错，夹奶油色、浅蓝、浅桃点缀
+const keyDefs: Array<[string, KeyAccent?]> = [
+  ['I', 'cream'], ['robot'], ['T', 'cream'], ['camera'], ['-'], ['film'],
+  ['C'], ['git'], ['spark', 'blue'], ['o'],
+  ['d'], ['term'], ['e', 'peach'], ['head'], ['r'], ['chip'],
+  ['Y', 'cream'], ['y'],
+];
+
+const skipLabel = english ? 'Skip →' : '跳过 →';
+const hintText = english ? 'Press ENTER to enter — sound on ♪' : '按下 ENTER 进入 —— 声音将开启 ♪';
+const enterAriaLabel = english
+  ? 'Press ENTER to enter personal space with sound'
+  : '按下 ENTER 进入个人空间并开启声音';
+---
+
+<section
+  class="intro intro-keypad"
+  id="intro-keypad"
+  data-intro-keypad
+  data-locale={locale}
+  aria-label={english ? 'Intro macro keypad' : '开场等距宏键盘'}
+  hidden
+>
+  <div class="intro-wm" aria-hidden="true">Yy.</div>
+  <button type="button" class="intro-skip" data-intro-skip>{skipLabel}</button>
+
+  <div class="kp-wrap">
+    <div class="keypad" data-intro-pad>
+      <div class="kp-el pre screen" data-intro-screen>
+        <span data-intro-type></span><span class="caret" aria-hidden="true"></span>
+        <small data-intro-stat>booting…</small>
+      </div>
+
+      <div class="kp-el pre knob-wrap" aria-hidden="true">
+        <div class="knob"></div>
+      </div>
+
+      {keyDefs.map(([value, accent]) => (
+        <div class:list={['kp-el', 'pre', 'key', accent]} aria-hidden="true">
+          {isIconKey(value) ? (
+            <svg viewBox="0 0 24 24" aria-hidden="true" set:html={iconPaths[value]} />
+          ) : (
+            value
+          )}
+        </div>
+      ))}
+
+      <button
+        type="button"
+        class="kp-el pre key enter"
+        data-intro-enter
+        aria-label={enterAriaLabel}
+      >
+        ENTER
+      </button>
+
+      <div class="kp-el pre key space" aria-hidden="true">
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+      </div>
+
+      <div class="leds" aria-hidden="true">
+        <i></i><i></i><i></i><i></i>
+      </div>
+    </div>
+
+    <div class="intro-txt">
+      <div>IT-Coder-Yy · personal space</div>
+      <div class="intro-hint">{hintText}</div>
+    </div>
+
+    <div class="intro-loader" aria-hidden="true">
+      <div class="bar"><i data-intro-bar></i></div>
+      <span data-intro-num>0%</span>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  (function () {
+    var el = document.getElementById('intro-keypad');
+    if (!el) return;
+    el.dataset.introDecided = '1';
+
+    var root = document.documentElement;
+    var param = new URLSearchParams(location.search).get('intro');
+    var skipHashes = ['#projects', '#about', '#ai-agent', '#media', '#tools', '#cv', '#contact'];
+    var seen = false;
+    try {
+      seen = sessionStorage.getItem('site-intro-seen') === '1';
+    } catch (_) {}
+
+    var show = false;
+    if (param === 'none') {
+      show = false;
+    } else if (param === 'a' || param === 'force') {
+      show = true;
+    } else if (skipHashes.indexOf(location.hash) !== -1) {
+      show = false;
+    } else if (seen) {
+      show = false;
+    } else {
+      show = true;
+    }
+
+    if (show) {
+      el.hidden = false;
+      root.dataset.introDone = 'false';
+      root.classList.add('intro-locking');
+    } else {
+      el.hidden = true;
+      root.dataset.introDone = 'true';
+      root.classList.remove('intro-locking');
+      if (document.body) document.body.classList.add('in');
+    }
+  })();
+</script>
+
+<script>
+  import '../scripts/intro';
+</script>

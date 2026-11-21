@@ -1,0 +1,590 @@
+html.intro-locking,
+html.intro-locking body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  place-items: center;
+  transition: opacity 0.7s var(--ease, cubic-bezier(0.23, 1, 0.32, 1));
+}
+
+.intro.gone {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.intro[hidden] {
+  display: none;
+}
+
+.intro-keypad,
+.intro-keypad *,
+.intro-keypad *::before,
+.intro-keypad *::after {
+  box-sizing: border-box;
+}
+
+.intro-keypad {
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 46%, rgba(255, 90, 31, 0.08), transparent 70%),
+    #111 repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 10px);
+  color: #e9e5dc;
+  font-family: var(--font-sans, "Youzai Hand", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif);
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.intro-keypad .intro-wm {
+  position: absolute;
+  top: 24px;
+  left: 30px;
+  z-index: 2;
+  font-weight: 800;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: #e9e5dc;
+}
+
+.intro-keypad .intro-skip {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 10px 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: 400 13px/1 var(--font-mono, "JetBrains Mono", ui-monospace, monospace);
+  color: inherit;
+  opacity: 0.6;
+  background: none;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity 0.2s var(--ease, cubic-bezier(0.23, 1, 0.32, 1));
+}
+
+.intro-keypad .intro-skip:hover,
+.intro-keypad .intro-skip:focus-visible {
+  opacity: 1;
+}
+
+.intro-keypad .intro-skip:focus-visible {
+  outline: 2px solid var(--accent, #ff5a1f);
+  outline-offset: 2px;
+}
+
+.intro-keypad .kp-wrap {
+  --kp-scale: 1;
+  perspective: 2000px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+  max-width: 100vw;
+}
+
+.intro-keypad .keypad {
+  --kp-line: rgba(255, 255, 255, 0.6);
+  width: 540px;
+  height: 450px;
+  flex: none;
+  transform: scale(var(--kp-scale, 1)) rotateX(56deg) rotateZ(-45deg);
+  transform-style: preserve-3d;
+  border: 1.5px solid var(--kp-line);
+  border-radius: 42px;
+  padding: 30px;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  gap: 14px;
+  grid-template-areas:
+    "scr scr scr scr knob knob"
+    ". . . . . ."
+    ". . ent ent . ."
+    ". . . . . ."
+    "spc spc spc spc . .";
+  position: relative;
+  margin: -90px 0 10px;
+  background: #131313 radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1.2px) 0 0 / 16px 16px;
+  transition: opacity 0.6s var(--ease, cubic-bezier(0.23, 1, 0.32, 1));
+}
+
+.intro-keypad .keypad::before,
+.intro-keypad .keypad::after {
+  content: "";
+  position: absolute;
+  inset: -1.5px;
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  border-radius: 42px;
+  transform: translateZ(-24px);
+  pointer-events: none;
+}
+
+.intro-keypad .keypad::after {
+  transform: translateZ(-12px);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.intro-keypad .kp-el {
+  --z: 12px;
+  position: relative;
+  transform: translateZ(var(--z));
+  transform-style: preserve-3d;
+  transition:
+    transform 0.5s var(--ease, cubic-bezier(0.23, 1, 0.32, 1)),
+    opacity 0.45s;
+}
+
+.intro-keypad .kp-el.pre {
+  transform: translateZ(calc(var(--z) + 170px));
+  opacity: 0;
+  pointer-events: none;
+}
+
+.intro-keypad .key {
+  border: 1.5px solid var(--kp-line);
+  border-radius: 14px;
+  background: #151515;
+  color: rgba(255, 255, 255, 0.8);
+  display: grid;
+  place-items: center;
+  font: 700 22px/1 var(--font-sans, "Youzai Hand", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif);
+  letter-spacing: -0.03em;
+  cursor: default;
+}
+
+.intro-keypad .key::before {
+  content: "";
+  position: absolute;
+  inset: -1.5px;
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  border-radius: 14px;
+  transform: translateZ(calc(var(--z) * -1));
+  pointer-events: none;
+}
+
+.intro-keypad .key svg {
+  width: 42%;
+  height: 42%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (hover: hover) {
+  .intro-keypad .key:not(.pre):not(.fly):hover {
+    transform: translateZ(calc(var(--z) + 10px));
+    border-color: #fff;
+  }
+}
+
+.intro-keypad .key.tap {
+  transform: translateZ(calc(var(--z) - 7px));
+  transition-duration: 0.12s;
+}
+
+.intro-keypad .key.cream {
+  background: #f3efe6;
+  color: #161616;
+  border-color: #fff;
+}
+
+.intro-keypad .key.blue {
+  background: #cfe0f7;
+  color: #161616;
+  border-color: #fff;
+}
+
+.intro-keypad .key.peach {
+  background: #f8d2bb;
+  color: #161616;
+  border-color: #fff;
+}
+
+.intro-keypad .key.enter {
+  --z: 26px;
+  grid-area: ent;
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  background: var(--accent, #ff5a1f);
+  color: #161616;
+  border-color: #ffb08f;
+  font: 700 15px/1 var(--font-mono, "JetBrains Mono", ui-monospace, monospace);
+  letter-spacing: 0.12em;
+  box-shadow: 0 0 60px 6px rgba(255, 90, 31, 0.5);
+  cursor: pointer;
+}
+
+.intro-keypad .key.enter::before {
+  border-color: rgba(255, 90, 31, 0.6);
+}
+
+.intro-keypad .key.enter::after {
+  content: "";
+  position: absolute;
+  inset: -10px;
+  border: 1.5px solid var(--accent, #ff5a1f);
+  border-radius: 20px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.intro-keypad.ready .key.enter::after {
+  animation: intro-ring 1.6s ease-out infinite;
+}
+
+.intro-keypad .key.enter:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 4px;
+  border-color: #fff;
+}
+
+.intro-keypad .key.enter.pressed {
+  transform: translateZ(5px);
+  box-shadow: 0 0 110px 26px rgba(255, 90, 31, 0.7);
+  transition-duration: 0.12s;
+}
+
+.intro-keypad .key.space {
+  grid-area: spc;
+  gap: 5px;
+  grid-auto-flow: column;
+  align-content: center;
+  justify-content: center;
+}
+
+.intro-keypad .key.space i {
+  display: block;
+  width: 5px;
+  height: 22px;
+  border-radius: 3px;
+  background: var(--accent, #ff5a1f);
+  transform-origin: bottom;
+  animation: intro-eq 1s ease-in-out infinite;
+}
+
+.intro-keypad .key.space i:nth-child(2n) {
+  animation-delay: -0.35s;
+}
+
+.intro-keypad .key.space i:nth-child(3n) {
+  animation-delay: -0.7s;
+}
+
+.intro-keypad .screen {
+  --z: 5px;
+  grid-area: scr;
+  border: 1.5px solid var(--kp-line);
+  border-radius: 12px;
+  background: #0a0a0a repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.03) 0 1px, transparent 1px 3px);
+  padding: 12px 16px;
+  font: 600 19px/1.35 var(--font-mono, "JetBrains Mono", ui-monospace, monospace);
+  color: #ffb08f;
+  overflow: hidden;
+  text-shadow: 0 0 12px rgba(255, 90, 31, 0.55);
+}
+
+.intro-keypad .screen small {
+  display: block;
+  font-size: 11.5px;
+  color: rgba(255, 176, 143, 0.6);
+  text-shadow: none;
+  margin-top: 6px;
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.intro-keypad .screen .caret {
+  display: inline-block;
+  width: 10px;
+  height: 19px;
+  background: #ffb08f;
+  vertical-align: -3px;
+  margin-left: 2px;
+  animation: intro-blink 1s steps(1) infinite;
+}
+
+.intro-keypad .knob-wrap {
+  --z: 6px;
+  grid-area: knob;
+  display: grid;
+  place-items: center;
+  border: 1.5px dashed rgba(255, 255, 255, 0.22);
+  border-radius: 14px;
+}
+
+.intro-keypad .knob {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: 1.5px solid #fff;
+  background: radial-gradient(circle at 35% 30%, #3a3a3a, #141414 70%);
+  position: relative;
+  transform: translateZ(14px);
+  animation: intro-spin 7s linear infinite;
+  box-shadow: 0 0 0 7px rgba(255, 255, 255, 0.04);
+}
+
+.intro-keypad .knob::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 7px;
+  width: 3px;
+  height: 16px;
+  margin-left: -1.5px;
+  border-radius: 2px;
+  background: var(--accent, #ff5a1f);
+  pointer-events: none;
+}
+
+.intro-keypad .knob::after {
+  content: "";
+  position: absolute;
+  inset: -14px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(rgba(255, 255, 255, 0.45) 0 2deg, transparent 2deg 20deg);
+  -webkit-mask: radial-gradient(circle, transparent 60%, #000 61%);
+  mask: radial-gradient(circle, transparent 60%, #000 61%);
+  pointer-events: none;
+}
+
+.intro-keypad .leds {
+  position: absolute;
+  right: 34px;
+  bottom: 9px;
+  display: flex;
+  gap: 8px;
+  transform: translateZ(2px);
+  pointer-events: none;
+}
+
+.intro-keypad .leds i {
+  display: block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #2c2c2c;
+  animation: intro-led 2.4s infinite;
+}
+
+.intro-keypad .leds i:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.intro-keypad .leds i:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+.intro-keypad .leds i:nth-child(4) {
+  animation-delay: 0.9s;
+}
+
+.intro-keypad .keypad .kp-el.fly {
+  transform: translateZ(560px) rotate(var(--r, 0deg));
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform 0.85s cubic-bezier(0.5, 0, 0.75, 0),
+    opacity 0.7s ease-in;
+}
+
+.intro-keypad .keypad.fade {
+  opacity: 0;
+}
+
+.intro-keypad .intro-txt {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  font-family: var(--font-mono, "JetBrains Mono", ui-monospace, monospace);
+  font-size: 14px;
+  line-height: 1.9;
+  color: #bdb8ad;
+  padding-inline: 20px;
+}
+
+.intro-keypad .intro-txt .intro-hint {
+  opacity: 0;
+  transition: opacity 0.6s var(--ease, cubic-bezier(0.23, 1, 0.32, 1));
+}
+
+.intro-keypad.ready .intro-txt .intro-hint {
+  opacity: 1;
+}
+
+.intro-keypad .intro-loader {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 22px;
+  font: 400 12px/1 var(--font-mono, "JetBrains Mono", ui-monospace, monospace);
+  color: #8d887e;
+}
+
+.intro-keypad .intro-loader .bar {
+  width: 300px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.intro-keypad .intro-loader .bar i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: #e9e5dc;
+}
+
+@keyframes intro-eq {
+  0%,
+  100% {
+    transform: scaleY(0.3);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes intro-ring {
+  0% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+
+@keyframes intro-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+@keyframes intro-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes intro-led {
+  0%,
+  60%,
+  100% {
+    background: #2c2c2c;
+    box-shadow: none;
+  }
+  20% {
+    background: var(--accent, #ff5a1f);
+    box-shadow: 0 0 10px var(--accent, #ff5a1f);
+  }
+}
+
+@media (max-height: 640px) and (min-width: 721px) {
+  .intro-keypad .kp-wrap {
+    --kp-scale: 0.82;
+  }
+
+  .intro-keypad .keypad {
+    margin: -105px 0 -24px;
+  }
+}
+
+@media (max-width: 720px) {
+  .intro-keypad .intro-wm {
+    top: 20px;
+    left: 20px;
+    font-size: 22px;
+  }
+
+  .intro-keypad .intro-skip {
+    top: 12px;
+    right: 12px;
+  }
+
+  .intro-keypad .kp-wrap {
+    --kp-scale: 0.62;
+  }
+
+  .intro-keypad .keypad {
+    margin: -110px 0 -70px;
+  }
+
+  .intro-keypad .intro-loader .bar {
+    width: min(260px, 64vw);
+  }
+}
+
+@media (max-width: 480px) {
+  .intro-keypad .kp-wrap {
+    --kp-scale: 0.48;
+  }
+
+  .intro-keypad .keypad {
+    margin: -125px 0 -105px;
+  }
+
+  .intro-keypad .intro-txt {
+    font-size: 13px;
+    line-height: 1.8;
+  }
+
+  .intro-keypad .intro-loader {
+    margin-top: 18px;
+  }
+
+  .intro-keypad .intro-loader .bar {
+    width: min(220px, 60vw);
+  }
+}
+
+@media (max-width: 360px) {
+  .intro-keypad .kp-wrap {
+    --kp-scale: 0.42;
+  }
+
+  .intro-keypad .keypad {
+    margin: -135px 0 -118px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-keypad,
+  .intro-keypad *,
+  .intro-keypad *::before,
+  .intro-keypad *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .intro-keypad .kp-el.pre {
+    transform: translateZ(var(--z));
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
