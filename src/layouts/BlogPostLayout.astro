@@ -1,5 +1,6 @@
 ---
 import { ClientRouter } from 'astro:transitions';
+import ThemeScript from '../components/ThemeScript.astro';
 import type { MarkdownHeading } from 'astro';
 import type { BlogPost } from '../lib/blog';
 import { estimateReadingTime, getAdjacentPosts } from '../lib/blog';
@@ -33,7 +34,7 @@ const jsonLd = {
   inLanguage: 'zh-CN',
   author: {
     '@type': 'Person',
-    name: '于洋',
+    name: 'IT-coder-Yy',
   },
   keywords: post.data.tags.join(', '),
   ...(articleUrl ? { mainEntityOfPage: articleUrl, url: articleUrl } : {}),
@@ -43,17 +44,18 @@ const jsonLd = {
 <!doctype html>
 <html lang="zh-CN">
   <head>
-    <ClientRouter fallback="swap" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <SeoHead
-      title={`${post.data.title}｜于洋技术博客`}
+      title={`${post.data.title}｜IT-coder-Yy 技术博客`}
       description={post.data.description}
       canonicalPath={canonicalPath}
       type="article"
       publishedAt={post.data.publishedAt}
       updatedAt={post.data.updatedAt}
     />
+    <ThemeScript />
+    <ClientRouter fallback="swap" />
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </head>
   <body class="blog-page blog-article-page">
@@ -64,14 +66,14 @@ const jsonLd = {
       <header class="article-hero">
         <div class="article-hero-inner">
           <nav class="article-breadcrumb" aria-label="面包屑">
-            <a class="article-back" href={sitePath('/blog')}>博客</a>
+            <a class="article-back" href={sitePath('/blog')}>返回博客</a>
             <span aria-hidden="true">/</span>
             <span>{post.data.category}</span>
           </nav>
           <p class="article-series">
             {post.data.series
               ? `${post.data.series} · ${String(post.data.seriesOrder).padStart(2, '0')}`
-              : '独立技术笔记'}
+              : '独立技术笔记 · ENGINEERING NOTE'}
           </p>
           <h1>{post.data.title}</h1>
           <p class="article-description">{post.data.description}</p>
@@ -108,8 +110,8 @@ const jsonLd = {
     <footer class="blog-footer">
       <p>持续记录可复现、可解释、可维护的工程实践。</p>
       <div>
-        <span>Yu Yang / 2026</span>
-        <a href="mailto:yuyang24@mails.ucas.ac.cn">yuyang24@mails.ucas.ac.cn</a>
+        <span>IT-coder-Yy / 2026</span>
+        <a href="mailto:coder.yy521@gmail.com">coder.yy521@gmail.com</a>
       </div>
     </footer>
 
