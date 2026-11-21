@@ -65,11 +65,7 @@ const jsonLd = {
     <main id="article-content">
       <header class="article-hero">
         <div class="article-hero-inner">
-          <nav class="article-breadcrumb" aria-label="面包屑">
-            <a class="article-back" href={sitePath('/blog')}>返回博客</a>
-            <span aria-hidden="true">/</span>
-            <span>{post.data.category}</span>
-          </nav>
+          <p class="article-category">{post.data.category}</p>
           <p class="article-series">
             {post.data.series
               ? `${post.data.series} · ${String(post.data.seriesOrder).padStart(2, '0')}`
