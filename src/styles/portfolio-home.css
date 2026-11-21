@@ -973,64 +973,29 @@ body.portfolio-home {
 }
 
 .personal-letter h2 {
-  margin-top: 10px;
+  margin-top: 14px;
   font-size: clamp(32px, 4.4vw, 52px);
-  line-height: 1.2;
+  line-height: 1.25;
   letter-spacing: -0.01em;
   font-weight: 800;
   color: var(--ink);
 }
 
 .personal-letter .section-subhead {
-  margin-top: 16px;
+  margin-top: 32px;
   font-size: clamp(16px, 1.5vw, 18px);
-  line-height: 1.65;
+  line-height: 1.82;
   font-weight: 600;
   color: var(--ink);
   max-width: 44ch;
 }
 
 .personal-letter .about-lead {
-  margin-top: 16px;
+  margin-top: 28px;
   font-size: 15.5px;
-  line-height: 1.82;
+  line-height: 2.08;
   color: var(--ink-secondary);
   max-width: 48ch;
-}
-
-.portfolio-home .about-github-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  margin-top: 26px;
-  padding: 10px 18px;
-  border-radius: 999px;
-  background: var(--pill);
-  color: var(--pill-ink);
-  border: 1px solid var(--pill-border);
-  font-family: var(--font-mono);
-  font-size: 13px;
-  font-weight: 500;
-  text-decoration: none;
-  box-shadow: var(--shadow-pill);
-  transition: transform 0.25s var(--ease), background-color 0.2s ease, color 0.2s ease;
-}
-
-.portfolio-home .about-github-link:hover {
-  transform: translateY(-2px);
-  background: var(--accent);
-  color: #161616;
-  border-color: var(--accent);
-}
-
-.about-github-link svg {
-  width: 17px;
-  height: 17px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
 }
 
 .personal-directions {
@@ -1238,14 +1203,16 @@ body.portfolio-home {
 }
 
 .contact-actions {
-  display: flex;
+  display: grid;
+  grid-template-columns: max-content auto;
   align-items: center;
-  gap: 18px 22px;
-  flex-wrap: wrap;
+  justify-content: start;
+  gap: 20px 26px;
   margin-top: 32px;
 }
 
 .contact-email {
+  justify-self: start;
   font-family: var(--font-sans);
   font-size: clamp(18px, 2.5vw, 30px);
   font-weight: 700;
@@ -1263,7 +1230,11 @@ body.portfolio-home {
   border-color: var(--accent);
 }
 
-.contact-actions button {
+.contact-actions .contact-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  justify-self: start;
   padding: 10px 18px;
   border-radius: 999px;
   border: 1px solid rgba(246, 245, 241, 0.28);
@@ -1271,10 +1242,13 @@ body.portfolio-home {
   color: #f6f5f1;
   font-size: 13px;
   font-weight: 600;
+  line-height: 1.25;
+  text-decoration: none;
+  white-space: nowrap;
   transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
 }
 
-.contact-actions button:hover {
+.contact-actions .contact-pill-btn:hover {
   background: var(--accent);
   border-color: var(--accent);
   color: #161616;
@@ -1282,7 +1256,7 @@ body.portfolio-home {
 
 .contact-status {
   min-height: 1.4em;
-  margin-top: 10px !important;
+  margin-top: 12px !important;
   font-family: var(--font-mono);
   font-size: 12px;
   color: #ff946b;
@@ -1295,7 +1269,7 @@ body.portfolio-home {
   flex-wrap: wrap;
   border-top: 1px dashed rgba(246, 245, 241, 0.2);
   padding-top: 22px;
-  margin-top: 38px;
+  margin-top: 32px;
   font-family: var(--font-mono);
   font-size: 12px;
   color: rgba(246, 245, 241, 0.65);
@@ -1807,6 +1781,16 @@ body.portfolio-home {
     font-size: 30px;
   }
 
+  .personal-letter .section-subhead {
+    margin-top: 20px;
+    line-height: 1.7;
+  }
+
+  .personal-letter .about-lead {
+    margin-top: 18px;
+    line-height: 1.88;
+  }
+
   .education-records {
     grid-template-columns: 1fr;
   }
@@ -1823,6 +1807,15 @@ body.portfolio-home {
   .footer-card {
     padding: 24px 20px;
     border-radius: 20px;
+  }
+
+  .contact-actions {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .contact-github {
+    margin-top: 12px;
   }
 
   .footer-bottom a:last-child {

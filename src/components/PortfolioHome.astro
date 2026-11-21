@@ -109,6 +109,7 @@ const text = english
       copy: 'Copy email',
       copied: 'Email copied',
       copyError: 'Could not copy. Please select the email address.',
+      visitGithub: 'Visit profile',
       backHome: 'Back to home ↑',
     }
   : {
@@ -145,6 +146,7 @@ const text = english
       copy: '复制邮箱',
       copied: '邮箱已复制',
       copyError: '复制失败，请选中邮箱文字复制。',
+      visitGithub: '访问主页',
       backHome: '返回首页 ↑',
     };
 
@@ -417,18 +419,6 @@ const tilts: Record<Artwork, string> = {
               <h2 id="about-title">{text.aboutTitle}</h2>
               <p class="section-subhead">{text.aboutSubhead}</p>
               <p class="about-lead">{text.aboutIntro}</p>
-              <a
-                class="about-github-link"
-                href="https://github.com/IT-coder-Yy"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M9 19c-4 1.5-4-2-6-2.5M15 21v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12 12 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21" />
-                </svg>
-                <span>github.com/IT-coder-Yy</span>
-                <span aria-hidden="true">↗</span>
-              </a>
             </div>
 
             <div class="personal-directions">
@@ -519,6 +509,7 @@ const tilts: Record<Artwork, string> = {
               coder.yy521@gmail.com <span aria-hidden="true">↗</span>
             </a>
             <button
+              class="contact-pill-btn"
               type="button"
               data-copy-email
               data-copy-label={text.copy}
@@ -527,14 +518,28 @@ const tilts: Record<Artwork, string> = {
             >
               {text.copy}
             </button>
+
+            <a
+              class="contact-email contact-github"
+              href="https://github.com/IT-coder-Yy"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              github.com/IT-coder-Yy <span aria-hidden="true">↗</span>
+            </a>
+            <a
+              class="contact-pill-btn"
+              href="https://github.com/IT-coder-Yy"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {text.visitGithub}
+            </a>
           </div>
           <p class="contact-status" aria-live="polite" data-copy-status></p>
 
           <div class="footer-bottom">
             <span>IT-Coder-Yy · 2026</span>
-            <a href="https://github.com/IT-coder-Yy" target="_blank" rel="noopener noreferrer">
-              GitHub ↗
-            </a>
             <a href="#top">{text.backHome}</a>
           </div>
         </div>
