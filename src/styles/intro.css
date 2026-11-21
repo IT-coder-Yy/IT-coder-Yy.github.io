@@ -86,7 +86,7 @@ html.intro-locking body {
 }
 
 .intro-keypad .kp-wrap {
-  --kp-scale: 1;
+  --kp-scale: 1.22;
   perspective: 2000px;
   display: flex;
   flex-direction: column;
@@ -118,7 +118,8 @@ html.intro-locking body {
     ". . . . . ."
     "spc spc spc spc . .";
   position: relative;
-  margin: -90px 0 10px;
+  margin-top: calc(-90px + (var(--kp-scale, 1) - 1) * 145px);
+  margin-bottom: calc(10px + (var(--kp-scale, 1) - 1) * 230px);
   background: #131313 radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1.2px) 0 0 / 16px 16px;
   transition: opacity 0.6s var(--ease, cubic-bezier(0.23, 1, 0.32, 1));
 }
@@ -417,7 +418,7 @@ html.intro-locking body {
   z-index: 1;
   text-align: center;
   font-family: var(--font-mono, "JetBrains Mono", ui-monospace, monospace);
-  font-size: 14px;
+  font-size: 15.5px;
   line-height: 1.9;
   color: #bdb8ad;
   padding-inline: 20px;
@@ -438,13 +439,13 @@ html.intro-locking body {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-top: 22px;
-  font: 400 12px/1 var(--font-mono, "JetBrains Mono", ui-monospace, monospace);
+  margin-top: 24px;
+  font: 400 13px/1 var(--font-mono, "JetBrains Mono", ui-monospace, monospace);
   color: #8d887e;
 }
 
 .intro-keypad .intro-loader .bar {
-  width: 300px;
+  width: 380px;
   height: 2px;
   background: rgba(255, 255, 255, 0.12);
   border-radius: 2px;
@@ -504,13 +505,33 @@ html.intro-locking body {
   }
 }
 
+@media (min-width: 1120px) and (min-height: 780px) {
+  .intro-keypad .kp-wrap {
+    --kp-scale: 1.35;
+  }
+}
+
+@media (min-width: 1500px) and (min-height: 920px) {
+  .intro-keypad .kp-wrap {
+    --kp-scale: 1.46;
+  }
+}
+
+@media (max-height: 720px) and (min-width: 721px) {
+  .intro-keypad .kp-wrap {
+    --kp-scale: 1.08;
+  }
+}
+
+@media (max-width: 1024px) and (min-width: 721px) {
+  .intro-keypad .kp-wrap {
+    --kp-scale: 0.98;
+  }
+}
+
 @media (max-height: 640px) and (min-width: 721px) {
   .intro-keypad .kp-wrap {
-    --kp-scale: 0.82;
-  }
-
-  .intro-keypad .keypad {
-    margin: -105px 0 -24px;
+    --kp-scale: 0.88;
   }
 }
 
@@ -527,11 +548,16 @@ html.intro-locking body {
   }
 
   .intro-keypad .kp-wrap {
-    --kp-scale: 0.62;
+    --kp-scale: 0.66;
   }
 
-  .intro-keypad .keypad {
-    margin: -110px 0 -70px;
+  .intro-keypad .intro-txt {
+    font-size: 14px;
+  }
+
+  .intro-keypad .intro-loader {
+    margin-top: 22px;
+    font-size: 12px;
   }
 
   .intro-keypad .intro-loader .bar {
@@ -541,11 +567,7 @@ html.intro-locking body {
 
 @media (max-width: 480px) {
   .intro-keypad .kp-wrap {
-    --kp-scale: 0.48;
-  }
-
-  .intro-keypad .keypad {
-    margin: -125px 0 -105px;
+    --kp-scale: 0.5;
   }
 
   .intro-keypad .intro-txt {
@@ -564,11 +586,7 @@ html.intro-locking body {
 
 @media (max-width: 360px) {
   .intro-keypad .kp-wrap {
-    --kp-scale: 0.42;
-  }
-
-  .intro-keypad .keypad {
-    margin: -135px 0 -118px;
+    --kp-scale: 0.44;
   }
 }
 
