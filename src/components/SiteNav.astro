@@ -15,8 +15,13 @@ const { locale, pathname, detail = false, showLanguageSwitch = true } = Astro.pr
 const isEnglish = locale === 'en';
 const isHome = pathname === '/' || pathname === '/en';
 const isBlog = pathname === '/blog' || pathname.startsWith('/blog/');
+const isBlogArticle = pathname.startsWith('/blog/') && pathname !== '/blog/';
 const isProject = detail || pathname.includes('/projects/');
+const isDetailView = isProject || isBlogArticle;
 const home = isEnglish ? sitePath('/en') : sitePath('/');
+const backFallback = isBlogArticle ? sitePath('/blog') : `${home}#projects`;
+const backLabel = isEnglish ? 'Go back to previous page' : '返回上一页';
+const progressLabel = isEnglish ? 'Reading progress' : '阅读进度';
 const alternate = isEnglish
   ? sitePath(pathname === '/en' ? '/' : pathname.replace(/^\/en/, ''))
   : sitePath(pathname === '/' ? '/en' : `/en${pathname}`);
@@ -24,12 +29,60 @@ const switchLabel = isEnglish ? 'Language selection' : '语言选择';
 const githubUrl = 'https://github.com/IT-coder-Yy';
 ---
 
-<header class="site-header" data-site-header>
-  <a
-    class="nav-pill nav-logo"
-    href={isHome ? '#top' : `${home}#top`}
-    aria-label={isEnglish ? 'IT-coder-Yy portfolio home' : 'IT-coder-Yy 个人作品集首页'}
-  >Yy</a>
+{isDetailView && (
+  <div
+    class="reading-ruler"
+    data-reading-ruler
+    role="progressbar"
+    aria-label={progressLabel}
+    aria-valuemin="0"
+    aria-valuemax="100"
+    aria-valuenow="0"
+  >
+    <div class="reading-ruler-track">
+      <div class="reading-ruler-fill" data-ruler-fill></div>
+    </div>
+    <div class="reading-ruler-ticks" data-ruler-ticks aria-hidden="true">
+      {Array.from({ length: 41 }).map((_, i) => (
+        <span
+          class:list={[
+            'reading-ruler-tick',
+            i % 10 === 0 ? 'is-major' : i % 4 === 0 ? 'is-mid' : undefined,
+          ]}
+          data-tick-pct={String(i / 40)}
+        />
+      ))}
+    </div>
+    <div class="reading-ruler-chapters" data-ruler-chapters></div>
+    <div class="reading-ruler-badge" data-ruler-badge aria-hidden="true">
+      <span class="reading-ruler-dot"></span>
+      <span data-ruler-pct>0%</span>
+    </div>
+  </div>
+)}
+
+<header class:list={['site-header', { 'is-detail-nav': isDetailView }]} data-site-header>
+  <div class="nav-brand-slot">
+    <a
+      class="nav-pill nav-logo"
+      href={isHome ? '#top' : `${home}#top`}
+      aria-label={isEnglish ? 'IT-coder-Yy portfolio home' : 'IT-coder-Yy 个人作品集首页'}
+    >Yy</a>
+    {isDetailView && (
+      <a
+        class="nav-pill nav-back"
+        href={backFallback}
+        data-smart-back
+        aria-label={backLabel}
+        title={backLabel}
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M19 12H5" />
+          <path d="M11 6l-6 6 6 6" />
+        </svg>
+      </a>
+    )}
+  </div>
 
   <nav
     id="primary-navigation"
@@ -191,7 +244,87 @@ const githubUrl = 'https://github.com/IT-coder-Yy';
 
   type ThemeMode = 'light' | 'dark' | 'system';
   const STORAGE_KEY = 'site-theme';
+  const TRAIL_KEY = 'site-nav-trail';
+  const MAX_TRAIL = 20;
   const MODES: readonly ThemeMode[] = ['light', 'dark', 'system'];
+
+  const normalizeRouteKey = (urlLike: string): string => {
+    try {
+      const u = new URL(urlLike, window.location.origin);
+      return u.pathname.replace(/\/+$/, '') || '/';
+    } catch {
+      return '/';
+    }
+  };
+
+  const toRelativeHref = (urlLike: string): string => {
+    try {
+      const u = new URL(urlLike, window.location.origin);
+      return `${u.pathname}${u.search}${u.hash}`;
+    } catch {
+      return '/';
+    }
+  };
+
+  const readTrail = (): string[] => {
+    try {
+      const raw = window.sessionStorage.getItem(TRAIL_KEY);
+      const parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed)
+        ? parsed.filter((item): item is string => typeof item === 'string')
+        : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const writeTrail = (trail: string[]) => {
+    try {
+      window.sessionStorage.setItem(TRAIL_KEY, JSON.stringify(trail.slice(-MAX_TRAIL)));
+    } catch {}
+  };
+
+  const recordTrailHref = (href: string): string[] => {
+    const rel = toRelativeHref(href);
+    const key = normalizeRouteKey(rel);
+    const trail = readTrail();
+
+    if (trail.length === 0 && document.referrer) {
+      try {
+        const ref = new URL(document.referrer);
+        if (ref.origin === window.location.origin) {
+          const refRel = `${ref.pathname}${ref.search}${ref.hash}`;
+          if (normalizeRouteKey(refRel) !== key) {
+            trail.push(refRel);
+          }
+        }
+      } catch {}
+    }
+
+    const existingIndex = trail.findIndex((entry) => normalizeRouteKey(entry) === key);
+    if (existingIndex >= 0) {
+      const next = trail.slice(0, existingIndex + 1);
+      next[existingIndex] = rel;
+      writeTrail(next);
+      return next;
+    }
+
+    const next = [...trail, rel].slice(-MAX_TRAIL);
+    writeTrail(next);
+    return next;
+  };
+
+  const winWithNavHook = window as Window & { __siteNavTrailHooked?: boolean };
+  if (!winWithNavHook.__siteNavTrailHooked) {
+    winWithNavHook.__siteNavTrailHooked = true;
+    // Capture latest hash (including replaceState category filters) right before leaving a page
+    document.addEventListener('astro:before-preparation', () => {
+      recordTrailHref(window.location.href);
+    });
+    window.addEventListener('hashchange', () => {
+      recordTrailHref(window.location.href);
+    });
+  }
 
   const resolveTheme = (mode: ThemeMode): 'light' | 'dark' => {
     if (mode === 'light') return 'light';
@@ -371,6 +504,190 @@ const githubUrl = 'https://github.com/IT-coder-Yy';
       );
       signal.addEventListener('abort', () => chapterObserver.disconnect(), { once: true });
       chapterSections.forEach((section) => chapterObserver.observe(section));
+    }
+
+    // Record current page into the deduplicated same-origin navigation trail
+    const trail = recordTrailHref(window.location.href);
+
+    // Smart back navigation: link directly to the recorded previous route (preserving hash/category),
+    // avoiding history.back() which Astro ClientRouter ignores when hash history entries have state === null
+    const smartBack = document.querySelector<HTMLAnchorElement>('[data-smart-back]');
+    if (smartBack && trail.length >= 2) {
+      const prevEntry = trail[trail.length - 2];
+      if (prevEntry && normalizeRouteKey(prevEntry) !== normalizeRouteKey(window.location.href)) {
+        smartBack.setAttribute('href', prevEntry);
+      }
+    }
+
+    // Top precision reading ruler: 3px bar + 41 ticks + chapter milestones + light cursor-tracking % pill
+    const ruler = document.querySelector<HTMLElement>('[data-reading-ruler]');
+    if (ruler) {
+      const fill = ruler.querySelector<HTMLElement>('[data-ruler-fill]');
+      const badge = ruler.querySelector<HTMLElement>('[data-ruler-badge]');
+      const pctEl = ruler.querySelector<HTMLElement>('[data-ruler-pct]');
+      const chaptersHost = ruler.querySelector<HTMLElement>('[data-ruler-chapters]');
+      const tickEls = Array.from(ruler.querySelectorAll<HTMLElement>('[data-tick-pct]'));
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+      const collectChapters = (): Array<{ label: string; target: HTMLElement }> => {
+        if (chapterLinks.length) {
+          return chapterLinks
+            .map((link) => {
+              const target = document.querySelector<HTMLElement>(link.hash);
+              const label = link.textContent?.trim() ?? '';
+              return target && label ? { label, target } : null;
+            })
+            .filter((item): item is { label: string; target: HTMLElement } => Boolean(item));
+        }
+
+        const tocPrimaryLinks = Array.from(
+          document.querySelectorAll<HTMLAnchorElement>(
+            '[data-table-of-contents] li:not(.toc-level-three) > a[href^="#"]',
+          ),
+        );
+        const tocFallbackLinks = tocPrimaryLinks.length
+          ? tocPrimaryLinks
+          : Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-table-of-contents] a[href^="#"]'));
+
+        if (tocFallbackLinks.length) {
+          return tocFallbackLinks
+            .map((link) => {
+              const id = decodeURIComponent(link.hash.slice(1));
+              const target = document.getElementById(id);
+              const label = link.textContent?.trim() ?? '';
+              return target && label ? { label, target } : null;
+            })
+            .filter((item): item is { label: string; target: HTMLElement } => Boolean(item));
+        }
+
+        return Array.from(document.querySelectorAll<HTMLElement>('.article-prose h2[id]'))
+          .map((heading) => ({
+            label: heading.textContent?.trim() ?? '',
+            target: heading,
+          }))
+          .filter((item) => Boolean(item.label));
+      };
+
+      const chapters = collectChapters();
+      let chapterMarkers: Array<{ btn: HTMLButtonElement; ratio: number }> = [];
+
+      const getMaxScroll = () =>
+        Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+
+      const rebuildChapters = () => {
+        if (!chaptersHost) return;
+        chaptersHost.replaceChildren();
+        chapterMarkers = [];
+        const max = getMaxScroll();
+        if (max <= 0 || !chapters.length) return;
+
+        const offset = 112;
+        chapters.forEach(({ label, target }) => {
+          const top = Math.max(0, target.getBoundingClientRect().top + window.scrollY - offset);
+          const ratio = Math.min(0.96, Math.max(0.04, top / max));
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'reading-ruler-chapter';
+          if (ratio < 0.14) btn.classList.add('is-left');
+          else if (ratio > 0.86) btn.classList.add('is-right');
+          btn.style.left = `${(ratio * 100).toFixed(2)}%`;
+          btn.setAttribute('aria-label', label);
+
+          const dot = document.createElement('span');
+          dot.className = 'reading-ruler-chapter-dot';
+          dot.setAttribute('aria-hidden', 'true');
+
+          const tip = document.createElement('span');
+          tip.className = 'reading-ruler-chapter-tip';
+          tip.setAttribute('aria-hidden', 'true');
+          tip.textContent = label;
+
+          btn.append(dot, tip);
+          btn.addEventListener(
+            'click',
+            () => {
+              target.scrollIntoView({
+                behavior: reducedMotion.matches ? 'auto' : 'smooth',
+                block: 'start',
+              });
+            },
+            { signal },
+          );
+          chaptersHost.append(btn);
+          chapterMarkers.push({ btn, ratio });
+        });
+      };
+
+      let frame = 0;
+      const updateRuler = () => {
+        frame = 0;
+        const max = getMaxScroll();
+        const ratio = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+        const pct = Math.round(ratio * 100);
+
+        if (fill) fill.style.transform = `scaleX(${ratio})`;
+        if (pctEl) pctEl.textContent = `${pct}%`;
+        ruler.setAttribute('aria-valuenow', String(pct));
+
+        tickEls.forEach((tick) => {
+          const tickPct = Number(tick.dataset.tickPct ?? '0');
+          tick.classList.toggle('is-passed', ratio > 0 && tickPct <= ratio + 0.004);
+        });
+
+        chapterMarkers.forEach(({ btn, ratio: chRatio }) => {
+          btn.classList.toggle('is-passed', ratio >= chRatio - 0.015);
+        });
+
+        if (badge) {
+          const viewportW = document.documentElement.clientWidth || window.innerWidth;
+          const badgeW = badge.offsetWidth || 48;
+          const pad = 8;
+          const rawX = ratio * viewportW;
+          const minCenter = badgeW / 2 + pad;
+          const maxCenter = Math.max(minCenter, viewportW - badgeW / 2 - pad);
+          const clampedCenter = Math.min(maxCenter, Math.max(minCenter, rawX));
+          const leftPx = clampedCenter - badgeW / 2;
+          const tipPx = Math.min(badgeW - 8, Math.max(8, rawX - leftPx));
+
+          badge.style.transform = `translate3d(${leftPx.toFixed(1)}px, 0, 0)`;
+          badge.style.setProperty('--tip-x', `${tipPx.toFixed(1)}px`);
+        }
+      };
+
+      const scheduleUpdate = () => {
+        if (!frame) frame = requestAnimationFrame(updateRuler);
+      };
+
+      let layoutFrame = 0;
+      const scheduleLayout = () => {
+        if (layoutFrame) return;
+        layoutFrame = requestAnimationFrame(() => {
+          layoutFrame = 0;
+          rebuildChapters();
+          updateRuler();
+        });
+      };
+
+      rebuildChapters();
+      updateRuler();
+
+      window.addEventListener('scroll', scheduleUpdate, { passive: true, signal });
+      window.addEventListener('resize', scheduleLayout, { passive: true, signal });
+
+      if ('ResizeObserver' in window) {
+        const ro = new ResizeObserver(scheduleLayout);
+        ro.observe(document.body);
+        signal.addEventListener('abort', () => ro.disconnect(), { once: true });
+      }
+
+      signal.addEventListener(
+        'abort',
+        () => {
+          if (frame) cancelAnimationFrame(frame);
+          if (layoutFrame) cancelAnimationFrame(layoutFrame);
+        },
+        { once: true },
+      );
     }
   });
 </script>
