@@ -1,5 +1,5 @@
 {
-  "name": "yu-yang-portfolio",
+  "name": "it-coder-yy-portfolio",
   "type": "module",
   "version": "0.0.1",
   "engines": {
@@ -14,10 +14,14 @@
   "dependencies": {
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.3",
-    "astro": "^7.1.3"
+    "astro": "^7.1.3",
+    "matter-js": "^0.20.0"
   },
   "overrides": {
     "js-yaml": "4.3.1",
     "nanoid": "3.3.17"
+  },
+  "devDependencies": {
+    "@types/matter-js": "^0.20.2"
   }
 }
