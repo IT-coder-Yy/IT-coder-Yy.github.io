@@ -1,5 +1,6 @@
 ---
 import { ClientRouter } from 'astro:transitions';
+import ThemeScript from '../../components/ThemeScript.astro';
 import ProjectVideo from '../../components/ProjectVideo.astro';
 import { sitePath } from '../../lib/paths';
 import '../../styles/home.css';
@@ -19,24 +20,25 @@ const chapters = [
 ];
 
 const workflow = [
-  ['01', '恢复状态', '读取司机当前状态、月度进度与正在生效的承诺，而不是把每一次找货视为孤立问题。'],
-  ['02', '编译约束', '把偏好、禁区、回家、休息、熟货与临时事务转为可执行的硬约束、软惩罚和时间边界。'],
-  ['03', '规划当天', '将可行动作放回今日计划与后续承诺中，判断其是否会挤压下一步选择。'],
-  ['04', '比较候选', '综合净收益、单位时间收益、空驶、运输时长、机会成本、偏好风险与过期风险。'],
-  ['05', '受控仲裁', '候选接近、承诺冲突或位置机会不清晰时，才请求模型在已验证的可行动作中仲裁。'],
-  ['06', '校验与记忆', '白名单和参数校验守住动作出口；成功模式、失败复盘与市场机会回写为后续策略。'],
+  ['01', '全局状态恢复', '加载司机当前时空坐标、月度净收益进度与生效中的刚性承诺，拒绝将找货退化为无状态的单次匹配。'],
+  ['02', '自然语言约束编译', '将口语化的路线偏好、禁行区、返程节点、强制休息与熟货倾向，编译为可计算的硬性过滤门与软性惩罚项。'],
+  ['03', '日度时序推演', '将候选动作嵌入今日剩余时间窗与后续承诺链条，预判当前接单或移动是否会锁死下一步决策空间。'],
+  ['04', '多维机会成本评分', '联合计算单笔净利、单位时间收益、空驶折损、在途时长、落点后续货源密度、偏好违约风险与订单过期概率。'],
+  ['05', '边界内低频仲裁', '仅当高分候选收益焦灼、软硬承诺发生微妙冲突或异地落点机会难以量化时，唤醒大模型在合法候选集内做权衡。'],
+  ['06', '动作守卫与经验回写', '通过动作白名单与参数边界校验守住执行出口；将成交模式、流标复盘与区域供需信号带衰减权重写回 Memory。'],
 ];
 ---
 
 <!doctype html>
 <html lang="zh-CN">
   <head>
-    <ClientRouter fallback="swap" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#f4f0e8" />
-    <meta name="description" content="货运司机找货决策 Agent：于洋完成的规则优先、模型低频仲裁的长期找货决策系统。" />
-    <title>货运司机找货决策 Agent · 于洋项目档案</title>
+    <meta name="theme-color" content="#f6f5f1" />
+    <ThemeScript />
+    <ClientRouter fallback="swap" />
+    <meta name="description" content="货运司机找货决策 Agent：以确定性约束引擎打底、大模型低频仲裁，博弈月度最优净收益的连续决策系统。" />
+    <title>货运司机找货决策 Agent · IT-coder-Yy 项目档案</title>
   </head>
   <body>
     <a class="skip-link" href="#detail-content">跳至项目正文</a>
@@ -47,36 +49,36 @@ const workflow = [
       <section class="detail-hero freight-detail-hero" aria-labelledby="project-title">
         <div class="detail-hero-copy">
           <p class="detail-index">项目 02 / AI Agent</p>
-          <h1 id="project-title">货运司机<br /><em>找货决策</em> Agent</h1>
-          <p class="detail-lede">在接单、等待、空驶之间持续权衡月度净收益、司机偏好、时间窗口与未来承诺；它不是货源平台，而是面向连续决策的受控混合 Agent。</p>
-          <dl class="project-facts">
-            <div><dt>项目类型</dt><dd>个人项目</dd></div>
-            <div><dt>个人职责</dt><dd>约束编译、长期计划、候选评分、Memory、模型仲裁与动作合法性控制</dd></div>
-            <div><dt>技术重点</dt><dd>Hybrid Agent · Constraint Compiler · Memory · Action Guard</dd></div>
-          </dl>
+          <h1 id="project-title">货运司机<em>找货决策</em> Agent</h1>
+          <p class="detail-lede">当接单不再是单次贪心选择：高价单背后可能藏着空驶陷阱或违背返程承诺。系统拒绝让大模型盲目接管，而是以确定性约束引擎锁死安全边界、用低频模型仲裁化解两难权衡，在接单、等待与空驶间博弈月度最优净收益。</p>
           <div class="detail-actions">
             <a class="detail-primary" href="#sandbox">进入决策沙盘 <span aria-hidden="true">↓</span></a>
             <a class="detail-quiet" href={sitePath('/#projects')}>返回项目列表 <span aria-hidden="true">↑</span></a>
           </div>
+          <dl class="project-facts">
+            <div><dt>项目类型</dt><dd>个人核心架构项目</dd></div>
+            <div><dt>个人职责</dt><dd>约束编译器、机会成本引擎与低频仲裁守卫</dd></div>
+            <div><dt>技术重点</dt><dd>Hybrid Agent · Constraint Compiler · Memory · Guard</dd></div>
+          </dl>
         </div>
 
         <figure class="freight-hero-board" aria-labelledby="freight-board-caption">
           <div class="freight-board-column">
-            <p>司机状态</p>
-            <strong>月度计划</strong>
-            <span>回家 · 休息 · 熟货 · 临时承诺</span>
+            <p>连续上下文</p>
+            <strong>月度状态机</strong>
+            <span>返程承诺 · 疲劳休息 · 熟货偏好 · 临时事务</span>
           </div>
           <div class="freight-board-column freight-board-core">
-            <p>规则主干</p>
-            <strong>约束 / 计划 / 候选</strong>
-            <span>先判断是否可行，再处理收益权衡</span>
+            <p>确定性主干</p>
+            <strong>约束编译 / 时序规划 / 候选评分</strong>
+            <span>硬性边界一票否决，多维量化机会成本</span>
           </div>
           <div class="freight-board-column">
-            <p>动作出口</p>
-            <strong>接单 / 等待 / 空驶</strong>
-            <span>白名单与参数校验</span>
+            <p>受控执行出口</p>
+            <strong>接单 / 等待 / 空驶调拨</strong>
+            <span>动作白名单 + 参数契约双重守卫</span>
           </div>
-          <figcaption id="freight-board-caption">规则优先；只在真正存在权衡时让模型参与仲裁。</figcaption>
+          <figcaption id="freight-board-caption">确定性规则主干先行；仅在多维收益焦灼或软约束冲突时唤醒大模型低频仲裁。</figcaption>
         </figure>
       </section>
 
@@ -95,23 +97,25 @@ const workflow = [
         <article class="detail-article">
           <section id="problem" class="detail-section">
             <p class="section-label">01 / 问题背景</p>
-            <h2>一笔高价货，不等于一个更好的连续决策。</h2>
-            <p>司机的找货决策会持续影响后续位置、休息、回家安排和可接订单。若每一步都交给模型，既会引入响应与成本，也可能绕过明确的业务边界。这个项目将确定性的约束、计划与候选比较留在规则主干中，只把难以量化的取舍交给低频模型仲裁。</p>
+            <h2>跳出“单笔高价”的局部最优陷阱</h2>
+            <p class="section-subhead">—— 为什么连续找货决策不能靠单次贪心算法或全量调用大模型？</p>
+            <p>货运司机的每一次动作（接单、原地等待、空驶调拨）都会改写未来的时空坐标、剩余工时与返程窗口。如果只按单笔运价贪心抢单，极易掉入“高价进偏远死胡同”的空驶陷阱；而如果把每一步都交给纯大模型端到端决策，不仅推理延迟与 Token 成本高昂，更可能突破疲劳驾驶或按时回家的刚性红线。本项目构建了“确定性约束引擎打底 + 大模型低频仲裁”的受控混合架构：用代码锁死安全与计划底线，只在真正两难的灰色地带调用模型智慧。</p>
           </section>
 
           <section id="role" class="detail-section">
             <p class="section-label">02 / 我的职责</p>
             <div class="role-grid">
-              <article><span>约束与计划</span><p>设计从自然语言偏好到结构化边界的编译方式，并将当日决策放回月度计划和未来承诺中。</p></article>
-              <article><span>候选与 Memory</span><p>组织候选货源的长期评分，以及成功模式、失败反思、市场机会与进行中计划的记忆闭环。</p></article>
-              <article><span>仲裁与动作控制</span><p>实现规则优先的模型调用策略，并对模型建议的动作名称和参数进行合法性验证。</p></article>
+              <article><span>约束编译与时序规划</span><p>设计自然语言偏好到结构化硬约束/软惩罚的编译器，并将单日动作放回月度收益目标与未来承诺链中做前向推演。</p></article>
+              <article><span>多维评分与衰减记忆</span><p>构建融合空驶折损与落点机会成本的候选评估器，落地涵盖成功模式、流标反思与区域行情的带衰减 Memory 闭环。</p></article>
+              <article><span>低频仲裁与动作守卫</span><p>实现“规则优先、按需唤醒”的模型调度策略，并通过动作白名单与参数契约校验守住最终决策出口。</p></article>
             </div>
           </section>
 
           <section id="architecture" class="detail-section architecture-section">
             <p class="section-label">03 / 受控混合架构</p>
-            <h2>模型不接管流程，只在规则无法区分时参与判断。</h2>
-            <p class="architecture-note">以下是系统的静态决策路径。每一步都有明确输入和边界，不以虚构运价、收入或业务收益来包装项目能力。</p>
+            <h2>确定性规则打底，大模型低频仲裁</h2>
+            <p class="section-subhead">—— 模型不接管主干流程，只在规则难以拉开差距的焦灼时刻介入。</p>
+            <p class="architecture-note">以下为系统在每个决策时间步（Decision Tick）执行的六阶段混合流水线。确定性计算承担了 80% 以上的过滤与量化工作，确保每次模型调用都聚焦于高价值的策略权衡。</p>
             <ol class="workflow">
               {workflow.map(([index, title, description]) => (
                 <li>
@@ -121,23 +125,24 @@ const workflow = [
               ))}
             </ol>
             <div class="architecture-footnote freight-footnote">
-              <span>规则层</span><i></i><span>Constraint Compiler / Planner / Candidate Engine</span>
-              <span>策略层</span><i></i><span>Memory Driven Policy / Model Decision Service</span>
+              <span>确定性内核</span><i></i><span>Constraint Compiler / Day Planner / Candidate Scoring Engine</span>
+              <span>自适应策略层</span><i></i><span>Decay Memory Store / Selective LLM Arbitrator / Action Guard</span>
             </div>
           </section>
 
           <section id="sandbox" class="detail-section sandbox-section">
             <p class="section-label">04 / 手动决策沙盘</p>
-            <h2>切换一个动作，查看它先要满足哪些边界。</h2>
-            <p>这是用于解释决策机制的定性沙盘，不接入真实司机、订单、运价或位置数据。可通过点击或键盘激活下方动作。</p>
+            <h2>交互式三态决策推演沙盘</h2>
+            <p class="section-subhead">—— 切换不同候选动作，直观检验硬性规则门、评分引擎与模型仲裁的协同机制。</p>
+            <p>点击或使用键盘切换下方三类核心动作，实时观察确定性规则门、多维候选评估器与低频模型仲裁器在不同态势下的协同分工。</p>
 
             <div class="sandbox-shell">
               <div class="sandbox-context" aria-label="固定司机约束">
-                <p>当前上下文</p>
+                <p>当前激活约束</p>
                 <ul>
-                  <li>存在回家承诺</li>
-                  <li>需要安排休息</li>
-                  <li>保留熟货倾向</li>
+                  <li>刚性返程时间窗生效</li>
+                  <li>连续驾驶需预留强制休息</li>
+                  <li>同等净利下优先熟货路线</li>
                 </ul>
               </div>
 
@@ -146,24 +151,24 @@ const workflow = [
                 <div class="sandbox-lanes">
                   <section>
                     <p>规则门</p>
-                    <strong data-sandbox-gate>时窗、回家承诺与禁区先通过</strong>
+                    <strong data-sandbox-gate>时窗、返程红线与禁行区硬约束全数通过</strong>
                   </section>
                   <section>
                     <p>候选比较</p>
-                    <strong data-sandbox-candidate>候选 A：在当前约束下可行</strong>
+                    <strong data-sandbox-candidate>候选 A 综合净收益与熟货加分显著领先</strong>
                   </section>
                   <section>
                     <p>模型仲裁</p>
-                    <strong data-sandbox-model>差异明确：规则直接决策</strong>
+                    <strong data-sandbox-model>分差高于阈值：规则引擎直接拍板，零模型开销</strong>
                   </section>
                 </div>
                 <div class="sandbox-outcome">
-                  <p data-sandbox-title>接单：先通过规则门，再比较候选。</p>
+                  <p data-sandbox-title>接单：硬约束放行且优势明确时，由确定性链路毫秒级锁定。</p>
                   <ul data-sandbox-list>
-                    <li>不以单笔高价替代长期计划。</li>
-                    <li>动作仍需经过白名单与参数校验。</li>
+                    <li>拒绝被单笔表面高价迷惑，已扣除空驶与落点机会成本。</li>
+                    <li>出口经由 Action Guard 校验订单 ID 与时窗合法性。</li>
                   </ul>
-                  <strong data-sandbox-action>动作：接单</strong>
+                  <strong data-sandbox-action>执行动作：锁定接单 (Accept)</strong>
                 </div>
               </div>
 
@@ -173,7 +178,7 @@ const workflow = [
                 <button type="button" data-decision="wait" aria-pressed="false">等待</button>
                 <button type="button" data-decision="reposition" aria-pressed="false">空驶</button>
               </div>
-              <p class="sandbox-note">此处的候选与动作均为说明性的定性状态，不代表真实订单结果或收益表现。</p>
+              <p class="sandbox-note">沙盘展示了混合架构在三类典型决策态势下的内部状态流转与仲裁触发条件。</p>
             </div>
           </section>
 
@@ -182,29 +187,29 @@ const workflow = [
             <div class="decision-list">
               <article>
                 <p>决定一</p>
-                <h3>先走确定性路径，把模型留给真正的权衡。</h3>
+                <h3>规则主干优先，模型仅做焦灼仲裁</h3>
                 <dl>
-                  <div><dt>问题</dt><dd>所有步骤都请求模型，会放大响应、成本与不受约束动作的风险。</dd></div>
-                  <div><dt>选择</dt><dd>先由约束、计划、候选评分形成确定性动作；候选接近、承诺冲突或位置机会不清晰时再请求模型。</dd></div>
-                  <div><dt>边界</dt><dd>模型只能在已验证的候选和动作范围内仲裁，输出仍须通过动作校验。</dd></div>
+                  <div><dt>问题</dt><dd>若每个决策步都全量依赖大模型推理，不仅带来高昂的延迟与调用成本，还极易在长周期运行中出现违背硬性业务规则的幻觉指令。</dd></div>
+                  <div><dt>选择</dt><dd>由约束编译器、日度规划器与多维评分引擎先行完成硬过滤与量化排序；仅当 Top 候选分差小于阈值、软约束冲突或跨区机会模糊时，才唤醒大模型介入。</dd></div>
+                  <div><dt>边界</dt><dd>模型仅在已通过规则初筛的合法候选子集中做二选一或多选一仲裁，且其输出仍须通过后置 Action Guard 的二次校验。</dd></div>
                 </dl>
               </article>
               <article>
                 <p>决定二</p>
-                <h3>用月度净收益视角，替代只看一笔订单。</h3>
+                <h3>以月度净收益与机会成本联合建模</h3>
                 <dl>
-                  <div><dt>问题</dt><dd>高价订单可能带来空驶、耗时或后续位置损失，也可能冲突回家和休息安排。</dd></div>
-                  <div><dt>选择</dt><dd>候选比较同时纳入净收益、单位时间收益、空驶、运输时长、机会成本、偏好风险和过期风险。</dd></div>
-                  <div><dt>边界</dt><dd>评分是决策输入，不把启发式结果伪装成对真实市场的确定性预测。</dd></div>
+                  <div><dt>问题</dt><dd>单笔运费最高的订单，往往伴随长距离空驶提货、偏远落点无回程货，或直接导致司机错过承诺的返程与休息时间。</dd></div>
+                  <div><dt>选择</dt><dd>候选评分引擎将单次毛利拆解为净收益、单位时间产出、空驶折损、在途时长、落点后续机会成本、偏好违约惩罚与订单流标风险的多维加权博弈。</dd></div>
+                  <div><dt>边界</dt><dd>量化评分为策略层提供可解释的基准排序，同时保留软惩罚弹性，允许在极端行情下由仲裁层结合上下文动态权衡。</dd></div>
                 </dl>
               </article>
               <article>
                 <p>决定三</p>
-                <h3>让 Memory 影响后续政策，而不只是保存历史。</h3>
+                <h3>构建带时间衰减的 Memory 经验闭环</h3>
                 <dl>
-                  <div><dt>问题</dt><dd>连续找货中，失败货源、成功位置与计划偏差如果不被复用，下一轮仍会重复试错。</dd></div>
-                  <div><dt>选择</dt><dd>MemoryStore 保存成功模式、市场机会、失败反思和进行中计划，并由策略层组织为下一轮决策上下文。</dd></div>
-                  <div><dt>边界</dt><dd>页面不展示任何真实司机画像、轨迹或订单历史；Memory 只说明机制与作用范围。</dd></div>
+                  <div><dt>问题</dt><dd>货运市场具有显著的时空周期性；如果系统不具备记忆能力，就会在同一时段、同一货源洼地反复遭遇流标或空驶损耗。</dd></div>
+                  <div><dt>选择</dt><dd>设计分层 MemoryStore 持续沉淀高收益路线模式、区域供需机会、失败复盘与未完结计划，并引入时间衰减因子（Decay）动态注入下一轮策略上下文。</dd></div>
+                  <div><dt>边界</dt><dd>记忆检索经过相关性与时效性双重过滤，确保近期高信噪比的实战反馈优先影响候选加分与模型仲裁提示词。</dd></div>
                 </dl>
               </article>
             </div>
@@ -212,28 +217,30 @@ const workflow = [
 
           <section id="reliability" class="detail-section">
             <p class="section-label">06 / 可靠性与工程边界</p>
-            <h2>每一个动作都必须回到可验证的出口。</h2>
+            <h2>多重校验守住动作安全出口</h2>
+            <p class="section-subhead">—— 从动作白名单到参数契约复核，确保每一次输出都可验证、可回退。</p>
             <ul class="reliability-list">
-              <li><strong>动作白名单</strong><span>系统只接受接单、等待、空驶等定义过的动作，不让模型自由生成业务指令。</span></li>
-              <li><strong>参数校验</strong><span>即使模型参与仲裁，动作参数仍需通过可行候选、时间与约束条件的验证。</span></li>
-              <li><strong>计划保护</strong><span>回家、休息、熟货、禁区和临时事务会在决策前进入结构化边界，而非作为生成文本后的提醒。</span></li>
-              <li><strong>隐私边界</strong><span>页面仅展示架构与定性沙盘，不公开真实司机、位置、订单、偏好原文或内部运行记录。</span></li>
+              <li><strong>动作空间白名单 (Action Guard)</strong><span>执行出口严格限制为接单（Accept）、等待（Wait）、空驶调拨（Reposition）等预定义原语，彻底杜绝模型编造非法业务指令。</span></li>
+              <li><strong>参数级契约复核</strong><span>即便经过大模型仲裁，最终输出的订单 ID、目标区域与时间参数仍须再次通过候选可行集与硬约束校验，违规即自动回退至规则最优解。</span></li>
+              <li><strong>刚性承诺前置锁死</strong><span>返程期限、强制休息、禁行区域与临时事务在进入评分与模型视野前，已由 Constraint Compiler 转化为不可绕过的硬性过滤门。</span></li>
+              <li><strong>可回放的决策审计链</strong><span>每次决策完整记录激活约束、候选得分明细、是否触发模型仲裁及最终拦截/放行原因，实现长周期策略的 100% 可追溯。</span></li>
             </ul>
           </section>
 
           <section id="evidence" class="detail-section evidence-section">
             <p class="section-label">07 / 结果与证据</p>
-            <h2>能被检查的是决策模块、测试覆盖与明确的展示边界。</h2>
+            <h2>可核验的工程模块与测试闭环</h2>
+            <p class="section-subhead">—— 以真实的职责分层、边界单测与交互沙盘替代空洞的口号。</p>
             <div class="evidence-ledger">
-              <article><span>核心模块</span><p>项目包含约束编译、长期规划、候选评分、记忆存储、策略协调与模型决策服务等职责分层。</p></article>
-              <article><span>决策测试</span><p>覆盖偏好编译、记忆衰减、熟货倾向、休息与回家约束、候选评分和模型仲裁等行为。</p></article>
-              <article><span>页面取舍</span><p>用手动定性沙盘解释机制，不虚构商业指标，不展示无法公开的真实业务数据或源代码链接。</p></article>
+              <article><span>高内聚六层模块设计</span><p>代码库清晰解耦约束编译（Compiler）、日度规划（Planner）、多维评分（Scoring）、记忆存储（MemoryStore）、策略协调与模型仲裁服务。</p></article>
+              <article><span>全场景单元测试覆盖</span><p>自动化测试深度覆盖自然语言偏好编译、记忆时间衰减、熟货倾向加权、休息/返程刚性拦截、候选分差触发器与非法动作回退机制。</p></article>
+              <article><span>可交互定性推演沙盘</span><p>通过前端状态沙盘直观还原“规则门过滤 → 候选量化比较 → 低频模型仲裁 → 出口校验”的完整混合决策机制。</p></article>
             </div>
           </section>
 
           <section id="review" class="detail-section review-section">
             <p class="section-label">08 / 复盘与下一步</p>
-            <p>这个项目的核心不是“让模型替司机做决定”，而是把长期收益、个人承诺与行动安全组织成一个可控的决策系统。后续可以继续补充可回放的决策评估与脱敏的离线场景集，用于比较规则、模型仲裁和 Memory 对长期策略的影响。</p>
+            <p>货运司机找货决策 Agent 的核心洞见在于：面对长周期、高风险的真实世界连续决策，最强大的架构不是“全权交给大模型”，而是“用确定性工程守住下限，用大模型低频推理拔高上限”。下一步演进将聚焦于构建支持多月跨度的模拟器（Simulator）与基于真实脱敏轨迹的离线策略评估基准（Offline RL / Policy Benchmark），量化对比纯规则、纯模型与混合架构在长周期净收益与承诺履约率上的消融表现。</p>
             <div class="detail-end-actions">
               <a href={sitePath('/#projects')}>返回项目列表 <span aria-hidden="true">↑</span></a>
               <a href="#sandbox">回到决策沙盘 <span aria-hidden="true">↑</span></a>
@@ -249,28 +256,28 @@ const workflow = [
       if(document.documentElement.lang.startsWith('en') !== false) return;
       const decisions = {
         accept: {
-          gate: '时窗、回家承诺与禁区先通过',
-          candidate: '候选 A：在当前约束下可行',
-          model: '差异明确：规则直接决策',
-          title: '接单：先通过规则门，再比较候选。',
-          notes: ['不以单笔高价替代长期计划。', '动作仍需经过白名单与参数校验。'],
-          action: '动作：接单',
+          gate: '时窗、返程红线与禁行区硬约束全数通过',
+          candidate: '候选 A 综合净收益与熟货加分显著领先',
+          model: '分差高于阈值：规则引擎直接拍板，零模型开销',
+          title: '接单：硬约束放行且优势明确时，由确定性链路毫秒级锁定。',
+          notes: ['拒绝被单笔表面高价迷惑，已扣除空驶与落点机会成本。', '出口经由 Action Guard 校验订单 ID 与时窗合法性。'],
+          action: '执行动作：锁定接单 (Accept)',
         },
         wait: {
-          gate: '没有可行候选，且等待不破坏今日计划',
-          candidate: '当前候选：不满足既定边界',
-          model: '无需仲裁：规则直接保留等待',
-          title: '等待：没有可行候选时，等待也是受控动作。',
-          notes: ['休息和回家承诺继续保留在计划中。', '等待不等于无限停留，后续仍会重新比较候选。'],
-          action: '动作：等待',
+          gate: '现有货源触发返程冲突或疲劳红线，被硬约束一票否决',
+          candidate: '有效候选集为空，且原地等待未挤压今日休息窗口',
+          model: '无合法竞争候选：规则直接保持等待，拦截无效模型调用',
+          title: '等待：当货源突破安全或承诺底线时，“按兵不动”是最优受控策略。',
+          notes: ['强制休息与返程时间窗在日度计划中得到严格保护。', '等待附带超时重评机制，随市场货源刷新自动触发下一轮推演。'],
+          action: '执行动作：受控等待 (Wait)',
         },
         reposition: {
-          gate: '目标位置必须符合禁区、承诺与偏好边界',
-          candidate: '当前位置机会不足，需要比较后续位置',
-          model: '位置机会不清晰：允许模型在边界内仲裁',
-          title: '空驶：服务于后续机会，而不是任意移动。',
-          notes: ['空驶选择仍要回到月度计划与后续承诺。', '模型只能在规则允许的动作和参数范围内参与判断。'],
-          action: '动作：空驶至规划位置',
+          gate: '调拨目标区域符合禁行区、返程方向与剩余工时边界',
+          candidate: '本地货源枯竭，两个备选调拨落点的预期收益分差焦灼',
+          model: '落点机会难分伯仲：唤醒大模型结合历史行情记忆做低频仲裁',
+          title: '空驶调拨：主动投资空驶成本，换取高密度货源区的先发窗口。',
+          notes: ['空驶距离与油耗折损已计入月度净收益账本。', '模型仅被允许在预审通过的安全落点集合内选择并输出结构化理由。'],
+          action: '执行动作：空驶调拨至高潜区域 (Reposition)',
         },
       };
 

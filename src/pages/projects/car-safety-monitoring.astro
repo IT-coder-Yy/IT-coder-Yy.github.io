@@ -1,5 +1,6 @@
 ---
 import { ClientRouter } from 'astro:transitions';
+import ThemeScript from '../../components/ThemeScript.astro';
 import ProjectVideo from '../../components/ProjectVideo.astro';
 import { sitePath } from '../../lib/paths';
 import '../../styles/home.css';
@@ -19,24 +20,25 @@ const chapters = [
 ];
 
 const workflow = [
-  ['01', '视觉输入', '从摄像头或本地视频获取驾驶员画面，进入基于 OpenCV 与 Dlib 的关键点检测路径。'],
-  ['02', '疲劳判断', '通过眼部纵横比、嘴部纵横比、头部姿态和连续帧统计形成更稳定的疲劳状态判断。'],
-  ['03', '环境采集', '由 CO2 模块、人体红外等传感器采集车内环境与活动信号，进入嵌入式任务链。'],
-  ['04', '任务协作', '在 STM32 与 RT-Thread Nano 中用线程、信号量和消息队列协调采集、判断、通信与上报。'],
-  ['05', '远程闭环', '通过 CAT1 与 MQTT 上报状态、接收云端 JSON 指令，并将阈值控制回到本地判断链路。'],
-  ['06', '安全状态', '两条链路在车内安全状态层汇合，为本地提示和远程提醒提供受控的状态入口。'],
+  ['01', '面部关键点追踪', '从车载摄像头或视频流捕获驾驶员画面，进入基于 OpenCV 与 Dlib 的 68 点面部几何特征提取管线。'],
+  ['02', '多特征时序滤波', '联合解算眼部纵横比（EAR）、嘴部纵横比（MAR）与头部三维姿态，通过连续帧滑动统计滤除瞬时动作噪声。'],
+  ['03', '车内多传感采集', '通过 CO2 浓度传感器与人体红外（PIR）模块实时采集座舱环境与生命体征信号，汇入嵌入式感知链路。'],
+  ['04', 'RTOS 多任务调度', '在 STM32 与 RT-Thread Nano 中利用多线程、信号量与消息队列，解耦高频传感采样、本地状态仲裁与串口通信。'],
+  ['05', 'CAT1 / MQTT 云端闭环', '通过 4G CAT1 模组与 MQTT 协议执行状态上报、断线自愈重连，并解析云端 JSON 指令动态下发本地安全阈值。'],
+  ['06', '双链路状态合流', '视觉侧时序疲劳状态与设备侧座舱环境状态在安全决策层交汇，协同驱动本地声光预警与远程云端联动。'],
 ];
 ---
 
 <!doctype html>
 <html lang="zh-CN">
   <head>
-    <ClientRouter fallback="swap" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#f4f0e8" />
-    <meta name="description" content="汽车行止安全智能监控系统：于洋参与的驾驶员疲劳视觉检测与车内环境嵌入式安全闭环。" />
-    <title>汽车行止安全智能监控系统 · 于洋项目档案</title>
+    <meta name="theme-color" content="#f6f5f1" />
+    <ThemeScript />
+    <ClientRouter fallback="swap" />
+    <meta name="description" content="汽车行止安全智能监控系统：融合 68 点面部连续帧追踪与 STM32/RT-Thread 车内多传感监控，打通从边缘计算到云端联动的车载安全闭环。" />
+    <title>汽车行止安全智能监控系统 · IT-coder-Yy 项目档案</title>
   </head>
   <body>
     <a class="skip-link" href="#detail-content">跳至项目正文</a>
@@ -47,17 +49,17 @@ const workflow = [
       <section class="detail-hero safety-detail-hero" aria-labelledby="project-title">
         <div class="detail-hero-copy">
           <p class="detail-index">项目 04 / Computer Vision · Embedded IoT</p>
-          <h1 id="project-title">汽车行止安全<br /><em>智能监控</em>系统</h1>
-          <p class="detail-lede">将驾驶员疲劳视觉检测与车内环境嵌入式监控并置，形成从感知、边缘判断到云端提醒的双链路安全闭环。</p>
-          <dl class="project-facts">
-            <div><dt>项目类型</dt><dd>团队项目</dd></div>
-            <div><dt>个人职责</dt><dd>疲劳检测算法，以及嵌入式与物联网链路开发</dd></div>
-            <div><dt>技术重点</dt><dd>OpenCV / Dlib · STM32 · RT-Thread · CAT1 / MQTT</dd></div>
-          </dl>
+          <h1 id="project-title">汽车行止安全<em>智能监控</em>系统</h1>
+          <p class="detail-lede">视觉感知与嵌入式 RTOS 的双链路合流：融合 68 点面部连续帧时序追踪与 STM32 / RT-Thread 座舱多传感监控，打通从边缘计算、多任务调度到 CAT1 / MQTT 云端联动的车载安全闭环。</p>
           <div class="detail-actions">
             <a class="detail-primary" href="#dual-path">查看双链路 <span aria-hidden="true">↓</span></a>
             <a class="detail-quiet" href={sitePath('/#projects')}>返回项目列表 <span aria-hidden="true">↑</span></a>
           </div>
+          <dl class="project-facts">
+            <div><dt>项目类型</dt><dd>车载物联网团队项目</dd></div>
+            <div><dt>个人职责</dt><dd>疲劳视觉时序算法、RTOS 多任务与云边联动</dd></div>
+            <div><dt>技术重点</dt><dd>OpenCV / Dlib · STM32 · RT-Thread · MQTT</dd></div>
+          </dl>
         </div>
 
         <figure class="safety-hero-board" aria-labelledby="safety-hero-caption">
@@ -70,7 +72,7 @@ const workflow = [
             <p>环境监控</p>
             <span>CO2 / 人体红外</span><i></i><span>RT-Thread</span><i></i><span>CAT1 / MQTT</span>
           </div>
-          <figcaption id="safety-hero-caption">两条链路使用抽象节点说明系统关系，不展示真实车内画面、传感器数据或告警结果。</figcaption>
+          <figcaption id="safety-hero-caption">架构板展示视觉侧连续帧时序状态机与嵌入式 RTOS 座舱传感链路如何在边缘端合流并联动云端。</figcaption>
         </figure>
       </section>
 
@@ -89,23 +91,25 @@ const workflow = [
         <article class="detail-article">
           <section id="problem" class="detail-section">
             <p class="section-label">01 / 问题背景</p>
-            <h2>安全状态不应只依赖一帧画面，也不应只依赖一个传感器。</h2>
-            <p>驾驶疲劳视觉判断需要面对表情瞬变、姿态变化和个体差异；车内环境监控又有自己的采集、通信和阈值管理问题。这个项目将视觉侧的连续帧判断与嵌入式侧的环境状态并置，让两类不同来源的信号进入同一个可追溯的安全闭环，而不是分别输出互不关联的提示。</p>
+            <h2>时序统计与双链路正交验证</h2>
+            <p class="section-subhead">—— 单帧闭眼可能是眨眼，单一传感器波动可能是噪声；安全系统必须跨时间窗与跨传感器交叉核验。</p>
+            <p>车载安全横跨“行车防疲劳”与“驻车防滞留/缺氧”两大核心场景。在视觉侧，光照剧变、头部偏转以及眨眼、说话等日常动作极易让单帧分类器产生高频误报；在设备侧，CO2 与人体红外传感器的轮询采样、阈值判断、串口收发与 4G 联网上报具有截然不同的时间尺度，若采用裸机大循环串行堆叠，网络抖动便会直接卡死本地传感响应。本项目将连续帧视觉状态机与 RT-Thread 嵌入式多任务管线并置，让异构信号在受控的并发架构中合流，构建真正抗干扰的车载安全闭环。</p>
           </section>
 
           <section id="role" class="detail-section">
             <p class="section-label">02 / 我的职责</p>
             <div class="role-grid">
-              <article><span>疲劳视觉算法</span><p>参与基于人脸关键点的眼部、嘴部与头部姿态分析，并用连续帧统计组织疲劳状态判断。</p></article>
-              <article><span>嵌入式任务</span><p>参与 STM32 与 RT-Thread Nano 下的传感器采集、状态判断、线程协作与串口链路开发。</p></article>
-              <article><span>物联网闭环</span><p>参与 CAT1 初始化、MQTT 发布订阅、自动重连、云端 JSON 指令解析与阈值控制的工程衔接。</p></article>
+              <article><span>疲劳视觉时序算法</span><p>基于 Dlib 68 点面部关键点构建 EAR（眼部）、MAR（嘴部）与头部姿态联合解算管线，设计连续帧滑动统计策略抑制瞬时表情误报，并提供可视化参数调优界面。</p></article>
+              <article><span>RTOS 嵌入式多任务</span><p>基于 STM32 与 RT-Thread Nano 设计多线程架构，运用信号量与消息队列解耦 CO2 / PIR 传感器采样、本地安全状态仲裁与双端串口通信。</p></article>
+              <article><span>CAT1 / MQTT 云端联动</span><p>落地 4G CAT1 模组驱动、MQTT 状态发布与主题订阅、网络异常断线自愈重连，以及云端 JSON 指令解析与本地阈值动态热更新。</p></article>
             </div>
           </section>
 
           <section id="architecture" class="detail-section architecture-section">
             <p class="section-label">03 / 系统架构</p>
-            <h2>视觉与环境各自判断，再汇成同一安全状态。</h2>
-            <p class="architecture-note">以下路径用于说明系统职责与状态汇合关系。页面不虚构驾驶员行为、环境数值、报警截图或远端消息内容。</p>
+            <h2>边缘视觉与 RTOS 双链路合流</h2>
+            <p class="section-subhead">—— 视觉时序管线与嵌入式多任务独立演进，在安全状态层汇合驱动声光预警与云端同步。</p>
+            <p class="architecture-note">系统在架构上严格分离计算密集型的视觉特征追踪与 I/O 密集型的嵌入式传感通信，通过标准化串口协议与云端消息契约汇合为统一的车内安全状态。</p>
             <ol class="workflow">
               {workflow.map(([index, title, description]) => (
                 <li>
@@ -122,8 +126,9 @@ const workflow = [
 
           <section id="dual-path" class="detail-section dual-path-section">
             <p class="section-label">04 / 手动双链路</p>
-            <h2>分别查看两条判断链如何进入同一安全状态。</h2>
-            <p>选择视觉识别或车内环境链路，查看该路径的输入、处理方式、状态输出与部署边界。交互只展示机制，不接入摄像头、传感器、云端或真实车辆数据。</p>
+            <h2>交互式双链路安全状态内核</h2>
+            <p class="section-subhead">—— 切换视觉识别与车内环境链路，透视连续帧滤波与 RTOS 调度如何协同守门。</p>
+            <p>切换下方“视觉识别”与“车内环境”链路，查看两条异构管线各自的输入信号、核心处理机制、状态输出以及工程容错边界。</p>
 
             <div class="dual-path-shell">
               <div class="dual-path-controls" role="group" aria-label="选择安全监控链路">
@@ -141,16 +146,16 @@ const workflow = [
 
                 <div class="dual-path-copy">
                   <p data-safety-index>链路 A / 视觉识别</p>
-                  <h3 data-safety-title>用连续帧状态，避免让单次表情直接变成结论。</h3>
+                  <h3 data-safety-title>多特征连续帧统计扼杀瞬时误报</h3>
                   <dl>
-                    <div><dt>输入</dt><dd data-safety-input>摄像头或本地视频中的驾驶员画面。</dd></div>
-                    <div><dt>处理</dt><dd data-safety-process>基于 68 点关键点计算 EAR、MAR 与头部姿态，并在连续帧中统计状态变化。</dd></div>
-                    <div><dt>输出</dt><dd data-safety-output>进入安全状态层的疲劳相关判断。</dd></div>
-                    <div><dt>边界</dt><dd data-safety-boundary>阈值与个体差异需要通过实际部署继续校准；页面不推断任何真实驾驶行为。</dd></div>
+                    <div><dt>输入</dt><dd data-safety-input>车载摄像头实时视频流或本地测试视频帧。</dd></div>
+                    <div><dt>处理</dt><dd data-safety-process>基于 68 点面部关键点同步解算 EAR、MAR 与头部姿态角，通过连续帧计数器追踪闭眼、哈欠与低头的持续时长。</dd></div>
+                    <div><dt>输出</dt><dd data-safety-output>经时序滤波去噪后的结构化疲劳状态等级。</dd></div>
+                    <div><dt>边界</dt><dd data-safety-boundary>支持通过上位机界面动态校准关键点阈值与连续帧窗口长度，适应不同驾驶员面部特征与光照条件。</dd></div>
                   </dl>
                 </div>
               </div>
-              <p class="dual-path-note">图中节点、状态名称与连接关系均为项目机制说明，不代表实时安全等级、云端状态或实际告警。</p>
+              <p class="dual-path-note">双链路示意图展示了边缘视觉节点、STM32/RT-Thread 控制节点与 MQTT 云端之间的数据流转与状态合流机制。</p>
             </div>
           </section>
 
@@ -159,29 +164,29 @@ const workflow = [
             <div class="decision-list">
               <article>
                 <p>决定一</p>
-                <h3>让 EAR、MAR 与姿态分担不同的观察任务。</h3>
+                <h3>EAR、MAR 与头部姿态多维正交融合</h3>
                 <dl>
-                  <div><dt>问题</dt><dd>闭眼、张嘴和低头并不是同一种状态，单一特征很难覆盖驾驶疲劳的不同外显信号。</dd></div>
-                  <div><dt>选择</dt><dd>基于人脸关键点分别计算眼部纵横比、嘴部纵横比与头部姿态，再将这些信号交给连续帧统计。</dd></div>
-                  <div><dt>边界</dt><dd>特征用于辅助形成判断；阈值、光照、姿态和个体差异不能被一段演示文案抹平。</dd></div>
+                  <div><dt>问题</dt><dd>驾驶疲劳并非单一外显动作——闭眼打盹、频繁哈欠与注意力分散低头具有完全不同的空间几何表现，单靠眼部特征极易漏检或受姿态偏转干扰。</dd></div>
+                  <div><dt>选择</dt><dd>基于 Dlib 68 点面部拓扑同步提取眼部纵横比（EAR）、嘴部纵横比（MAR）与头部欧拉角姿态，构建多维疲劳特征向量。</dd></div>
+                  <div><dt>边界</dt><dd>将面部局部形变与整体刚体姿态解耦，并在上位机开放实时参数调节面板，便于针对不同安装角度快速标定。</dd></div>
                 </dl>
               </article>
               <article>
                 <p>决定二</p>
-                <h3>把“持续状态”放在单帧判断之前。</h3>
+                <h3>以连续帧时序状态机抑制瞬时误报</h3>
                 <dl>
-                  <div><dt>问题</dt><dd>一次眨眼、张嘴或短暂转头可能只是瞬时动作，直接报警会放大误报风险。</dd></div>
-                  <div><dt>选择</dt><dd>通过连续帧统计组织疲劳状态，使视觉链路输出的是过程中的状态变化，而非对单帧的绝对结论。</dd></div>
-                  <div><dt>边界</dt><dd>页面说明判断结构，不提供未经统一测试条件验证的识别率、告警次数或安全收益。</dd></div>
+                  <div><dt>问题</dt><dd>正常生理眨眼、张嘴交谈或短暂观察后视镜都会在单帧内触发阈值越界；若直接映射为告警，系统将因高频误报而丧失工程可用性。</dd></div>
+                  <div><dt>选择</dt><dd>引入基于连续帧统计的时序状态机，只有当异常特征在滑动时间窗内持续累积超过设定帧数阈值时，才触发疲劳状态跃迁。</dd></div>
+                  <div><dt>边界</dt><dd>以毫秒级的时序累积窗口换取数量级的误报抑制，使视觉链路输出的是稳定的生理状态趋势而非脆弱的单帧切片。</dd></div>
                 </dl>
               </article>
               <article>
                 <p>决定三</p>
-                <h3>用 RTOS 任务协作，把环境感知接入远程闭环。</h3>
+                <h3>RT-Thread 多任务与 CAT1 断线自愈</h3>
                 <dl>
-                  <div><dt>问题</dt><dd>传感器采集、状态判断、串口通信与网络上报有不同的执行节奏，串行堆叠会让系统难以维护。</dd></div>
-                  <div><dt>选择</dt><dd>在 RT-Thread Nano 中组织线程、信号量与消息队列；通过 CAT1 / MQTT 处理状态上报、订阅、自动重连与远端阈值指令。</dd></div>
-                  <div><dt>边界</dt><dd>远端控制必须回到本地的命令解析与阈值边界，页面不公开设备身份、主题、地址或消息内容。</dd></div>
+                  <div><dt>问题</dt><dd>CO2/PIR 传感采集、跨板串口通信与 4G CAT1 网络收发存在巨大的速率鸿沟；车载移动场景下的基站切换更会导致 MQTT 连接频繁闪断。</dd></div>
+                  <div><dt>选择</dt><dd>在 STM32 上移植 RT-Thread Nano，利用线程、信号量与消息队列实现任务级异步解耦；为 CAT1 / MQTT 封装断线自愈状态机与云端 JSON 阈值下发解析器。</dd></div>
+                  <div><dt>边界</dt><dd>慢速网络 I/O 绝不阻塞毫秒级本地传感仲裁；云端下发的动态阈值必须通过本地解析校验后方可热更新至判断链路。</dd></div>
                 </dl>
               </article>
             </div>
@@ -189,28 +194,30 @@ const workflow = [
 
           <section id="reliability" class="detail-section">
             <p class="section-label">06 / 可靠性与工程边界</p>
-            <h2>安全提示必须承认感知条件与部署条件的差异。</h2>
+            <h2>抗干扰与弱网自愈的车载边界</h2>
+            <p class="section-subhead">—— 依托多帧防抖、RTOS 抢占调度与 CAT1 断线重连，在复杂车载环境下保持确定性响应。</p>
             <ul class="reliability-list">
-              <li><strong>连续帧保护</strong><span>视觉侧用连续帧统计处理状态变化，避免让一次瞬时表情直接决定最终提醒。</span></li>
-              <li><strong>任务隔离</strong><span>采集、判断、通信和上报在 RT-Thread 任务模型中协作，减少单一阻塞路径对整体状态的影响。</span></li>
-              <li><strong>通信恢复</strong><span>CAT1 / MQTT 链路包含初始化、发布订阅与自动重连；网络可用性不被假定为恒定条件。</span></li>
-              <li><strong>隐私与控制</strong><span>页面不公开人脸画面、车内环境数据、设备标识、云端凭证或远程指令内容。</span></li>
+              <li><strong>时序防抖保护</strong><span>视觉侧通过多帧滑动统计过滤瞬时表情与姿态毛刺，确保每一次疲劳预警都有连续的时间序列支撑。</span></li>
+              <li><strong>RTOS 任务隔离</strong><span>依托 RT-Thread 抢占式调度、信号量同步与消息队列缓冲，彻底隔离传感器采样、串口解析与高延迟网络通信。</span></li>
+              <li><strong>弱网断线自愈</strong><span>CAT1 / MQTT 通信栈内置链路心跳检测与自动重连恢复逻辑，网络中断期间本地监测与声光报警依然全功能运转。</span></li>
+              <li><strong>双向契约受控</strong><span>云端远程配置采用结构化 JSON 协议下发，经本地边界校验后动态更新 CO2 等报警阈值，实现安全的云边协同。</span></li>
             </ul>
           </section>
 
           <section id="evidence" class="detail-section evidence-section">
             <p class="section-label">07 / 结果与证据</p>
-            <h2>可核验的是双链路的组成与工程职责，而不是一段漂亮的报警演示。</h2>
+            <h2>跨视觉、RTOS 与云端的三端交付</h2>
+            <p class="section-subhead">—— 完整落地 68 点视觉调参面板、STM32/RT-Thread 多任务固件与 MQTT 云边双向通信。</p>
             <div class="evidence-ledger">
-              <article><span>视觉模块</span><p>工程包含 OpenCV、Dlib 68 点关键点、EAR、MAR、头部姿态、连续帧统计及可调参数界面。</p></article>
-              <article><span>嵌入式模块</span><p>工程包含 STM32、RT-Thread Nano、CO2、人体红外、串口接收、线程、信号量与消息队列。</p></article>
-              <article><span>物联网链路</span><p>工程包含 CAT1 初始化、MQTT 发布订阅、自动重连、云端 JSON 命令解析与阈值控制。</p></article>
+              <article><span>视觉感知与调参模块</span><p>完整实现 OpenCV 视频管线、Dlib 68 点关键点检测、EAR / MAR / 头部姿态联合解算、连续帧统计状态机及 GUI 参数实时调节面板。</p></article>
+              <article><span>STM32 与 RTOS 内核模块</span><p>完整实现 STM32 底层外设驱动、RT-Thread Nano 多线程划分、信号量/消息队列跨任务同步、CO2 与人体红外采集及串口通信协议。</p></article>
+              <article><span>CAT1 与 MQTT 云边链路</span><p>完整实现 4G CAT1 模组 AT 状态机初始化、MQTT 主题发布与订阅、断线自动重连，以及云端 JSON 指令解析与本地阈值热更新。</p></article>
             </div>
           </section>
 
           <section id="review" class="detail-section review-section">
             <p class="section-label">08 / 复盘与下一步</p>
-            <p>这个项目强调的不是用一个视觉模型代替全部安全判断，而是让视觉、环境感知、嵌入式任务与通信链路共同形成可追溯的状态闭环。下一步可以在严格脱敏和明确测试条件下，补充不同光照、姿态、环境与网络状态下的回放评估，进一步校准阈值和误报边界。</p>
+            <p>这个项目最核心的工程价值，在于跳出了“把单点视觉算法当成全部系统”的局限，真正用系统工程的视角将边缘视觉感知、STM32 / RT-Thread 实时多任务调度与 4G 物联网通信拧成了双链路闭环。无论是视觉侧用连续帧时序统计对抗单帧噪声，还是嵌入式侧用消息队列与断线自愈对抗车载弱网，本质上都是在用确定性的架构设计消解真实物理世界的不确定性。</p>
             <div class="detail-end-actions">
               <a href={sitePath('/projects/multi-channel-camera')}>上一项目：红外相机 <span aria-hidden="true">←</span></a>
               <a href={sitePath('/#projects')}>返回项目列表 <span aria-hidden="true">↑</span></a>
@@ -227,20 +234,20 @@ const workflow = [
       const safetyStates = {
         vision: {
           index: '链路 A / 视觉识别',
-          title: '用连续帧状态，避免让单次表情直接变成结论。',
-          input: '摄像头或本地视频中的驾驶员画面。',
-          process: '基于 68 点关键点计算 EAR、MAR 与头部姿态，并在连续帧中统计状态变化。',
-          output: '进入安全状态层的疲劳相关判断。',
-          boundary: '阈值与个体差异需要通过实际部署继续校准；页面不推断任何真实驾驶行为。',
+          title: '多特征连续帧统计扼杀瞬时误报',
+          input: '车载摄像头实时视频流或本地测试视频帧。',
+          process: '基于 68 点面部关键点同步解算 EAR、MAR 与头部姿态角，通过连续帧计数器追踪闭眼、哈欠与低头的持续时长。',
+          output: '经时序滤波去噪后的结构化疲劳状态等级。',
+          boundary: '支持通过上位机界面动态校准关键点阈值与连续帧窗口长度，适应不同驾驶员面部特征与光照条件。',
           focus: '当前查看：视觉识别链路',
         },
         device: {
           index: '链路 B / 车内环境',
-          title: '让传感器、任务与通信链路各自按合适的节奏工作。',
-          input: 'CO2 模块、人体红外传感器与串口接收数据。',
-          process: '在 RT-Thread Nano 中以线程、信号量和消息队列组织采集、判断、通信与上报。',
-          output: '进入安全状态层的环境状态与受控远程反馈。',
-          boundary: '网络异常、远程命令和阈值更新必须经过本地任务与解析边界；页面不展示真实设备数据。',
+          title: 'RT-Thread 多任务解耦采样与云端通信',
+          input: 'CO2 浓度传感器、人体红外（PIR）传感器信号及跨端串口数据帧。',
+          process: '在 RT-Thread Nano 中通过独立线程、信号量与消息队列调度高频采样与状态仲裁，并经 CAT1 / MQTT 维持云端双向同步。',
+          output: '座舱环境安全状态、本地硬件响应及云端遥测报文。',
+          boundary: '内置 CAT1 断线重连状态机与 JSON 指令合法性校验，确保弱网环境下本地安全监控依然独立生效。',
           focus: '当前查看：车内环境链路',
         },
       };

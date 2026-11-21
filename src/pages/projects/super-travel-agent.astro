@@ -1,5 +1,6 @@
 ---
 import { ClientRouter } from 'astro:transitions';
+import ThemeScript from '../../components/ThemeScript.astro';
 import ProjectVideo from '../../components/ProjectVideo.astro';
 import { sitePath } from '../../lib/paths';
 import travelInterface from '../../assets/images/super-travel-agent-interface.png';
@@ -18,24 +19,25 @@ const chapters = [
 ];
 
 const workflow = [
-  ['01', '需求分析', '提取目标、偏好与约束，判断任务复杂度。'],
-  ['02', '任务分解', '将旅行问题拆为可规划、可查询、可验证的子任务。'],
-  ['03', '路径规划', '组织依赖关系与执行顺序，而非直接生成最终答案。'],
-  ['04', '工具执行', '通过统一工具层查询本地能力与 MCP 服务。'],
-  ['05', '结果观察', '记录工具结果、状态变化和失败信号，决定是否继续。'],
-  ['06', '任务总结', '在已核验的信息边界内组织可读的旅行方案。'],
+  ['01', '意图解析与约束提取', '解析多目的地、预算上限、出行偏好与硬性时间窗，评估任务拓扑复杂度。'],
+  ['02', '子任务正交分解', '将耦合的出行需求拆解为交通核验、住宿检索、路线串联等可独立校验的原子子任务。'],
+  ['03', '依赖拓扑规划', '编排跨城市接驳与时间窗依赖顺序，构建有状态的执行计划而非单次盲目生成。'],
+  ['04', '双协议工具调度', '通过 ToolBase / ToolManager 统一层并发或按序调用本地能力与 MCP（stdio / SSE）服务。'],
+  ['05', '状态观测与动态重规划', '捕获工具返回的数据契约、库存信号与异常状态，动态决定重试、降级或推进下一节点。'],
+  ['06', '证据链汇总交付', '在已核验的票务、地理与库存事实边界内组装结构化行程，流式推送至前端工作台。'],
 ];
 ---
 
 <!doctype html>
 <html lang="zh-CN">
   <head>
-    <ClientRouter fallback="swap" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#f4f0e8" />
-    <meta name="description" content="Super Travel Agent：于洋独立完成的多智能体旅行规划与工具编排系统。" />
-    <title>Super Travel Agent · 于洋项目档案</title>
+    <meta name="theme-color" content="#f6f5f1" />
+    <ThemeScript />
+    <ClientRouter fallback="swap" />
+    <meta name="description" content="Super Travel Agent：拒绝大模型幻觉式攻略，基于有状态多步规划与 MCP 实时工具链的旅行智能体系统。" />
+    <title>Super Travel Agent · IT-coder-Yy 项目档案</title>
   </head>
   <body>
     <a class="skip-link" href="#detail-content">跳至项目正文</a>
@@ -47,21 +49,21 @@ const workflow = [
         <div class="detail-hero-copy">
           <p class="detail-index">项目 01 / AI Agent</p>
           <h1 id="project-title">Super <em>Travel</em> Agent</h1>
-          <p class="detail-lede">把复杂旅行需求转化为可追踪的分析、分解、规划、执行、观察与总结流程，而非一次性生成一段看似完整的回答。</p>
-          <dl class="project-facts">
-            <div><dt>项目类型</dt><dd>个人项目</dd></div>
-            <div><dt>个人职责</dt><dd>产品设计、Agent 编排、工具体系、后端服务与工程化实现</dd></div>
-            <div><dt>技术重点</dt><dd>Multi-Agent · Tool Calling · MCP · RAG · FastAPI · React</dd></div>
-          </dl>
+          <p class="detail-lede">拒绝大模型“幻觉式攻略”：真正的出行助手不靠单轮对话盲猜时刻表，而是通过有状态的多阶段规划与 MCP 实时工具链，先拆解依赖、核验票务与地理库存，再流式交付每一环都可溯源的真实行程。</p>
           <div class="detail-actions">
             <a class="detail-primary" href="https://github.com/IT-coder-Yy/SuperTravel-Agent" target="_blank" rel="noreferrer">查看公开源码 <span aria-hidden="true">↗</span></a>
             <a class="detail-quiet" href="#architecture">查看系统架构 <span aria-hidden="true">↓</span></a>
           </div>
+          <dl class="project-facts">
+            <div><dt>项目类型</dt><dd>个人全栈架构项目</dd></div>
+            <div><dt>个人职责</dt><dd>多步状态机编排、双协议工具层与流式工作台</dd></div>
+            <div><dt>技术重点</dt><dd>Multi-Agent · MCP · RAG · FastAPI · React</dd></div>
+          </dl>
         </div>
 
         <figure class="detail-product-shot">
           <img src={travelInterface.src} alt="Super Travel Agent 的真实旅行规划产品界面" />
-          <figcaption><span>真实产品界面</span><span>流式状态 · 工具执行 · 行程工作台</span></figcaption>
+          <figcaption><span>真实产品界面</span><span>SSE 全链路状态 · 双协议工具调度 · 实时行程工作台</span></figcaption>
         </figure>
       </section>
 
@@ -80,23 +82,25 @@ const workflow = [
         <article class="detail-article">
           <section id="problem" class="detail-section">
             <p class="section-label">01 / 问题背景</p>
-            <h2>复杂旅行规划，缺的不是一段文字，而是可验证的执行过程。</h2>
-            <p>多城市、交通、预算、偏好和实时变化会相互牵连。若只依赖单轮问答，模型难以说明信息来自哪里、何时需要查询工具，也无法把中间状态反馈给用户。这个项目将规划拆为可观察的阶段，并把实时结论留在工具核验之后。</p>
+            <h2>拒绝单轮生成式“幻觉攻略”</h2>
+            <p class="section-subhead">—— 单轮 Prompt 写得出游记，却算不出跨城接驳的真实库存与时间窗。</p>
+            <p>多城市串联、交通时刻、预算分配与实时余票之间存在强耦合依赖。如果把所有需求塞进单次大模型调用，模型只能凭参数记忆“盲猜”车次与酒店，既无法向用户解释信息来源，也无法在某个节点无票时动态调整后续路线。本项目将不可控的端到端文本生成重构为“拆解—规划—核验—观察—交付”的有状态执行链，强制所有时效性结论建立在真实工具回执之上。</p>
           </section>
 
           <section id="role" class="detail-section">
             <p class="section-label">02 / 我的职责</p>
             <div class="role-grid">
-              <article><span>产品与任务流</span><p>定义旅行规划从需求澄清到结果交付的状态与用户反馈方式。</p></article>
-              <article><span>Agent 编排</span><p>组织分析、分解、规划、执行、观察与总结的多阶段执行链。</p></article>
-              <article><span>工具与服务</span><p>完成本地工具、MCP 接入、流式后端接口与前端工作台的工程化衔接。</p></article>
+              <article><span>产品与任务流</span><p>设计从模糊出行灵感到结构化行程交付的状态流转机制，打造全链路可观测的交互体验。</p></article>
+              <article><span>Agent 状态机编排</span><p>构建“分析—分解—规划—执行—观察—总结”六阶段循环控制流，支持长链路上下文追踪与异常回退。</p></article>
+              <article><span>双协议工具与全栈服务</span><p>落地 ToolBase / ToolManager 统一接入层（覆盖本地工具与 MCP stdio/SSE）、地图并发去重缓存及 FastAPI + React 流式工作台。</p></article>
             </div>
           </section>
 
           <section id="architecture" class="detail-section architecture-section">
             <p class="section-label">03 / 系统架构</p>
-            <h2>让模型负责判断，让工具负责事实。</h2>
-            <p class="architecture-note">这是用于理解系统边界的静态执行流。它不代表一段自动播放的演示，也不以虚构旅行案例替代真实界面。</p>
+            <h2>让模型做推理，让工具锁事实</h2>
+            <p class="section-subhead">—— 六阶段有状态执行流水线，将非确定性推理关进工具验证的事实边界。</p>
+            <p class="architecture-note">以下为系统核心的六阶段有状态执行流水线。每个节点均受控于明确的数据契约与状态跃迁规则，将非确定性的推理限制在工具验证的事实边界内。</p>
             <ol class="workflow">
               {workflow.map(([index, title, description]) => (
                 <li>
@@ -106,8 +110,8 @@ const workflow = [
               ))}
             </ol>
             <div class="architecture-footnote">
-              <span>上下文</span><i></i><span>旅行知识 / 用户偏好 / 任务状态</span>
-              <span>工具层</span><i></i><span>本地工具 / MCP stdio / MCP SSE</span>
+              <span>上下文状态</span><i></i><span>领域知识检索 / 用户偏好约束 / 阶段执行快照</span>
+              <span>统一工具层</span><i></i><span>本地原生工具 / MCP stdio 管道 / MCP SSE 远程流</span>
             </div>
           </section>
 
@@ -116,29 +120,29 @@ const workflow = [
             <div class="decision-list">
               <article>
                 <p>决定一</p>
-                <h3>用统一工具边界接入本地能力与 MCP。</h3>
+                <h3>ToolBase 统一屏蔽双模 MCP 差异</h3>
                 <dl>
-                  <div><dt>问题</dt><dd>工具来源不同，模型侧却需要稳定的函数描述、参数与结果结构。</dd></div>
-                  <div><dt>选择</dt><dd>通过 ToolBase / ToolManager 统一注册、发现和执行；MCP 同时覆盖 stdio 与 SSE 接入。</dd></div>
-                  <div><dt>边界</dt><dd>页面只展示系统能力，不暴露工具实现代码或密钥配置。</dd></div>
+                  <div><dt>问题</dt><dd>本地 Python 函数、MCP stdio 本地子进程与 MCP SSE 远程服务具有截然不同的生命周期、通信协议与错误形态，直接暴露给编排层会导致调用逻辑高度碎片化。</dd></div>
+                  <div><dt>选择</dt><dd>设计 ToolBase 与 ToolManager 统一抽象层，将异构能力收敛为标准化的 Schema 描述、参数校验与异步执行接口，实现本地工具与双模 MCP 的无感热插拔。</dd></div>
+                  <div><dt>边界</dt><dd>编排层仅消费标准化的结构化回执与错误码，底层协议握手、连接池维护与鉴权隔离完全下沉至工具管理器内部。</dd></div>
                 </dl>
               </article>
               <article>
                 <p>决定二</p>
-                <h3>实时票务与库存结论必须先查询，再组织回答。</h3>
+                <h3>“先核验、后生成”阻断库存幻觉</h3>
                 <dl>
-                  <div><dt>问题</dt><dd>把时刻、余票或库存当作模型常识，会制造无法核验的“实时信息”。</dd></div>
-                  <div><dt>选择</dt><dd>将实时查询交给工具；数据模型要求具体班次、时刻和可用性来自已核验的数据源。</dd></div>
-                  <div><dt>边界</dt><dd>没有可靠实时库存时，系统明确将酒店或交通建议标注为参考，而不是伪装成可下单结果。</dd></div>
+                  <div><dt>问题</dt><dd>大模型极易将预训练语料中的历史车次、虚构航班或过期价格当作实时事实输出，直接破坏出行方案的可用性。</dd></div>
+                  <div><dt>选择</dt><dd>在数据模型层实施严格契约：凡涉及具体班次、时刻、票价与房态的字段，必须绑定工具查询回执；未经核验的节点不得进入确定性行程清单。</dd></div>
+                  <div><dt>边界</dt><dd>当外部数据源缺失或实时库存不可达时，系统自动触发降级策略，将该节点显式标记为“参考建议”并提示核验渠道，守住生成内容的可信边界。</dd></div>
                 </dl>
               </article>
               <article>
                 <p>决定三</p>
-                <h3>长任务用流式状态而不是无反馈等待。</h3>
+                <h3>SSE 细粒度状态流消除交互盲区</h3>
                 <dl>
-                  <div><dt>问题</dt><dd>多阶段工具调用的等待时间不可忽略，用户需要知道任务是否还在推进。</dd></div>
-                  <div><dt>选择</dt><dd>后端通过 SSE 输出过程状态；前端工作台承接流式内容与行程处理状态。</dd></div>
-                  <div><dt>边界</dt><dd>流式输出是反馈通道，不等于所有中间推理都应直接暴露给用户。</dd></div>
+                  <div><dt>问题</dt><dd>跨城市多阶段规划往往伴随十余次串并联工具请求，传统同步 HTTP 接口会让前端陷入漫长的白屏等待，且一旦中途失败难以定位卡点。</dd></div>
+                  <div><dt>选择</dt><dd>后端通过 Server-Sent Events (SSE) 实时广播阶段跃迁、当前激活工具、查询进度与增量文本，前端工作台同步渲染可视化的执行轨迹与行程卡片。</dd></div>
+                  <div><dt>边界</dt><dd>流式协议对内部原始思维链（Raw CoT）与底层调试载荷进行脱敏聚合，向用户呈现清晰、高信噪比的工程状态反馈。</dd></div>
                 </dl>
               </article>
             </div>
@@ -146,28 +150,30 @@ const workflow = [
 
           <section id="reliability" class="detail-section">
             <p class="section-label">05 / 可靠性与工程边界</p>
-            <h2>把“能调用”推进到“调用过程可控”。</h2>
+            <h2>全链路契约校验与并发治理</h2>
+            <p class="section-subhead">—— 从“能调通 Demo”升级为具备死循环熔断、去重缓存与强 Schema 校验的生产级闭环。</p>
             <ul class="reliability-list">
-              <li><strong>执行保护</strong><span>控制器覆盖流式与非流式流程，并处理循环、失败与 token 统计等执行状态。</span></li>
-              <li><strong>请求治理</strong><span>地图类请求具备作用域预算、归一化缓存与并发去重，避免同一查询被重复消耗。</span></li>
-              <li><strong>契约校验</strong><span>对实时结论、结构化结果与接口流进行测试和校验，避免把测试快照误写为真实出行建议。</span></li>
-              <li><strong>信息边界</strong><span>页面不展示真实用户案例、完整配置、访问密钥或无法公开的运行数据。</span></li>
+              <li><strong>执行保护与死循环熔断</strong><span>核心控制器统一接管流式与非流式执行循环，内置最大步数限制、重复调用检测、异常重试与细粒度 Token 消耗计量。</span></li>
+              <li><strong>地理查询并发治理</strong><span>针对高频地图与 POI 检索设计作用域预算控制、参数归一化缓存与 In-flight 并发请求合并，消除多子任务间的重复 API 消耗。</span></li>
+              <li><strong>结构化输出契约校验</strong><span>基于 Pydantic 对工具入参、实时回执与最终行程 Schema 实施全链路强校验，确保前端工作台接收的数据结构 100% 确定可解析。</span></li>
+              <li><strong>配置隔离与安全边界</strong><span>采用环境变量与分层配置管理外部 Provider 密钥及 MCP 端点，运行时上下文严格隔离不同会话的偏好状态与工具权限。</span></li>
             </ul>
           </section>
 
           <section id="evidence" class="detail-section evidence-section">
             <p class="section-label">06 / 结果与证据</p>
-            <h2>可核验的不是一句“做过 Agent”，而是产品、执行边界与测试约束。</h2>
+            <h2>全栈工作台与自动化契约测试</h2>
+            <p class="section-subhead">—— 用可交互的前端工作台、高内聚异步服务端与自动化测试集交付工程证明。</p>
             <div class="evidence-ledger">
-              <article><span>产品界面</span><p>真实 React 工作台承载旅行规划、流式反馈与工具执行状态。</p></article>
-              <article><span>服务接口</span><p>FastAPI 提供聊天流、工具、MCP、旅行知识检索和行程处理相关能力。</p></article>
-              <article><span>工程验证</span><p>项目包含流式事件、工具调用、地图请求治理与旅行数据契约相关测试。</p></article>
+              <article><span>全功能前端工作台</span><p>React 端完整承载多轮对话、SSE 实时阶段流、工具调用状态追踪与结构化行程面板。</p></article>
+              <article><span>高内聚后端服务</span><p>FastAPI 构建异步服务底座，模块化承载多智能体编排、双协议 MCP 客户端、RAG 知识检索与地图请求治理。</p></article>
+              <article><span>契约与回归测试集</span><p>覆盖 SSE 事件流完整性、ToolManager 注册调度、地图查询去重预算以及实时出行数据契约的自动化单元测试。</p></article>
             </div>
           </section>
 
           <section id="review" class="detail-section review-section">
             <p class="section-label">07 / 复盘与下一步</p>
-            <p>当前页面选择展示真实界面与静态系统图，而不虚构一段旅行案例或自动播放长流程。下一步会继续围绕真实 Provider 的稳定性、可追踪的来源展示，以及复杂规划的评估与回放能力深化。</p>
+            <p>Super Travel Agent 的核心工程价值在于证明了：面对高耦合、重事实的复杂业务场景，可以通过“有状态多步规划 + 统一协议工具层 + 严格数据契约”将大模型的推理能力关进可靠的工程笼子里。下一阶段演进将聚焦于引入多源票务 Provider 的故障自动切换、工具调用链路的分布式追踪（Tracing），以及基于真实长尾 Case 的离线回放与规划质量基准评估（Benchmark）。</p>
             <div class="detail-end-actions">
               <a href={sitePath('/#projects')}>返回项目列表 <span aria-hidden="true">↑</span></a>
               <a href="https://github.com/IT-coder-Yy/SuperTravel-Agent" target="_blank" rel="noreferrer">在 GitHub 查看源码 <span aria-hidden="true">↗</span></a>

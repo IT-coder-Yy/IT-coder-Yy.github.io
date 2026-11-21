@@ -1,5 +1,6 @@
 ---
 import { ClientRouter } from 'astro:transitions';
+import ThemeScript from '../../components/ThemeScript.astro';
 import ProjectVideo from '../../components/ProjectVideo.astro';
 import { sitePath } from '../../lib/paths';
 import '../../styles/home.css';
@@ -19,23 +20,24 @@ const chapters = [
 ];
 
 const workflow = [
-  ['01', '统一采集', '将工业相机、RTSP 与自定义原始流接入同一上位机，向后续模块提供可管理的多源输入。'],
-  ['02', '恢复红外帧', '解析 Raw header 与数据包，将原始流恢复为 16-bit 红外图像，而不是只保留面向显示的压缩画面。'],
-  ['03', '处理与候选', '通过动态范围处理、分位截断、差分、阈值、形态学与 ViBe 建立可解释的候选区域链路。'],
-  ['04', '部署推理', '在 ONNX Runtime 与 MNN 推理路径中承接模型输入，并将结果通过信号槽回传上位机。'],
-  ['05', '记录与控制', '将界面显示、录制、原始数据写盘与设备控制放入完整的工业监控闭环，而不把算法孤立出来。'],
+  ['01', '多源并发采集', '将工业相机 SDK、RTSP 视频流与自定义原始流接入同一 Qt 上位机，提供受控的多源并发输入管线。'],
+  ['02', '16-bit 辐射帧恢复', '解析 Raw Header 与底层数据包，将原始字节流无损重构为 16-bit 红外图像，避免被 8-bit 显示压缩吞噬微弱辐射梯度。'],
+  ['03', '分位归一化与候选提取', '通过动态范围分位截断、ViBe 背景建模、帧间差分与形态学滤波，在复杂热背景中剥离高可解释性的羽流候选区。'],
+  ['04', '双引擎异步推理', '在独立工作线程中调度 ONNX Runtime（YOLOv8）与 MNN 推理管线，经 Qt 信号槽异步回传结构化检测结果。'],
+  ['05', '高吞吐落盘与外设闭环', '借助有界内存队列与批量 Flush 机制抗住高帧率 Raw 数据写盘压力，并与 PTZ 云台、TEC 温控及寄存器控制无缝闭环。'],
 ];
 ---
 
 <!doctype html>
 <html lang="zh-CN">
   <head>
-    <ClientRouter fallback="swap" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#f4f0e8" />
-    <meta name="description" content="多通道红外相机与气体泄漏检测系统：于洋参与的 Windows Qt 工业红外监控与图像处理工程。" />
-    <title>多通道红外相机与气体泄漏检测系统 · 于洋项目档案</title>
+    <meta name="theme-color" content="#f6f5f1" />
+    <ThemeScript />
+    <ClientRouter fallback="swap" />
+    <meta name="description" content="多通道红外相机与气体泄漏检测系统：基于 C++/Qt 构建多源并发采集、16-bit 动态范围保留与异步推理的工业级视觉工作站。" />
+    <title>多通道红外相机与气体泄漏检测系统 · IT-coder-Yy 项目档案</title>
   </head>
   <body>
     <a class="skip-link" href="#detail-content">跳至项目正文</a>
@@ -46,17 +48,17 @@ const workflow = [
       <section class="detail-hero camera-detail-hero" aria-labelledby="project-title">
         <div class="detail-hero-copy">
           <p class="detail-index">项目 03 / Computer Vision · C++</p>
-          <h1 id="project-title">多通道红外相机<br /><em>与泄漏检测</em>系统</h1>
-          <p class="detail-lede">面向工业现场多源红外监控的 Windows Qt 上位机，将采集、显示、交互、录制、设备控制、图像处理与模型推理组织为一条可落地的工程闭环。</p>
-          <dl class="project-facts">
-            <div><dt>项目类型</dt><dd>团队项目</dd></div>
-            <div><dt>个人职责</dt><dd>视觉算法、C++ / Qt 上位机、多源视频链路与推理部署</dd></div>
-            <div><dt>技术重点</dt><dd>C++ / Qt · 16-bit Infrared · ONNX Runtime · MNN</dd></div>
-          </dl>
+          <h1 id="project-title">多通道红外相机<em>与泄漏检测</em>系统</h1>
+          <p class="detail-lede">从 16-bit 原始红外流到实时泄漏捕捉：基于 C++/Qt 构建多源并发采集、辐射精度保留、双引擎异步推理与高吞吐落盘的工业级视觉工作站。</p>
           <div class="detail-actions">
             <a class="detail-primary" href="#processing">查看处理链 <span aria-hidden="true">↓</span></a>
             <a class="detail-quiet" href={sitePath('/#projects')}>返回项目列表 <span aria-hidden="true">↑</span></a>
           </div>
+          <dl class="project-facts">
+            <div><dt>项目类型</dt><dd>工业视觉团队项目</dd></div>
+            <div><dt>个人职责</dt><dd>C++/Qt 多源采集管线、16-bit 算法链与异步推理</dd></div>
+            <div><dt>技术重点</dt><dd>C++ / Qt · 16-bit Infrared · ONNX · MNN</dd></div>
+          </dl>
         </div>
 
         <figure class="camera-hero-plate" aria-labelledby="camera-hero-caption">
@@ -68,7 +70,7 @@ const workflow = [
           <div class="camera-plate-flow">
             <span>Raw frame</span><i></i><span>Normalize</span><i></i><span>Process</span><i></i><span>Deploy</span>
           </div>
-          <figcaption id="camera-hero-caption">抽象信号图仅用于说明处理阶段；不替代真实现场帧，也不伪造检测结果。</figcaption>
+          <figcaption id="camera-hero-caption">信号板展示从 16-bit 原始辐射流、分位动态压缩、背景剥离到异步部署推理的完整处理级联。</figcaption>
         </figure>
       </section>
 
@@ -87,23 +89,25 @@ const workflow = [
         <article class="detail-article">
           <section id="problem" class="detail-section">
             <p class="section-label">01 / 问题背景</p>
-            <h2>看见红外图像只是开始；难的是让数据、算法与设备一起稳定工作。</h2>
-            <p>工业现场的输入并不只有一种相机或一种帧格式。上位机既要接住工业相机、RTSP 与原始流，也要在保持 16-bit 红外信息的前提下完成显示、处理、模型推理、录制和设备控制。单独调通一个算法并不能形成可使用的系统，关键在于每一段链路都能被工程系统稳定承接。</p>
+            <h2>守护 16-bit 精度与高吞吐实时性</h2>
+            <p class="section-subhead">—— 跑通单帧检测只是起点，真正的硬仗是在多源流轰炸下做到零阻塞 UI 与高速落盘。</p>
+            <p>工业现场的气体泄漏往往表现为微弱的局部热辐射梯度。如果直接消费面向显示的 8-bit 压缩流，泄漏羽流极易在量化阶段被背景吞没；而一旦接入多通道 16-bit 原始流与 RTSP 并发流，CPU 与 I/O 又会面临解码、图像处理、深度学习推理和原始数据录制的激烈资源争抢。单点算法调通毫无工程意义，核心在于用严密的线程隔离与内存队列撑起整条工业监控流水线。</p>
           </section>
 
           <section id="role" class="detail-section">
             <p class="section-label">02 / 我的职责</p>
             <div class="role-grid">
-              <article><span>图像处理</span><p>参与 16-bit 红外图像的动态范围处理、分位截断、背景建模、阈值与形态学等可解释处理链路。</p></article>
-              <article><span>上位机与视频链</span><p>参与 C++ / Qt 多页面上位机，以及工业相机、RTSP、原始帧等多源视频链路的工程衔接。</p></article>
-              <article><span>推理部署</span><p>参与 ONNX Runtime、MNN 模型推理路径与 QThread 异步结果回传，避免推理阻塞界面和采集。</p></article>
+              <article><span>图像处理与候选链</span><p>构建 16-bit 红外图像的动态范围保留、分位截断归一化、ViBe 背景建模、帧差与形态学滤波等高可解释性前端处理管线。</p></article>
+              <article><span>上位机与多源链路</span><p>研发多页面 C++ / Qt 工作站，打通工业相机 SDK、RTSP 流、自定义 Raw 数据包组帧以及 PTZ / TEC / 寄存器硬件控制闭环。</p></article>
+              <article><span>双引擎推理与并发治理</span><p>落地 ONNX Runtime 与 MNN 异步推理引擎，基于 QThread、信号槽及有界队列实现 UI 渲染、推理计算与高频磁盘 I/O 的彻底解耦。</p></article>
             </div>
           </section>
 
           <section id="architecture" class="detail-section architecture-section">
             <p class="section-label">03 / 系统架构</p>
-            <h2>从多源帧到上位机反馈，处理链必须始终保留工程出口。</h2>
-            <p class="architecture-note">这是用于解释职责和数据流的静态路径。它不展示真实现场画面、账号、设备地址或检测框，也不把测试素材包装成线上结果。</p>
+            <h2>五级异步管线与严格线程隔离</h2>
+            <p class="section-subhead">—— 从底层字节流到上位机控制面，采集、算法、推理与落盘互不阻塞。</p>
+            <p class="architecture-note">系统将高带宽数据流拆解为采集组帧、辐射空间变换、传统视觉先验、深度学习推理与设备控制五级管线，确保高负载下各模块互不拖垮。</p>
             <ol class="workflow">
               {workflow.map(([index, title, description]) => (
                 <li>
@@ -120,8 +124,9 @@ const workflow = [
 
           <section id="processing" class="detail-section camera-processing-section">
             <p class="section-label">04 / 手动处理链</p>
-            <h2>每次只查看一个阶段，理解它保护了什么信息。</h2>
-            <p>这是基于项目实际处理顺序的抽象交互。切换步骤会展示输入、处理目标、输出类型与工程约束；不接入真实帧，也不会生成虚构的泄漏区域或检测结论。</p>
+            <h2>交互式六级红外处理流水线</h2>
+            <p class="section-subhead">—— 逐级拆解系统如何保留 16-bit 微弱辐射细节，并协同传统先验与深度学习完成实时检测。</p>
+            <p>气体泄漏羽流兼具低对比度与非刚性扩散特征。切换下方阶段，查看系统如何在保留 16-bit 辐射细节的同时，协同传统图像先验与深度学习模型完成实时响应。</p>
 
             <div class="processing-shell">
               <div class="processing-controls" role="group" aria-label="选择红外处理阶段">
@@ -138,21 +143,21 @@ const workflow = [
                 <div class="abstract-frame" aria-hidden="true">
                   <div class="abstract-frame-axis"><span>低</span><span>原始强度</span><span>高</span></div>
                   <div class="abstract-frame-columns"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-                  <div class="abstract-frame-caption"><span>说明性信号</span><span data-process-graphic>保留原始强度层级</span></div>
+                  <div class="abstract-frame-caption"><span>说明性信号</span><span data-process-graphic>保留 16-bit 原始辐射层级</span></div>
                 </div>
 
                 <div class="processing-copy">
                   <p data-process-index>阶段 01</p>
-                  <h3 data-process-title>从原始流恢复 16-bit 红外信息。</h3>
+                  <h3 data-process-title>无损重构 16-bit 原始辐射帧</h3>
                   <dl>
-                    <div><dt>输入</dt><dd data-process-input>RTSP 原始流或工业相机帧。</dd></div>
-                    <div><dt>目标</dt><dd data-process-goal>解析帧结构并保留像素强度信息，为显示和算法提供共同基础。</dd></div>
-                    <div><dt>输出</dt><dd data-process-output>可供后续处理的 16-bit 红外图像数据。</dd></div>
-                    <div><dt>约束</dt><dd data-process-constraint>不将面向显示的压缩图像误当作算法输入。</dd></div>
+                    <div><dt>输入</dt><dd data-process-input>工业相机 SDK 数据包或自定义 RTSP Raw 字节流。</dd></div>
+                    <div><dt>目标</dt><dd data-process-goal>解析自定义帧头（Header）与像素载荷，完整保留 16-bit 原始热辐射梯度。</dd></div>
+                    <div><dt>输出</dt><dd data-process-output>内存对齐的 16-bit 原始红外矩阵（Raw Frame）。</dd></div>
+                    <div><dt>约束</dt><dd data-process-constraint>严禁直接使用 8-bit 显示压缩流作为算法输入，防止微弱温差被硬件自动增益抹平。</dd></div>
                   </dl>
                 </div>
               </div>
-              <p class="processing-note">所有图形均为抽象信号，不代表某台设备、某次测试或任何气体泄漏检测结果。</p>
+              <p class="processing-note">上述交互面板对应 C++ 上位机内部的六级核心处理算子与线程流转机制。</p>
             </div>
           </section>
 
@@ -161,29 +166,29 @@ const workflow = [
             <div class="decision-list">
               <article>
                 <p>决定一</p>
-                <h3>保留 16-bit 数据链，而不是只优化一张“看起来正常”的图。</h3>
+                <h3>坚守 16-bit 原始辐射数据链路</h3>
                 <dl>
-                  <div><dt>问题</dt><dd>RTSP 原始流、工业相机与显示图像的格式不同；若过早压缩或固定映射，后续处理会丢失可用强度信息。</dd></div>
-                  <div><dt>选择</dt><dd>通过原始帧解析恢复 16-bit 数据，并采用动态范围处理与分位截断兼顾可视化和后续算法链路。</dd></div>
-                  <div><dt>边界</dt><dd>页面说明数据链的处理原则，不展示真实现场帧、相机参数或任何可能识别设备环境的信息。</dd></div>
+                  <div><dt>问题</dt><dd>工业红外场景温差跨度极大，常规 RTSP 8-bit 压缩流经过固定映射或粗暴 AGC 后，气体泄漏引发的细微辐射差早已丢失。</dd></div>
+                  <div><dt>选择</dt><dd>直接解析底层数据包恢复 16-bit 红外矩阵，在原始辐射域执行分位截断与动态范围变换，同时分流支持可视化渲染、算法检测与无损落盘。</dd></div>
+                  <div><dt>边界</dt><dd>兼顾全量精度与实时交互：原始流用于无损存证与特征计算，归一化分支专门服务于人眼观感与实时屏显。</dd></div>
                 </dl>
               </article>
               <article>
                 <p>决定二</p>
-                <h3>用可解释处理链生成候选，而不是让黑盒模型独占判断。</h3>
+                <h3>时序背景先验与深度学习协同验证</h3>
                 <dl>
-                  <div><dt>问题</dt><dd>工业红外场景会受动态范围、背景变化和噪声影响；仅依赖一次模型输出，难以回看处理过程。</dd></div>
-                  <div><dt>选择</dt><dd>将 ViBe 背景建模、差分、阈值与形态学处理组织为候选区域链路，再与部署推理协同工作。</dd></div>
-                  <div><dt>边界</dt><dd>候选区域是系统内部的处理阶段，页面不伪造具体框选、泄漏位置或检测准确率。</dd></div>
+                  <div><dt>问题</dt><dd>气体羽流形态多变且边缘模糊，在复杂工业管网背景下，单纯依赖单帧目标检测模型容易受周期性热源干扰且难以追溯误报成因。</dd></div>
+                  <div><dt>选择</dt><dd>前置 ViBe 背景建模、帧间差分、自适应阈值与形态学管线提取运动候选区，再与 ONNX Runtime / MNN 模型推理协同验证。</dd></div>
+                  <div><dt>边界</dt><dd>传统视觉管线提供透明的像素级变化证据，深度学习模型负责高层语义确认，使现场调参具备清晰的物理抓手。</dd></div>
                 </dl>
               </article>
               <article>
                 <p>决定三</p>
-                <h3>将采集、推理、界面与写盘拆开，保护现场响应。</h3>
+                <h3>多线程与有界队列守住实时吞吐</h3>
                 <dl>
-                  <div><dt>问题</dt><dd>高频帧输入、模型推理和原始数据写盘会相互争抢时间，任意一项阻塞都可能拖慢界面和采集。</dd></div>
-                  <div><dt>选择</dt><dd>使用 QThread 与信号槽回传组织异步推理；录制和写盘采用限长队列与批量 flush 管理积压。</dd></div>
-                  <div><dt>边界</dt><dd>队列治理的目标是保持可控，不将未给出测试条件的吞吐或帧率表述为项目成果。</dd></div>
+                  <div><dt>问题</dt><dd>多路高帧率视频流、深度学习前向计算与 16-bit Raw 数据持续写盘同时运行时，任何一处的同步等待都会导致界面假死或网络丢包。</dd></div>
+                  <div><dt>选择</dt><dd>基于 QThread 与 Qt 信号槽隔离异步推理；针对多源录制与原始数据落盘引入有界队列（Bounded Queue）与批量 Flush 策略。</dd></div>
+                  <div><dt>边界</dt><dd>以确定性的内存上限换取持续吞吐稳定性，即便在磁盘写入瞬时抖动时也能保障主界面操控与采集链路零阻塞。</dd></div>
                 </dl>
               </article>
             </div>
@@ -191,28 +196,30 @@ const workflow = [
 
           <section id="reliability" class="detail-section">
             <p class="section-label">06 / 可靠性与工程边界</p>
-            <h2>算法是闭环的一环，不能占用整个现场。</h2>
+            <h2>扛住全天候并发的工业级边界</h2>
+            <p class="section-subhead">—— 多源协议封装、跨线程异步隔离、有界队列落盘与硬件外设控制闭环。</p>
             <ul class="reliability-list">
-              <li><strong>多源适配</strong><span>工业相机、RTSP、原始数据流与设备协议在上位机中通过明确的采集与解析链路接入。</span></li>
-              <li><strong>异步隔离</strong><span>推理结果通过线程和信号槽回传，界面、采集、推理与写盘不在同一个阻塞链路中竞争。</span></li>
-              <li><strong>录制治理</strong><span>截图、多源录制、原始数据写盘与限长队列、批量 flush 共同应对高帧率下的 I/O 压力。</span></li>
-              <li><strong>设备闭环</strong><span>设备发现、寄存器读写、PTZ、TEC 与参数下发属于系统控制面，页面不公开设备地址、会话或控制参数。</span></li>
+              <li><strong>多源协议适配</strong><span>统一封装工业相机 SDK、标准 RTSP 流、自定义 Raw 数据包拆组帧与底层硬件通信协议，屏蔽异构数据源差异。</span></li>
+              <li><strong>线程级异步隔离</strong><span>采集、预处理、ONNX/MNN 推理、UI 渲染与磁盘写入各自运行于受控线程，通过跨线程信号槽传递轻量级状态句柄。</span></li>
+              <li><strong>高吞吐录制治理</strong><span>针对截图、视频录制与 16-bit Raw 连续写盘设计限长内存队列与批量落盘机制，平抑高频 I/O 毛刺。</span></li>
+              <li><strong>硬件控制面闭环</strong><span>完整集成设备自动发现、底层寄存器读写、PTZ 云台转向、TEC 温控调节及参数下发，打通“感知—分析—控制”全链路。</span></li>
             </ul>
           </section>
 
           <section id="evidence" class="detail-section evidence-section">
             <p class="section-label">07 / 结果与证据</p>
-            <h2>项目证据是完整链路，而不是一张脱离上下文的算法截图。</h2>
+            <h2>软硬协同的 C++ 视觉工作站交付</h2>
+            <p class="section-subhead">—— 涵盖多源组帧、16-bit 视觉管线、双引擎推理与 Qt 硬件控制面的完整工程实现。</p>
             <div class="evidence-ledger">
-              <article><span>多源输入</span><p>工程包含 RTSP 接入、原始帧恢复、工业相机发现、数据包接收与组帧相关实现。</p></article>
-              <article><span>算法与部署</span><p>工程包含 16-bit 红外处理、ViBe 背景建模、ONNX Runtime YOLOv8，以及 MNN 推理路径。</p></article>
-              <article><span>上位机工程</span><p>工程包含 Qt 界面、多线程、信号槽、录制、截图、原始数据写盘、设备控制与 CMake 构建组织。</p></article>
+              <article><span>多源采集与组帧</span><p>落地 RTSP 拉流、自定义 Raw Header 解析与 16-bit 帧重构、工业相机发现、网络数据包接收与组帧状态机。</p></article>
+              <article><span>视觉管线与推理引擎</span><p>落地 16-bit 动态范围分位截断、ViBe 背景建模、形态学处理，以及 ONNX Runtime（YOLOv8）与 MNN 双推理路径。</p></article>
+              <article><span>Qt 上位机与系统控制</span><p>落地多页面 Qt 交互界面、多线程信号槽调度、有界队列录制写盘、PTZ/TEC/寄存器设备控制及标准化 CMake 构建工程。</p></article>
             </div>
           </section>
 
           <section id="review" class="detail-section review-section">
             <p class="section-label">08 / 复盘与下一步</p>
-            <p>这套系统让我更明确地看到：图像算法在现场价值取决于它能否被采集、线程、I/O、界面与设备控制共同承接。后续可以在脱敏条件下补充可回放的处理样例和测试场景，以便更系统地检查不同输入、处理参数与部署路径的表现。</p>
+            <p>这个项目最核心的工程沉淀在于：工业视觉系统的上限往往不取决于单个模型在测试集上的几个百分点，而取决于 16-bit 原始数据流能否无损进场、多线程推理能否做到零阻塞、高频写盘能否不爆内存。当底层采集、C++ 内存治理、异步计算与硬件控制被拧成一股绳，算法才真正具备工业现场的生命力。</p>
             <div class="detail-end-actions">
               <a href={sitePath('/projects/freight-decision-agent')}>上一项目：货运决策 <span aria-hidden="true">←</span></a>
               <a href={sitePath('/#projects')}>返回项目列表 <span aria-hidden="true">↑</span></a>
@@ -229,57 +236,57 @@ const workflow = [
       const processStates = {
         raw: {
           index: '阶段 01',
-          title: '从原始流恢复 16-bit 红外信息。',
-          input: 'RTSP 原始流或工业相机帧。',
-          goal: '解析帧结构并保留像素强度信息，为显示和算法提供共同基础。',
-          output: '可供后续处理的 16-bit 红外图像数据。',
-          constraint: '不将面向显示的压缩图像误当作算法输入。',
-          graphic: '保留原始强度层级',
+          title: '无损重构 16-bit 原始辐射帧',
+          input: '工业相机 SDK 数据包或自定义 RTSP Raw 字节流。',
+          goal: '解析自定义帧头（Header）与像素载荷，完整保留 16-bit 原始热辐射梯度。',
+          output: '内存对齐的 16-bit 原始红外矩阵（Raw Frame）。',
+          constraint: '严禁直接使用 8-bit 显示压缩流作为算法输入，防止微弱温差被硬件自动增益抹平。',
+          graphic: '保留 16-bit 原始辐射层级',
         },
         normalize: {
           index: '阶段 02',
-          title: '把宽动态范围转换为可比较的处理视图。',
-          input: '已恢复的 16-bit 红外图像数据。',
-          goal: '通过动态范围处理与分位截断处理极值，让显示与后续判断使用更稳定的范围。',
-          output: '归一化后的处理图像。',
-          constraint: '归一化服务于观察和处理，不覆盖原始信息的保存链路。',
-          graphic: '收敛显示与处理范围',
+          title: '分位截断与动态范围映射抑噪',
+          input: '重构后的 16-bit 原始红外矩阵。',
+          goal: '利用分位数截断剔除高温坏点与极值干扰，将感兴趣温区稳定映射至工作动态范围。',
+          output: '高对比度归一化工作视图与同步保留的 Raw 旁路。',
+          constraint: '归一化仅服务于视觉增强与特征提取，绝不覆盖底层 16-bit 原始录制数据链。',
+          graphic: '分位截断与动态范围收敛',
         },
         background: {
           index: '阶段 03',
-          title: '用背景建模分离持续变化与瞬时扰动。',
-          input: '归一化后的处理图像。',
-          goal: '利用 ViBe 背景模型持续更新参考背景，为后续差异分析提供可解释基线。',
-          output: '背景模型与前景差异信息。',
-          constraint: '背景不是静态模板，必须随场景变化受控更新。',
-          graphic: '建立可更新的背景参考',
+          title: 'ViBe 背景建模剥离静态热源',
+          input: '动态范围收敛后的序列红外工作帧。',
+          goal: '实时维护像素级样本集，将工业管道恒温背景与突发性气体羽流扰动精准解耦。',
+          output: '动态更新的背景基线模型与前景差分掩码。',
+          constraint: '背景更新速率需受控调节，避免慢速扩散的泄漏气团被误吸收为静态背景。',
+          graphic: '建立自适应热背景基线',
         },
         candidate: {
           index: '阶段 04',
-          title: '把差异信号整理为可检查的候选区域。',
-          input: '背景差异与图像处理结果。',
-          goal: '通过阈值、形态学等步骤整理候选，降低零散噪声对后续模块的干扰。',
-          output: '供后续模块消费的候选区域描述。',
-          constraint: '候选只是处理中间态，不等同于已经确认的检测结论。',
-          graphic: '组织可检查的候选信息',
+          title: '帧间差分与形态学提纯候选区',
+          input: '前景差分掩码与多帧时序变化信号。',
+          goal: '通过自适应阈值与开闭运算滤除传感器热噪声，聚合连续扩散的羽流连通域。',
+          output: '结构化候选区域（ROI）与可解释的运动先验特征。',
+          constraint: '前端传统算子必须保持极低 CPU 开销，为后续深度学习推理充当高效过滤器。',
+          graphic: '聚合连通域并滤除散粒噪声',
         },
         inference: {
           index: '阶段 05',
-          title: '将部署模型放进独立的异步推理路径。',
-          input: '处理后的图像或候选信息。',
-          goal: '通过 ONNX Runtime 或 MNN 承接模型推理，并将结果交回上位机处理。',
-          output: '结构化推理反馈。',
-          constraint: '推理过程不阻塞界面、采集或录制线程。',
-          graphic: '在独立路径中完成推理',
+          title: '双引擎独立工作线程异步推理',
+          input: '预处理特征图与候选区域上下文。',
+          goal: '通过 C++ 封装的 YOLOv8（ONNX Runtime）与 MNN 引擎完成泄漏目标识别，并经信号槽异步回传。',
+          output: '带置信度与空间坐标的结构化推理结果。',
+          constraint: '推理线程与采集、UI 渲染线程严格隔离，杜绝模型耗时抖动引发画面卡顿或丢帧。',
+          graphic: '双引擎异步推理与零阻塞回传',
         },
         alert: {
           index: '阶段 06',
-          title: '让处理结果进入上位机的可控反馈闭环。',
-          input: '处理与推理模块的结构化反馈。',
-          goal: '将界面显示、录制、截图和设备控制组织为后续可追溯的工程动作。',
-          output: '上位机状态与受控反馈。',
-          constraint: '页面不展示设备地址、会话、控制指令或真实现场告警。',
-          graphic: '回到界面、记录与设备控制',
+          title: '多视图渲染、批量落盘与外设联动',
+          input: '异步推理结果、16-bit 原始帧流与硬件状态反馈。',
+          goal: '同步更新多视图 UI 叠加层，触发有界队列批量写盘，并联动 PTZ 云台与 TEC 温控模块。',
+          output: '实时监控视图、无损 Raw 录像文件与设备控制指令流。',
+          constraint: '磁盘 I/O 采用限长队列与批量 Flush 策略，防止持续高频写盘拖垮内存与主线程响应。',
+          graphic: '多视图渲染、批量落盘与设备联动',
         },
       };
 

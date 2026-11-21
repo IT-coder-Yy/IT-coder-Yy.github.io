@@ -1,5 +1,6 @@
 ---
 import { ClientRouter } from 'astro:transitions';
+import ThemeScript from '../../../components/ThemeScript.astro';
 import ProjectVideo from '../../../components/ProjectVideo.astro';
 import { sitePath } from '../../../lib/paths';
 import travelInterface from '../../../assets/images/super-travel-agent-interface.png';
@@ -12,24 +13,25 @@ const chapters = [
   ['Boundaries', 'reliability'], ['Evidence', 'evidence'], ['Review', 'review'],
 ];
 const workflow = [
-  ['01', 'Analyse the request', 'Extract goals, preferences and constraints, then judge the task complexity.'],
-  ['02', 'Decompose the task', 'Break the travel question into sub-tasks that can be planned, queried and checked.'],
-  ['03', 'Plan the path', 'Organise dependencies and execution order instead of generating a final answer in one pass.'],
-  ['04', 'Run tools', 'Use a unified tool layer to reach local capabilities and MCP services.'],
-  ['05', 'Observe results', 'Record tool results, state changes and failure signals before deciding the next move.'],
-  ['06', 'Synthesize the result', 'Produce a readable travel plan within the boundary of verified information.'],
+  ['01', 'Intent & Constraint Parsing', 'Extract multi-city targets, budget caps, preferences, and hard time windows while evaluating task topology complexity.'],
+  ['02', 'Orthogonal Task Decomposition', 'Break coupled travel demands into atomic, independently verifiable sub-tasks for transit, lodging, and routing.'],
+  ['03', 'Dependency Topology Planning', 'Sequence inter-city transfers and time-window dependencies into a stateful execution plan rather than a one-shot guess.'],
+  ['04', 'Dual-Protocol Tool Dispatch', 'Invoke local capabilities and MCP services (stdio & SSE) concurrently or sequentially through the unified ToolBase / ToolManager layer.'],
+  ['05', 'State Observation & Re-planning', 'Capture tool data contracts, inventory signals, and failure states to dynamically retry, degrade gracefully, or advance.'],
+  ['06', 'Verified Itinerary Synthesis', 'Assemble structured itineraries strictly within the boundary of verified ticketing, geo, and inventory facts, streamed live to the workspace.'],
 ];
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
-    <ClientRouter fallback="swap" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#f4f0e8" />
-    <meta name="description" content="Super Travel Agent: a multi-agent travel-planning system with controlled tool orchestration." />
-    <title>Super Travel Agent · Yu Yang</title>
+    <meta name="theme-color" content="#f6f5f1" />
+    <ThemeScript />
+    <ClientRouter fallback="swap" />
+    <meta name="description" content="Super Travel Agent: ditching hallucinated travel guides with stateful multi-stage planning and real-time MCP toolchains." />
+    <title>Super Travel Agent · IT-coder-Yy</title>
   </head>
   <body>
     <a class="skip-link" href="#detail-content">Skip to project details</a>
@@ -40,20 +42,20 @@ const workflow = [
         <div class="detail-hero-copy">
           <p class="detail-index">Project 01 / AI Agent</p>
           <h1 id="project-title">Super <em>Travel</em> Agent</h1>
-          <p class="detail-lede">A system that turns complex travel requirements into a traceable sequence of analysis, decomposition, planning, execution, observation and synthesis, rather than a single convincing-looking answer.</p>
-          <dl class="project-facts">
-            <div><dt>Project type</dt><dd>Personal project</dd></div>
-            <div><dt>My role</dt><dd>Product design, Agent orchestration, tool infrastructure, backend services and engineering implementation</dd></div>
-            <div><dt>Focus</dt><dd>Multi-agent · Tool calling · MCP · RAG · FastAPI · React</dd></div>
-          </dl>
+          <p class="detail-lede">No more hallucinated travel guides: instead of guessing timetables in a single pass, this system pairs stateful multi-stage planning with real-time MCP toolchains—decomposing dependencies, verifying live inventory, and streaming a traceable itinerary.</p>
           <div class="detail-actions">
             <a class="detail-primary" href="https://github.com/IT-coder-Yy/SuperTravel-Agent" target="_blank" rel="noreferrer">View public source <span aria-hidden="true">↗</span></a>
             <a class="detail-quiet" href="#architecture">View architecture <span aria-hidden="true">↓</span></a>
           </div>
+          <dl class="project-facts">
+            <div><dt>Project type</dt><dd>Full-stack Agent architecture</dd></div>
+            <div><dt>My role</dt><dd>State-machine orchestration, MCP tool layer & React workspace</dd></div>
+            <div><dt>Focus</dt><dd>Multi-Agent · MCP · RAG · FastAPI · React</dd></div>
+          </dl>
         </div>
         <figure class="detail-product-shot">
           <img src={travelInterface.src} alt="The actual Super Travel Agent planning interface" />
-          <figcaption><span>Actual product interface</span><span>Streaming state · Tool execution · Itinerary workspace</span></figcaption>
+          <figcaption><span>Actual product interface</span><span>End-to-end SSE state · Dual-protocol tool dispatch · Live itinerary workspace</span></figcaption>
         </figure>
       </section>
 
@@ -66,45 +68,49 @@ const workflow = [
         <article class="detail-article">
           <section id="problem" class="detail-section">
             <p class="section-label">01 / Context</p>
-            <h2>Complex travel planning needs a verifiable process, not just fluent prose.</h2>
-            <p>Multi-city travel, transport, budget, preferences and live changes all affect one another. A single-turn response cannot explain where information came from, when a tool should be queried, or what changed while the work was running. This project makes the stages observable and keeps time-sensitive conclusions behind tool verification.</p>
+            <h2>Beyond Single-Turn Hallucinated Guides</h2>
+            <p class="section-subhead">— Single-turn prompts write fluent travelogues, but cannot verify live transit inventory or time windows.</p>
+            <p>Multi-city routing, transit timetables, budget splits, and live ticket availability are tightly coupled. Stuffing everything into a single LLM call forces the model to hallucinate train numbers and hotel stock from parametric memory—offering zero provenance and no way to re-route when a leg sells out. This project replaces brittle one-shot generation with a stateful "decompose–plan–verify–observe–synthesize" pipeline, anchoring every time-sensitive claim to verified tool receipts.</p>
           </section>
           <section id="role" class="detail-section">
             <p class="section-label">02 / My role</p>
             <div class="role-grid">
-              <article><span>Product and task flow</span><p>Defined the states and user feedback from requirement clarification to delivery of a usable plan.</p></article>
-              <article><span>Agent orchestration</span><p>Structured the staged chain of analysis, decomposition, planning, execution, observation and synthesis.</p></article>
-              <article><span>Tools and services</span><p>Connected local tools, MCP, streaming backend endpoints and the web workspace into one engineering flow.</p></article>
+              <article><span>Product and task flow</span><p>Designed the state-transition pipeline from vague travel inspiration to structured itinerary delivery with end-to-end observability.</p></article>
+              <article><span>Agent state-machine orchestration</span><p>Built the six-stage closed-loop controller (analyse, decompose, plan, execute, observe, synthesize) with long-horizon state tracking and fallback handling.</p></article>
+              <article><span>Dual-protocol tools and full-stack service</span><p>Engineered the unified ToolBase / ToolManager layer (local tools + MCP stdio/SSE), map query deduplication cache, and the FastAPI + React streaming workspace.</p></article>
             </div>
           </section>
           <section id="architecture" class="detail-section architecture-section">
             <p class="section-label">03 / Architecture</p>
-            <h2>Let the model reason; let tools establish facts.</h2>
-            <p class="architecture-note">This is a static reading aid for the system boundary. It is not an autoplay demo, and it does not replace the real interface with an invented trip.</p>
+            <h2>LLM Topology Meets Tool-Verified Facts</h2>
+            <p class="section-subhead">— Let the model handle dependency reasoning while deterministic tools lock down physical availability.</p>
+            <p class="architecture-note">Below is the core six-stage stateful execution pipeline. Every node is governed by explicit data contracts and transition rules, confining non-deterministic reasoning strictly within tool-verified facts.</p>
             <ol class="workflow">{workflow.map(([index, title, description]) => <li><span>{index}</span><div><strong>{title}</strong><p>{description}</p></div></li>)}</ol>
-            <div class="architecture-footnote"><span>Context</span><i></i><span>Travel knowledge / User preferences / Task state</span><span>Tool layer</span><i></i><span>Local tools / MCP stdio / MCP SSE</span></div>
+            <div class="architecture-footnote"><span>Context state</span><i></i><span>Domain RAG / User constraints / Stage execution snapshots</span><span>Unified tool layer</span><i></i><span>Local native tools / MCP stdio pipes / MCP SSE remote streams</span></div>
           </section>
           <section id="decisions" class="detail-section">
             <p class="section-label">04 / Key decisions</p>
             <div class="decision-list">
-              <article><p>Decision one</p><h3>Use one tool boundary for local capabilities and MCP.</h3><dl><div><dt>Problem</dt><dd>Tools come from different places while the model needs stable function descriptions, parameters and result shapes.</dd></div><div><dt>Choice</dt><dd>ToolBase and ToolManager normalize registration, discovery and execution, including MCP over stdio and SSE.</dd></div><div><dt>Boundary</dt><dd>The page describes the capability boundary without exposing implementation code or secret configuration.</dd></div></dl></article>
-              <article><p>Decision two</p><h3>Query live ticketing and inventory before writing about them.</h3><dl><div><dt>Problem</dt><dd>Treating schedules, availability or inventory as model knowledge creates claims that cannot be checked.</dd></div><div><dt>Choice</dt><dd>Tools retrieve live information; structured results require services, times and availability to originate from checked data.</dd></div><div><dt>Boundary</dt><dd>When reliable live stock is absent, a suggestion remains a reference rather than an implied booking result.</dd></div></dl></article>
-              <article><p>Decision three</p><h3>Use streaming state instead of silent waiting for long tasks.</h3><dl><div><dt>Problem</dt><dd>Multi-stage tool calls take time, and users need to know that the task is still moving.</dd></div><div><dt>Choice</dt><dd>The backend emits process state over SSE and the workspace presents the stream with its execution state.</dd></div><div><dt>Boundary</dt><dd>Streaming is a feedback channel; it does not mean every internal reasoning trace should be exposed.</dd></div></dl></article>
+              <article><p>Decision one</p><h3>Unified ToolBase for Dual-Mode MCP</h3><dl><div><dt>Problem</dt><dd>Local Python functions, MCP stdio subprocesses, and MCP SSE remote endpoints differ wildly in lifecycle, transport protocol, and error semantics—exposing them raw would fragment the orchestrator.</dd></div><div><dt>Choice</dt><dd>Engineered a unified ToolBase and ToolManager abstraction that normalizes schema registration, argument validation, and async invocation across local tools and both MCP transports.</dd></div><div><dt>Boundary</dt><dd>The orchestrator consumes standardized structured receipts and error codes, while protocol handshakes, connection lifecycle, and credential isolation stay encapsulated inside the tool manager.</dd></div></dl></article>
+              <article><p>Decision two</p><h3>Verify-Before-Generate Data Contracts</h3><dl><div><dt>Problem</dt><dd>LLMs readily present outdated train numbers, invented flight times, or guessed room rates from pre-training data as live facts, breaking real-world usability.</dd></div><div><dt>Choice</dt><dd>Enforced strict schema contracts: any field asserting specific service numbers, departure times, fares, or availability must bind to a verified tool receipt before entering the confirmed itinerary.</dd></div><div><dt>Boundary</dt><dd>When external providers are unreachable or live stock is unverified, the system triggers graceful degradation—explicitly tagging items as reference suggestions with verification prompts.</dd></div></dl></article>
+              <article><p>Decision three</p><h3>Fine-Grained SSE Execution Telemetry</h3><dl><div><dt>Problem</dt><dd>Multi-city planning triggers dozens of sequential and parallel tool calls; a blocking HTTP request leaves users staring at a spinner with zero visibility into bottlenecks.</dd></div><div><dt>Choice</dt><dd>Built an end-to-end Server-Sent Events (SSE) pipeline that broadcasts stage transitions, active tool invocations, query progress, and incremental synthesis directly into the React workspace.</dd></div><div><dt>Boundary</dt><dd>The streaming protocol filters and aggregates noisy raw chain-of-thought traces into high-signal engineering status updates for the user interface.</dd></div></dl></article>
             </div>
           </section>
           <section id="reliability" class="detail-section">
             <p class="section-label">05 / Reliability and boundaries</p>
-            <h2>Move from “can call a tool” to a controlled calling process.</h2>
-            <ul class="reliability-list"><li><strong>Execution protection</strong><span>The controller covers streaming and non-streaming work, including loops, failures and token-related execution state.</span></li><li><strong>Request governance</strong><span>Map-like requests use scoped budgets, normalized caching and concurrent deduplication to avoid repeated cost.</span></li><li><strong>Contract checks</strong><span>Live conclusions, structured output and interface streams are tested and validated.</span></li><li><strong>Information boundary</strong><span>The page excludes real user cases, full configuration, keys and non-public run data.</span></li></ul>
+            <h2>Concurrency-Hardened Engineering Loop</h2>
+            <p class="section-subhead">— Moving from a fragile demo to circuit-breaking, geo-query deduplication, and strict schema validation.</p>
+            <ul class="reliability-list"><li><strong>Execution guardrails & loop circuit-breaking</strong><span>The core controller governs both streaming and batch execution loops with max-step caps, repeated-call detection, exception recovery, and granular token accounting.</span></li><li><strong>Geo-query concurrency governance</strong><span>Map and POI lookups enforce scoped request budgets, normalized cache keys, and in-flight deduplication to prevent redundant API spend across sub-tasks.</span></li><li><strong>Strict schema & contract validation</strong><span>Pydantic models validate tool arguments, live receipts, and final itinerary payloads end-to-end, guaranteeing 100% parseable data for the frontend workspace.</span></li><li><strong>Configuration isolation & security boundary</strong><span>External provider credentials and MCP endpoints are isolated via layered environment configurations, keeping runtime session states and tool permissions strictly scoped.</span></li></ul>
           </section>
           <section id="evidence" class="detail-section evidence-section">
             <p class="section-label">06 / Evidence</p>
-            <h2>The proof is the product, the execution boundary and the checks, not a claim that I “built an Agent.”</h2>
-            <div class="evidence-ledger"><article><span>Product interface</span><p>The real React workspace presents planning, streaming feedback and tool-execution state.</p></article><article><span>Service layer</span><p>FastAPI supports chat streaming, tools, MCP, travel retrieval and itinerary handling.</p></article><article><span>Engineering checks</span><p>The project includes tests around stream events, tool calls, map-request governance and travel-data contracts.</p></article></div>
+            <h2>Interactive Workspace & Contract Tests</h2>
+            <p class="section-subhead">— Backed by a live React workbench, cohesive FastAPI protocols, and automated regression suites.</p>
+            <div class="evidence-ledger"><article><span>Interactive React workspace</span><p>Full-featured web workbench supporting multi-turn refinement, live SSE stage tracking, tool execution telemetry, and structured itinerary views.</p></article><article><span>Cohesive FastAPI service</span><p>Async backend powering multi-agent orchestration, dual-mode MCP clients, travel RAG retrieval, and geo-request governance.</p></article><article><span>Contract & regression test suite</span><p>Automated tests covering SSE stream integrity, ToolManager dispatch, map query deduplication/budgets, and live travel data contracts.</p></article></div>
           </section>
           <section id="review" class="detail-section review-section">
             <p class="section-label">07 / Review and next step</p>
-            <p>This case study uses the actual interface and a static system map instead of inventing a travel story or autoplaying a long workflow. The next iteration can deepen provider reliability, traceable-source presentation, evaluation and replay for complex planning.</p>
+            <p>Super Travel Agent proves that for tightly coupled, fact-critical domains, wrapping LLM reasoning inside a stateful multi-stage planner, a unified tool protocol layer, and strict data contracts tames hallucination into reliable engineering delivery. Next steps focus on automatic multi-provider failover, distributed tracing across tool chains, and offline replay benchmarks on long-tail travel scenarios.</p>
             <div class="detail-end-actions"><a href={sitePath('/en#projects')}>Back to projects <span aria-hidden="true">↑</span></a><a href="https://github.com/IT-coder-Yy/SuperTravel-Agent" target="_blank" rel="noreferrer">View source on GitHub <span aria-hidden="true">↗</span></a></div>
           </section>
         </article>

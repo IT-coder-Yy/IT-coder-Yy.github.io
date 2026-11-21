@@ -1,5 +1,6 @@
 ---
 import { ClientRouter } from 'astro:transitions';
+import ThemeScript from './ThemeScript.astro';
 import SiteNav from './SiteNav.astro';
 import ProjectCover from './ProjectCover.astro';
 import ProjectVideo from './ProjectVideo.astro';
@@ -23,13 +24,14 @@ const chapters = en
 <!doctype html>
 <html lang={en ? 'en' : 'zh-CN'}>
   <head>
-    <ClientRouter fallback="swap" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#f7f7f5" />
+    <meta name="theme-color" content="#f6f5f1" />
+    <ThemeScript />
+    <ClientRouter fallback="swap" />
     <meta name="description" content={project.summary[locale]} />
     <link rel="icon" type="image/svg+xml" href={sitePath('/favicon.svg')} />
-    <title>{project.name[locale]} · {en ? 'Yu Yang' : '于洋项目档案'}</title>
+    <title>{project.name[locale]} · {en ? 'IT-coder-Yy' : 'IT-coder-Yy 项目档案'}</title>
   </head>
   <body>
     <a class="skip-link" href="#detail-content">{en ? 'Skip to project' : '跳至项目正文'}</a>
@@ -40,15 +42,15 @@ const chapters = en
           <p class="detail-index">{group.label[locale]}</p>
           <h1 id="project-title">{project.shortName[locale]}</h1>
           <p class="detail-lede">{project.summary[locale]}</p>
+          <div class="detail-actions">
+            <a class="detail-primary" href={project.source} target="_blank" rel="noopener noreferrer">{en ? 'View on GitHub' : '查看 GitHub 仓库'} ↗</a>
+            <a class="detail-quiet" href={`${home}#projects`}>{en ? 'All projects' : '返回作品集'} ↗</a>
+          </div>
           <dl class="project-facts">
             <div><dt>{en ? 'Project type' : '项目类型'}</dt><dd>{project.ownership[locale]}</dd></div>
             <div><dt>{en ? 'Implementation scope' : '实现范围'}</dt><dd>{project.role[locale]}</dd></div>
             <div><dt>{en ? 'Technologies' : '技术重点'}</dt><dd>{project.tags.join(' · ')}</dd></div>
           </dl>
-          <div class="detail-actions">
-            <a class="detail-primary" href={project.source} target="_blank" rel="noopener noreferrer">{en ? 'View on GitHub' : '查看 GitHub 仓库'} ↗</a>
-            <a class="detail-quiet" href={`${home}#projects`}>{en ? 'All projects' : '返回作品集'} ↗</a>
-          </div>
         </div>
         <figure class="repository-artwork">
           <ProjectCover kind={project.id} locale={locale} eager />
@@ -65,26 +67,31 @@ const chapters = en
         </aside>
         <article class="detail-article">
           <section id="context" class="detail-section">
-            <h2>{en ? 'What this project addresses' : '项目解决什么问题'}</h2>
+            <h2>{en ? 'Problem & Engineering Context' : '痛点与工程背景'}</h2>
+            <p class="section-subhead">{en ? '— Why existing workflows fall short and what this architecture solves.' : '—— 现有流程为何低效，以及本架构如何切入解决。'}</p>
             <p>{detail.context[locale]}</p>
           </section>
           <section id="workflow" class="detail-section">
-            <h2>{en ? 'From input to output' : '从输入到输出'}</h2>
+            <h2>{en ? 'End-to-End Execution Pipeline' : '端到端执行链路'}</h2>
+            <p class="section-subhead">{en ? '— How inputs are validated, transformed, and delivered step by step.' : '—— 从输入校验、状态流转到结果交付的完整闭环。'}</p>
             <ol class="repository-workflow">
               {detail.workflow[locale].map(([title, description], index) => <li><span aria-hidden="true">{String(index + 1).padStart(2, '0')}</span><div><h3>{title}</h3><p>{description}</p></div></li>)}
             </ol>
           </section>
           <section id="implementation" class="detail-section">
-            <h2>{en ? 'Implementation highlights' : '关键工程实现'}</h2>
+            <h2>{en ? 'Core Architectural Highlights' : '核心架构与工程亮点'}</h2>
+            <p class="section-subhead">{en ? '— Key design choices that keep the system reliable and maintainable.' : '—— 支撑系统可靠运行的关键技术决策与验证证据。'}</p>
             <ul class="reliability-list">{project.proofs[locale].map(([title, proof]) => <li><strong>{title}</strong><span>{proof}</span></li>)}</ul>
           </section>
           <section id="boundaries" class="detail-section">
-            <h2>{en ? 'Scope and current boundaries' : '范围与当前边界'}</h2>
+            <h2>{en ? 'System Scope & Safety Boundaries' : '系统范围与安全边界'}</h2>
+            <p class="section-subhead">{en ? '— Explicit operational constraints, dependency assumptions, and guardrails.' : '—— 明确的运行前置条件、依赖假设与工程防护边界。'}</p>
             <ul class="repository-boundaries">{detail.boundaries[locale].map(boundary => <li>{boundary}</li>)}</ul>
             {detail.upstream && <a class="repository-upstream" href={detail.upstream} target="_blank" rel="noopener noreferrer">{en ? 'Original project: PullMyBoots/X-MinimaxH3' : '原始项目：PullMyBoots/X-MinimaxH3'} ↗</a>}
           </section>
           <section id="source" class="detail-section">
-            <h2>{en ? 'Explore the source' : '沿着源码继续阅读'}</h2>
+            <h2>{en ? 'Source Code & Key Modules' : '源码导航与核心模块'}</h2>
+            <p class="section-subhead">{en ? '— Jump directly to the core entry points and contracts in the repository.' : '—— 直接定位仓库中的关键实现入口与契约定义。'}</p>
             <ul class="repository-sources">{detail.references.map(reference => <li><a href={`${project.source}/blob/main/${reference.path}`} target="_blank" rel="noopener noreferrer"><strong>{reference.label[locale]} ↗</strong><code>{reference.path}</code></a></li>)}</ul>
             <div class="detail-end-actions"><a href={`${home}#projects`}>{en ? 'Back to all projects' : '返回全部作品'} ↑</a><a href={`${home}#${group.id}`}>{en ? 'More in this category' : '浏览同类作品'} ↗</a></div>
           </section>
@@ -95,21 +102,21 @@ const chapters = en
 </html>
 
 <style>
-  .repository-project h1 { max-width: 13ch; overflow-wrap: anywhere; font-size: clamp(2.8rem, 5vw, 5rem); line-height: 1.06; letter-spacing: -.035em; }
   .repository-artwork { margin: 0; align-self: center; }
   .repository-artwork :global(img) { display: block; width: 100%; height: auto; }
-  .repository-artwork figcaption { margin-top: 12px; color: var(--detail-soft); font-size: 12px; }
-  .repository-workflow { margin: 28px 0 0; padding: 0; list-style: none; }
-  .repository-workflow li { display: grid; grid-template-columns: 2.5rem minmax(0, 1fr); gap: 16px; padding: 24px 0; border-top: 1px solid var(--detail-line); }
-  .repository-workflow li > span { color: var(--detail-red); font-size: 14px; font-weight: 700; }
-  .repository-workflow h3 { margin: 0 0 10px; font-size: 20px; }
-  .repository-workflow p { margin: 0; }
-  .repository-boundaries { padding-left: 1.3em; line-height: 1.85; }
-  .repository-boundaries li + li { margin-top: 14px; }
-  .repository-upstream { display: inline-block; padding-block: 12px; text-decoration: underline; text-underline-offset: 4px; overflow-wrap: anywhere; }
-  .repository-sources { margin: 28px 0; padding: 0; list-style: none; }
-  .repository-sources a { display: flex; flex-direction: column; gap: 8px; padding: 20px 0; border-bottom: 1px solid var(--detail-line); }
+  .repository-artwork figcaption { margin-top: 12px; color: var(--detail-soft); font-size: 0.82rem; }
+  .repository-workflow { margin: 24px 0 0; padding: 0; list-style: none; }
+  .repository-workflow li { display: grid; grid-template-columns: 2.5rem minmax(0, 1fr); gap: 16px; padding: 22px 0; border-top: 1px dashed var(--detail-line); }
+  .repository-workflow li > span { color: var(--detail-red); font-size: 0.88rem; font-weight: 700; }
+  .repository-workflow h3 { margin: 0 0 8px; font-size: 1.06rem; line-height: 1.38; font-weight: 750; color: var(--detail-ink); }
+  .repository-workflow p { margin: 0; font-size: 0.95rem; line-height: 1.72; color: var(--detail-soft); }
+  .repository-boundaries { padding-left: 1.3em; font-size: 0.95rem; line-height: 1.82; color: var(--detail-soft); }
+  .repository-boundaries li + li { margin-top: 12px; }
+  .repository-upstream { display: inline-block; padding-block: 12px; font-size: 0.94rem; color: var(--detail-red); text-decoration: underline; text-underline-offset: 4px; overflow-wrap: anywhere; }
+  .repository-sources { margin: 24px 0; padding: 0; list-style: none; }
+  .repository-sources a { display: flex; flex-direction: column; gap: 6px; padding: 18px 0; border-bottom: 1px dashed var(--detail-line); }
+  .repository-sources a strong { font-size: 0.96rem; color: var(--detail-ink); }
   .repository-sources a:hover strong { color: var(--detail-red); }
-  .repository-sources code { font-size: 12px; color: var(--detail-soft); overflow-wrap: anywhere; }
+  .repository-sources code { font-size: 0.82rem; color: var(--detail-soft); overflow-wrap: anywhere; }
   .repository-project :focus-visible { outline: 3px solid var(--detail-red); outline-offset: 4px; }
 </style>
