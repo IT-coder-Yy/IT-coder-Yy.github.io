@@ -7,133 +7,370 @@ interface Props {
   spatial?: boolean;
 }
 
+import '../styles/tokens.css';
 import MusicPlayer from './MusicPlayer.astro';
 import { sitePath } from '../lib/paths';
 
-const { locale, pathname, detail = false, showLanguageSwitch = true, spatial = false } = Astro.props;
+const { locale, pathname, detail = false, showLanguageSwitch = true } = Astro.props;
 const isEnglish = locale === 'en';
+const isHome = pathname === '/' || pathname === '/en';
 const isBlog = pathname === '/blog' || pathname.startsWith('/blog/');
+const isProject = detail || pathname.includes('/projects/');
 const home = isEnglish ? sitePath('/en') : sitePath('/');
 const alternate = isEnglish
   ? sitePath(pathname === '/en' ? '/' : pathname.replace(/^\/en/, ''))
   : sitePath(pathname === '/' ? '/en' : `/en${pathname}`);
-const labels = isEnglish
-  ? { home: 'Home', agent: 'AI Agents', vision: 'Vision / C++', method: 'Engineering', blog: 'Blog', github: 'GitHub', switch: 'Language selection' }
-  : { home: '首页', agent: 'AI Agent', vision: '视觉 / C++', method: '工程方法', blog: '博客', github: 'GitHub', switch: '语言选择' };
-const headerClass = isBlog ? 'blog-header' : detail ? 'detail-header' : 'site-header';
-const wordmarkClass = isBlog ? 'blog-wordmark' : detail ? 'detail-wordmark' : 'wordmark';
-const markClass = isBlog ? 'blog-mark' : detail ? 'detail-mark' : 'wordmark-mark';
+const switchLabel = isEnglish ? 'Language selection' : '语言选择';
+const githubUrl = 'https://github.com/IT-coder-Yy';
 ---
 
-<header class={headerClass} data-site-header>
-  <a class={wordmarkClass} href={`${home}#top`} aria-label={isEnglish ? 'Yu Yang portfolio home' : '于洋个人作品集首页'}>
-    <span class={markClass} aria-hidden="true">Y</span>
-    <span>{spatial ? 'Meridian' : 'Yu Yang'}</span>
-  </a>
-  <button
-    class="nav-toggle"
-    type="button"
-    aria-expanded="false"
-    aria-controls="primary-navigation"
-    aria-label={isEnglish ? 'Open navigation' : '打开主导航'}
+<header class="site-header" data-site-header>
+  <a
+    class="nav-pill nav-logo"
+    href={isHome ? '#top' : `${home}#top`}
+    aria-label={isEnglish ? 'IT-coder-Yy portfolio home' : 'IT-coder-Yy 个人作品集首页'}
+  >Yy</a>
+
+  <nav
+    id="primary-navigation"
+    class="nav-pill nav-links"
+    data-site-nav
+    aria-label={isEnglish ? 'Primary navigation' : '主导航'}
   >
-    <span>{isEnglish ? 'Menu' : '菜单'}</span>
-    <i aria-hidden="true"><b></b><b></b></i>
-  </button>
-  <nav id="primary-navigation" data-site-nav aria-label={isEnglish ? 'Primary navigation' : '主导航'}>
-    {spatial ? <>
-      <a class="nav-link" data-view-link="top" href="#top">{isEnglish ? 'Canvas' : '画布'}</a>
-      <a class="nav-link" data-view-link="projects" href="#projects">{isEnglish ? 'Work' : '作品'}</a>
-      <a class="nav-link" href={sitePath('/blog')}>{isEnglish ? 'Notes · 中文' : '手记'} <span aria-hidden="true">↗</span></a>
-      <a class="nav-link" data-view-link="about" href="#about">{isEnglish ? 'About' : '关于'}</a>
-    </> : <>
-    <a class="nav-link nav-home" href={`${home}#top`}>{labels.home}</a>
-    <a class="nav-link nav-agent" href={`${home}#ai-agent`}>{labels.agent}</a>
-    <a class="nav-link nav-vision" href={`${home}#cv`}>{labels.vision}</a>
-    <a class="nav-link nav-method" href={`${home}#method`}>{labels.method}</a>
-    {!isEnglish && (
-      <a class="nav-link nav-blog" href={sitePath('/blog')} aria-current={isBlog ? 'page' : undefined}>{labels.blog}</a>
-    )}
-    <a class="nav-link nav-github" href="https://github.com/IT-coder-Yy" target="_blank" rel="noopener noreferrer">{labels.github} <span aria-hidden="true">↗</span></a>
-    </>}
-    {showLanguageSwitch && <div class="language-switch" role="group" aria-label={labels.switch}>
-      {isEnglish ? (
-        <>
-          <a class="language-option" href={alternate} lang="zh-CN" hreflang="zh-CN" aria-label="切换至中文版">中文</a>
-          <span aria-hidden="true">/</span>
-          <strong class="language-option" lang="en" aria-current="page">EN</strong>
-        </>
-      ) : (
-        <>
-          <strong class="language-option" lang="zh-CN" aria-current="page">中文</strong>
-          <span aria-hidden="true">/</span>
-          <a class="language-option" href={alternate} lang="en" hreflang="en" aria-label="Switch to English">EN</a>
-        </>
+    <a
+      class="nav-link"
+      data-view-link={isHome ? 'top' : undefined}
+      href={isHome ? '#top' : `${home}#top`}
+      aria-current={isHome ? 'page' : undefined}
+    >{isEnglish ? 'Home' : '首页'}</a>
+    <i class="nav-sep" aria-hidden="true"></i>
+    <a
+      class="nav-link"
+      data-view-link={isHome ? 'projects' : undefined}
+      href={isHome ? '#projects' : `${home}#projects`}
+      aria-current={!isHome && isProject ? 'page' : undefined}
+    >{isEnglish ? 'Work' : '作品'}</a>
+    <i class="nav-sep" aria-hidden="true"></i>
+    <a
+      class="nav-link"
+      href={sitePath('/blog')}
+      aria-current={isBlog ? 'page' : undefined}
+    >{isEnglish ? 'Notes' : '手记'}</a>
+    <i class="nav-sep" aria-hidden="true"></i>
+    <a
+      class="nav-link"
+      data-view-link={isHome ? 'about' : undefined}
+      href={isHome ? '#about' : `${home}#about`}
+    >{isEnglish ? 'About' : '关于'}</a>
+
+    <div class="nav-drawer-extras">
+      <a
+        class="nav-drawer-github"
+        href={githubUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="GitHub"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M9 19c-4 1.5-4-2-6-2.5M15 21v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12 12 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21" />
+        </svg>
+        <span>GitHub ↗</span>
+      </a>
+      {showLanguageSwitch && (
+        <div class="language-switch" role="group" aria-label={switchLabel}>
+          {isEnglish ? (
+            <>
+              <a class="language-option" href={alternate} lang="zh-CN" hreflang="zh-CN" aria-label="切换至中文版">中</a>
+              <span class="language-sep" aria-hidden="true">/</span>
+              <strong class="language-option" lang="en" aria-current="page">EN</strong>
+            </>
+          ) : (
+            <>
+              <strong class="language-option" lang="zh-CN" aria-current="page">中</strong>
+              <span class="language-sep" aria-hidden="true">/</span>
+              <a class="language-option" href={alternate} lang="en" hreflang="en" aria-label="Switch to English">EN</a>
+            </>
+          )}
+        </div>
       )}
-    </div>}
+    </div>
   </nav>
+
+  <div class="nav-right">
+    <a
+      class="nav-pill nav-icon-pill nav-github-desktop"
+      href={githubUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="GitHub"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M9 19c-4 1.5-4-2-6-2.5M15 21v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12 12 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21" />
+      </svg>
+    </a>
+
+    <div
+      class="nav-pill theme-seg"
+      role="group"
+      aria-label={isEnglish ? 'Theme mode' : '主题切换'}
+      data-theme-switcher
+    >
+      <span class="theme-knob" aria-hidden="true"></span>
+      <button
+        class="theme-btn"
+        type="button"
+        data-theme-mode="light"
+        aria-pressed="false"
+        aria-label={isEnglish ? 'Light theme' : '亮色主题'}
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+        </svg>
+      </button>
+      <button
+        class="theme-btn"
+        type="button"
+        data-theme-mode="dark"
+        aria-pressed="false"
+        aria-label={isEnglish ? 'Dark theme' : '暗色主题'}
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" />
+        </svg>
+      </button>
+      <button
+        class="theme-btn"
+        type="button"
+        data-theme-mode="system"
+        aria-pressed="false"
+        aria-label={isEnglish ? 'System theme' : '跟随系统'}
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="3" y="4" width="18" height="12" rx="2" />
+          <path d="M8 20h8M12 16v4" />
+        </svg>
+      </button>
+    </div>
+
+    {showLanguageSwitch && (
+      <div class="nav-pill language-switch language-switch-desktop" role="group" aria-label={switchLabel}>
+        {isEnglish ? (
+          <>
+            <a class="language-option" href={alternate} lang="zh-CN" hreflang="zh-CN" aria-label="切换至中文版">中</a>
+            <span class="language-sep" aria-hidden="true">/</span>
+            <strong class="language-option" lang="en" aria-current="page">EN</strong>
+          </>
+        ) : (
+          <>
+            <strong class="language-option" lang="zh-CN" aria-current="page">中</strong>
+            <span class="language-sep" aria-hidden="true">/</span>
+            <a class="language-option" href={alternate} lang="en" hreflang="en" aria-label="Switch to English">EN</a>
+          </>
+        )}
+      </div>
+    )}
+
+    <button
+      class="nav-pill nav-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="primary-navigation"
+      aria-label={isEnglish ? 'Open navigation' : '打开主导航'}
+    >
+      <span>{isEnglish ? 'Menu' : '菜单'}</span>
+      <i aria-hidden="true"><b></b><b></b></i>
+    </button>
+  </div>
 </header>
+
 <MusicPlayer locale={locale} />
 
 <script>
-    import { onPageLoad } from '../lib/page-lifecycle';
-    onPageLoad((signal) => {
-  const header = document.querySelector<HTMLElement>('[data-site-header]');
+  import { onPageLoad } from '../lib/page-lifecycle';
 
-  if (header && !header.dataset.ready) {
-    header.dataset.ready = 'true';
-    const toggle = header.querySelector<HTMLButtonElement>('.nav-toggle');
-    const navigation = header.querySelector<HTMLElement>('[data-site-nav]');
+  type ThemeMode = 'light' | 'dark' | 'system';
+  const STORAGE_KEY = 'site-theme';
+  const MODES: readonly ThemeMode[] = ['light', 'dark', 'system'];
 
-    const setMenu = (open: boolean) => {
-      header.classList.toggle('is-open', open);
-      toggle?.setAttribute('aria-expanded', String(open));
-      toggle?.setAttribute(
-        'aria-label',
-        open
-          ? (document.documentElement.lang.startsWith('zh') ? '关闭主导航' : 'Close navigation')
-          : (document.documentElement.lang.startsWith('zh') ? '打开主导航' : 'Open navigation'),
+  const resolveTheme = (mode: ThemeMode): 'light' | 'dark' => {
+    if (mode === 'light') return 'light';
+    if (mode === 'dark') return 'dark';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  };
+
+  const normalizeMode = (value: string | undefined): ThemeMode =>
+    value === 'light' || value === 'dark' || value === 'system' ? value : 'system';
+
+  const syncThemeUI = (switcher: HTMLElement, mode: ThemeMode) => {
+    const idx = MODES.indexOf(mode);
+    switcher.style.setProperty('--seg-idx', String(idx >= 0 ? idx : 2));
+    switcher.querySelectorAll<HTMLButtonElement>('[data-theme-mode]').forEach((btn) => {
+      const active = btn.dataset.themeMode === mode;
+      btn.classList.toggle('is-active', active);
+      btn.setAttribute('aria-pressed', String(active));
+    });
+  };
+
+  onPageLoad((signal) => {
+    const header = document.querySelector<HTMLElement>('[data-site-header]');
+
+    if (header) {
+      const toggle = header.querySelector<HTMLButtonElement>('.nav-toggle');
+      const navigation = header.querySelector<HTMLElement>('[data-site-nav]');
+
+      const setMenu = (open: boolean) => {
+        header.classList.toggle('is-open', open);
+        toggle?.setAttribute('aria-expanded', String(open));
+        const isZh = document.documentElement.lang.startsWith('zh');
+        toggle?.setAttribute(
+          'aria-label',
+          open
+            ? (isZh ? '关闭主导航' : 'Close navigation')
+            : (isZh ? '打开主导航' : 'Open navigation'),
+        );
+      };
+
+      toggle?.addEventListener(
+        'click',
+        () => {
+          setMenu(toggle.getAttribute('aria-expanded') !== 'true');
+        },
+        { signal },
       );
-    };
 
-    toggle?.addEventListener('click', () => {
-      setMenu(toggle.getAttribute('aria-expanded') !== 'true');
-    });
+      navigation?.querySelectorAll('a').forEach((link) => {
+        link.addEventListener('click', () => setMenu(false), { signal });
+      });
 
-    navigation?.querySelectorAll('a').forEach((link) => {
-      link.addEventListener('click', () => setMenu(false));
-    });
+      document.addEventListener(
+        'click',
+        (event) => {
+          if (!header.classList.contains('is-open')) return;
+          const target = event.target as Node | null;
+          if (target && !header.contains(target)) {
+            setMenu(false);
+          }
+        },
+        { signal },
+      );
 
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && header.classList.contains('is-open')) {
-        setMenu(false);
-        toggle?.focus();
+      document.addEventListener(
+        'keydown',
+        (event) => {
+          if (event.key === 'Escape' && header.classList.contains('is-open')) {
+            setMenu(false);
+            toggle?.focus();
+          }
+        },
+        { signal },
+      );
+
+      const switcher = header.querySelector<HTMLElement>('[data-theme-switcher]');
+      if (switcher) {
+        const currentMode = normalizeMode(document.documentElement.dataset.themeMode);
+        syncThemeUI(switcher, currentMode);
+
+        switcher.addEventListener(
+          'click',
+          (event) => {
+            const target = event.target as HTMLElement | null;
+            const button = target?.closest<HTMLButtonElement>('[data-theme-mode]');
+            if (!button) return;
+
+            const mode = normalizeMode(button.dataset.themeMode);
+            try {
+              window.localStorage.setItem(STORAGE_KEY, mode);
+            } catch {}
+
+            const resolved = resolveTheme(mode);
+            const previousTheme = document.documentElement.dataset.theme;
+            const apply = () => {
+              document.documentElement.dataset.theme = resolved;
+              document.documentElement.dataset.themeMode = mode;
+              const meta = document.querySelector('meta[name="theme-color"]');
+              if (meta) {
+                meta.setAttribute('content', resolved === 'dark' ? '#121212' : '#f6f5f1');
+              }
+              syncThemeUI(switcher, mode);
+            };
+
+            const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const startVT = (document as Document & {
+              startViewTransition?: (cb: () => void) => {
+                ready: Promise<void>;
+                finished: Promise<void>;
+              };
+            }).startViewTransition;
+
+            if (typeof startVT !== 'function' || resolved === previousTheme || reducedMotion) {
+              apply();
+              return;
+            }
+
+            let x = event.clientX;
+            let y = event.clientY;
+            if (x === 0 && y === 0) {
+              const rect = button.getBoundingClientRect();
+              x = rect.left + rect.width / 2;
+              y = rect.top + rect.height / 2;
+            }
+            const radius = Math.hypot(
+              Math.max(x, window.innerWidth - x),
+              Math.max(y, window.innerHeight - y),
+            );
+
+            document.documentElement.classList.add('theme-transitioning');
+            const transition = startVT.call(document, apply);
+
+            transition.ready
+              .then(() => {
+                document.documentElement.animate(
+                  {
+                    clipPath: [
+                      `circle(0px at ${x}px ${y}px)`,
+                      `circle(${radius}px at ${x}px ${y}px)`,
+                    ],
+                  },
+                  {
+                    duration: 650,
+                    easing: 'cubic-bezier(.65, 0, .35, 1)',
+                    pseudoElement: '::view-transition-new(root)',
+                  },
+                );
+              })
+              .catch(() => {});
+
+            transition.finished.finally(() => {
+              document.documentElement.classList.remove('theme-transitioning');
+            });
+          },
+          { signal },
+        );
       }
-    }, { signal });
-  }
+    }
 
-  const chapterLinks = Array.from(
-    document.querySelectorAll<HTMLAnchorElement>('.chapter-rail a[href^="#"]'),
-  );
-  const chapterSections = chapterLinks
-    .map((link) => document.querySelector<HTMLElement>(link.hash))
-    .filter((section): section is HTMLElement => Boolean(section));
-
-  if (chapterSections.length && 'IntersectionObserver' in window) {
-    const chapterObserver = new IntersectionObserver(
-      (entries) => {
-        const active = entries.find((entry) => entry.isIntersecting)?.target as HTMLElement | undefined;
-        if (!active) return;
-        chapterLinks.forEach((link) => {
-          if (link.hash === `#${active.id}`) link.setAttribute('aria-current', 'location');
-          else link.removeAttribute('aria-current');
-        });
-      },
-      { rootMargin: '-18% 0px -70%', threshold: 0 },
+    const chapterLinks = Array.from(
+      document.querySelectorAll<HTMLAnchorElement>('.chapter-rail a[href^="#"]'),
     );
-    signal.addEventListener('abort', () => chapterObserver.disconnect(), { once: true });
-    chapterSections.forEach((section) => chapterObserver.observe(section));
-  }
+    const chapterSections = chapterLinks
+      .map((link) => document.querySelector<HTMLElement>(link.hash))
+      .filter((section): section is HTMLElement => Boolean(section));
 
-    });
-  </script>
+    if (chapterSections.length && 'IntersectionObserver' in window) {
+      const chapterObserver = new IntersectionObserver(
+        (entries) => {
+          const active = entries.find((entry) => entry.isIntersecting)?.target as HTMLElement | undefined;
+          if (!active) return;
+          chapterLinks.forEach((link) => {
+            if (link.hash === `#${active.id}`) link.setAttribute('aria-current', 'location');
+            else link.removeAttribute('aria-current');
+          });
+        },
+        { rootMargin: '-18% 0px -70%', threshold: 0 },
+      );
+      signal.addEventListener('abort', () => chapterObserver.disconnect(), { once: true });
+      chapterSections.forEach((section) => chapterObserver.observe(section));
+    }
+  });
+</script>
