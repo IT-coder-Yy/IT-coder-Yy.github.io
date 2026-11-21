@@ -32,3 +32,8 @@ Thumbs.db
 # Original/duplicate artwork; the site imports the transparent version.
 /src/assets/images/lit-official-emblem-source.jpg
 /src/assets/images/lit-official-emblem.jpg
+
+# Local-only personal photo and internal notes (kept locally, excluded from repository).
+/src/assets/images/it-coder-yy-portrait.jpg
+/public/project-media/README.md
+/src/data/music.README.md
