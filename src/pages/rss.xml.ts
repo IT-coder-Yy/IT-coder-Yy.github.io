@@ -9,7 +9,7 @@ export const GET: APIRoute = async (context) => {
       [
         '<?xml version="1.0" encoding="UTF-8"?>',
         '<rss version="2.0"><channel>',
-        '<title>于洋技术博客（待配置）</title>',
+        '<title>IT-coder-Yy 技术博客（待配置）</title>',
         '<link>/blog</link>',
         '<description>部署时设置 SITE_URL 后启用带绝对地址的正式 RSS。</description>',
         '</channel></rss>',
@@ -23,7 +23,7 @@ export const GET: APIRoute = async (context) => {
   const posts = await getBlogPosts({ includeDrafts: false });
 
   return rss({
-    title: '于洋技术博客',
+    title: 'IT-coder-Yy 技术博客',
     description: 'AI Agent、红外视觉、C++ / Qt 与模型部署的中文工程实践。',
     site: context.site,
     items: posts.map((post) => ({
