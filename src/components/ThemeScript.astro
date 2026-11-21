@@ -1,0 +1,75 @@
+---
+// 无闪烁主题初始化与全站字体加载（放入每个页面的 <head> 中）
+---
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap"
+  rel="stylesheet"
+/>
+
+<script is:inline>
+  (() => {
+    const STORAGE_KEY = 'site-theme';
+    const VALID_MODES = ['light', 'dark', 'system'];
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+
+    const resolveTheme = (mode) => {
+      if (mode === 'light') return 'light';
+      if (mode === 'dark') return 'dark';
+      return mq.matches ? 'dark' : 'light';
+    };
+
+    const readMode = () => {
+      try {
+        const param = new URLSearchParams(window.location.search).get('theme');
+        if (param && VALID_MODES.includes(param)) return param;
+      } catch {}
+      try {
+        const saved = window.localStorage.getItem(STORAGE_KEY);
+        if (saved && VALID_MODES.includes(saved)) return saved;
+      } catch {}
+      return 'system';
+    };
+
+    const applyTheme = (doc, mode) => {
+      if (!doc || !doc.documentElement) return;
+      const resolved = resolveTheme(mode);
+      doc.documentElement.dataset.theme = resolved;
+      doc.documentElement.dataset.themeMode = mode;
+      const meta = doc.querySelector('meta[name="theme-color"]');
+      if (meta) {
+        meta.setAttribute('content', resolved === 'dark' ? '#121212' : '#f6f5f1');
+      }
+    };
+
+    applyTheme(document, readMode());
+
+    if (!window.__siteThemeInit) {
+      window.__siteThemeInit = true;
+
+      document.addEventListener('astro:before-swap', (event) => {
+        if (event && event.newDocument) {
+          applyTheme(event.newDocument, readMode());
+        }
+      });
+
+      document.addEventListener('astro:after-swap', () => {
+        applyTheme(document, readMode());
+      });
+
+      const handleMediaChange = () => {
+        if (readMode() === 'system') {
+          applyTheme(document, 'system');
+        }
+      };
+
+      if (typeof mq.addEventListener === 'function') {
+        mq.addEventListener('change', handleMediaChange);
+      } else if (typeof mq.addListener === 'function') {
+        mq.addListener(handleMediaChange);
+      }
+    }
+  })();
+</script>

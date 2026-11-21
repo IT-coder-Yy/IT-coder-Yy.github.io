@@ -1,43 +1,44 @@
+@import './tokens.css';
+
 /**
- * Apple Design System (HIG) Implementation for Yu Yang's Engineering Portfolio
- * Principles: Clarity, Deference, Depth, Fluid Micro-interactions
+ * Shared Portfolio Styles mapped onto tokens.css (Light & Dark Themes)
  */
 
 :root {
-  /* Apple Surface & Neutral Tokens */
-  --apple-bg: #fbfbfd;
-  --apple-subtle: #f5f5f7;
-  --apple-card: #ffffff;
-  --apple-card-elevated: #ffffff;
-  --apple-card-glass: rgba(255, 255, 255, 0.88);
-  --apple-nav-glass: rgba(255, 255, 255, 0.92);
+  /* Surface & Neutral Aliases -> tokens.css */
+  --apple-bg: var(--bg);
+  --apple-subtle: var(--bg-deep);
+  --apple-card: var(--surface);
+  --apple-card-elevated: var(--surface-elevated);
+  --apple-card-glass: var(--surface-glass);
+  --apple-nav-glass: var(--surface-glass);
 
-  /* Apple Border & Line Tokens */
-  --apple-border: rgba(0, 0, 0, 0.08);
-  --apple-border-subtle: rgba(0, 0, 0, 0.04);
-  --apple-border-hover: rgba(0, 0, 0, 0.16);
-  --apple-border-glass: rgba(255, 255, 255, 0.85);
+  /* Border & Line Aliases -> tokens.css */
+  --apple-border: var(--line);
+  --apple-border-subtle: var(--line-subtle);
+  --apple-border-hover: color-mix(in srgb, var(--ink) 28%, transparent);
+  --apple-border-glass: var(--line);
 
-  /* Apple Typography & Ink Hierarchy */
-  --apple-text: #1d1d1f;
-  --apple-text-secondary: #6e6e73;
-  --apple-text-tertiary: #86868b;
-  --apple-text-quaternary: #aeaeb2;
+  /* Typography & Ink Hierarchy -> tokens.css */
+  --apple-text: var(--ink);
+  --apple-text-secondary: var(--ink-secondary);
+  --apple-text-tertiary: var(--muted);
+  --apple-text-quaternary: var(--muted);
 
-  /* Accent & Highlight Colors (Apple Pro Palettes) */
-  --apple-blue: #0071e3;
-  --apple-blue-hover: #0077ed;
-  --apple-blue-subtle: rgba(0, 113, 227, 0.08);
-  --apple-red: #e34430;
-  --apple-red-hover: #c93623;
-  --apple-red-subtle: rgba(227, 68, 48, 0.08);
+  /* Accent & Highlight Colors -> tokens.css */
+  --apple-blue: var(--accent);
+  --apple-blue-hover: var(--accent-hover);
+  --apple-blue-subtle: var(--accent-subtle);
+  --apple-red: var(--accent);
+  --apple-red-hover: var(--accent-hover);
+  --apple-red-subtle: var(--accent-subtle);
   --apple-emerald: #34c759;
   --apple-amber: #ff9500;
   --apple-purple: #af52de;
 
-  /* Typography Stacks */
-  --apple-font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Helvetica Neue", "Microsoft YaHei", sans-serif;
-  --apple-font-mono: "SF Mono", Menlo, Monaco, "Cascadia Code", Consolas, monospace;
+  /* Typography Stacks -> tokens.css */
+  --apple-font-sans: var(--font-sans);
+  --apple-font-mono: var(--font-mono);
 
   /* Precision Radii */
   --radius-pill: 9999px;
@@ -45,31 +46,26 @@
   --radius-card-sm: 16px;
   --radius-control: 12px;
 
-  /* Shadows (Multi-layered Sub-surface Apple Shadows) */
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
-  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.02);
-  --shadow-float: 0 10px 30px -4px rgba(0, 0, 0, 0.07), 0 2px 6px rgba(0, 0, 0, 0.03);
-  --shadow-hover: 0 20px 44px -6px rgba(0, 0, 0, 0.11), 0 4px 12px rgba(0, 0, 0, 0.04);
-  --shadow-glass: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 8px 32px rgba(0, 0, 0, 0.06);
+  /* Theme-aware Shadows -> tokens.css */
+  --shadow-sm: var(--shadow-card-sm);
+  --shadow-card: var(--shadow-card-sm);
+  --shadow-float: var(--shadow-card-md);
+  --shadow-hover: var(--shadow-card-md);
+  --shadow-glass: inset 0 1px 0 var(--line-subtle), var(--shadow-card-md);
 
   /* Physics & Timing */
   --apple-spring: cubic-bezier(0.16, 1, 0.3, 1);
   --apple-ease: cubic-bezier(0.25, 1, 0.5, 1);
   --apple-duration: 240ms;
 
-  /* Backward Compatibility Aliases */
-  --ink: var(--apple-text);
-  --ink-soft: var(--apple-text-secondary);
-  --paper: var(--apple-bg);
-  --paper-deep: var(--apple-subtle);
-  --blue: var(--apple-blue);
-  --blue-strong: var(--apple-red);
-  --lime: var(--apple-red);
-  --line: var(--apple-border);
-  --font-sans: var(--apple-font-sans);
-  --font-data: var(--apple-font-sans);
-  --font-mono: var(--apple-font-mono);
-  --shadow-float: var(--shadow-float);
+  /* Backward Compatibility Aliases (non-cyclic with tokens.css) */
+  --ink-soft: var(--ink-secondary);
+  --paper: var(--bg);
+  --paper-deep: var(--bg-deep);
+  --blue: var(--accent);
+  --blue-strong: var(--accent-hover);
+  --lime: var(--accent);
+  --font-data: var(--font-sans);
 }
 
 /* Base Reset & Smooth Rendering */
@@ -79,9 +75,9 @@
 
 html {
   scroll-behavior: smooth;
-  background-color: var(--apple-bg);
-  color: var(--apple-text);
-  font-family: var(--apple-font-sans);
+  background-color: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -91,8 +87,8 @@ html {
 body {
   margin: 0;
   padding: 0;
-  background-color: var(--apple-bg);
-  color: var(--apple-text);
+  background: var(--bg) repeating-linear-gradient(135deg, var(--hatch) 0 1px, transparent 1px 10px);
+  color: var(--ink);
   font-size: 16px;
   line-height: 1.6;
   overflow-x: hidden;
@@ -115,7 +111,7 @@ button, a {
 }
 
 :focus-visible {
-  outline: 2px solid var(--apple-blue);
+  outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
 
@@ -126,8 +122,8 @@ button, a {
   left: 1rem;
   z-index: 999;
   padding: 0.6rem 1.2rem;
-  background: var(--apple-text);
-  color: #ffffff;
+  background: var(--ink);
+  color: var(--bg);
   font-size: 0.85rem;
   font-weight: 600;
   border-radius: var(--radius-pill);
@@ -140,175 +136,7 @@ button, a {
   transform: translateY(0);
 }
 
-/* ==========================================================================
-   1. Apple Floating Frosted Capsule Island (Header & Navigation)
-   ========================================================================== */
-
-.site-header {
-  position: fixed;
-  top: 1rem;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 100;
-  width: min(calc(100% - 2.5rem), 1540px);
-  padding: 0.55rem 0.85rem 0.55rem 1.15rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.5rem;
-  background: var(--apple-nav-glass);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid var(--apple-border);
-  box-shadow: var(--shadow-glass);
-  border-radius: var(--radius-pill);
-  transition: background var(--apple-duration) var(--apple-ease),
-              box-shadow var(--apple-duration) var(--apple-ease),
-              border-color var(--apple-duration) var(--apple-ease),
-              transform var(--apple-duration) var(--apple-spring);
-}
-
-/* Wordmark Branding */
-.wordmark {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.65rem;
-  font-size: 0.92rem;
-  font-weight: 650;
-  letter-spacing: -0.015em;
-  color: var(--apple-text);
-  user-select: none;
-}
-
-.wordmark-mark {
-  width: 1.95rem;
-  height: 1.95rem;
-  display: grid;
-  place-items: center;
-  color: #ffffff;
-  background: var(--apple-text);
-  font-size: 0.82rem;
-  font-weight: 700;
-  border-radius: 50%;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  transition: transform var(--apple-duration) var(--apple-spring), background var(--apple-duration) var(--apple-ease);
-}
-
-.wordmark:hover .wordmark-mark {
-  transform: scale(1.06);
-  background: var(--apple-red);
-}
-
-/* Nav Link List */
-.site-header nav {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.nav-link {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.45rem 0.85rem;
-  font-size: 0.82rem;
-  font-weight: 500;
-  color: var(--apple-text-secondary);
-  border-radius: var(--radius-pill);
-  transition: all var(--apple-duration) var(--apple-ease);
-  letter-spacing: -0.01em;
-}
-
-.nav-link:hover {
-  color: var(--apple-text);
-  background: rgba(0, 0, 0, 0.05);
-}
-
-.nav-link[aria-current="page"] {
-  color: var(--apple-text);
-  font-weight: 600;
-  background: rgba(0, 0, 0, 0.06);
-}
-
-.nav-github span {
-  font-size: 0.8em;
-  opacity: 0.6;
-  margin-left: 0.2rem;
-  transition: transform var(--apple-duration) var(--apple-ease);
-}
-
-.nav-github:hover span {
-  transform: translate(2px, -2px);
-}
-
-/* iOS Segmented Control (Language Switcher) */
-.language-switch {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.2rem;
-  background: rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  border-radius: var(--radius-pill);
-  margin-left: 0.5rem;
-  font-size: 0.75rem;
-}
-
-.language-switch span[aria-hidden="true"] {
-  display: none;
-}
-
-.language-option {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.3rem 0.65rem;
-  border-radius: var(--radius-pill);
-  color: var(--apple-text-secondary);
-  font-weight: 500;
-  cursor: pointer;
-  transition: all var(--apple-duration) var(--apple-ease);
-}
-
-.language-option:hover {
-  color: var(--apple-text);
-}
-
-.language-option[aria-current="page"] {
-  background: #ffffff;
-  color: var(--apple-text);
-  font-weight: 650;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 1px rgba(0, 0, 0, 0.04);
-}
-
-/* Mobile Hamburger Toggle */
-.nav-toggle {
-  display: none;
-  align-items: center;
-  gap: 0.5rem;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 0.4rem 0.75rem;
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: var(--apple-text);
-  border-radius: var(--radius-pill);
-}
-
-.nav-toggle i {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  width: 16px;
-}
-
-.nav-toggle i b {
-  display: block;
-  width: 100%;
-  height: 1.5px;
-  background: var(--apple-text);
-  border-radius: 1px;
-  transition: transform var(--apple-duration) var(--apple-spring);
-}
+/* Shared floating pill navigation (.site-header) is defined in ./tokens.css */
 
 /* ==========================================================================
    2. Hero Section (Apple Keynote Pro Dossier & Wide Bento)
@@ -1829,56 +1657,8 @@ button, a {
 }
 
 @media (max-width: 768px) {
-  .site-header {
-    width: calc(100% - 1.5rem);
-    top: 0.75rem;
-    padding: 0.45rem 0.75rem;
-  }
-
-  .nav-toggle {
-    display: inline-flex;
-  }
-
   .hero {
     padding-top: 5.6rem;
-  }
-
-  .site-header nav {
-    position: absolute;
-    top: calc(100% + 0.6rem);
-    left: 0;
-    right: 0;
-    background: rgba(255, 255, 255, 0.98);
-    backdrop-filter: blur(32px) saturate(200%);
-    -webkit-backdrop-filter: blur(32px) saturate(200%);
-    border: 1px solid var(--apple-border);
-    border-radius: var(--radius-card-sm);
-    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.16);
-    padding: 0.85rem;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.35rem;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-8px) scale(0.98);
-    transition: all 0.26s var(--apple-spring);
-  }
-
-  .site-header.is-open nav {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0) scale(1);
-  }
-
-  .nav-link {
-    padding: 0.75rem 1rem;
-    font-size: 0.92rem;
-  }
-
-  .language-switch {
-    margin: 0.5rem 0 0;
-    justify-content: center;
   }
 
   .profile-dossier {
@@ -1956,10 +1736,6 @@ button, a {
    ========================================================================== */
 
 @media (min-width: 1540px) {
-  .site-header {
-    width: min(calc(100% - 4rem), 1760px);
-  }
-
   .hero-shell,
   .project-index,
   .project-section,
@@ -1997,11 +1773,6 @@ button, a {
 }
 
 @media (min-width: 1900px) {
-  .site-header {
-    width: min(calc(100% - 6rem), 1980px);
-    padding: 0.65rem 1.35rem 0.65rem 1.6rem;
-  }
-
   .hero-shell,
   .project-index,
   .project-section,
