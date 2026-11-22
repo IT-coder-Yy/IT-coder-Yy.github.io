@@ -1,10 +1,14 @@
-// Astro 保留页面脚本；每次导航重新绑定当前 DOM，离开时清理全局监听与动画。
+// 首次访问会先后触发两个加载事件，同一页只初始化一次。
 export function onPageLoad(setup: (signal: AbortSignal) => void) {
   let controller: AbortController | undefined;
-  document.addEventListener('astro:page-load', () => {
-    controller?.abort();
+
+  const start = () => {
+    if (controller && !controller.signal.aborted) return;
     controller = new AbortController();
     setup(controller.signal);
-  });
+  };
+
+  document.addEventListener('DOMContentLoaded', start, { once: true });
+  document.addEventListener('astro:page-load', start);
   document.addEventListener('astro:before-swap', () => controller?.abort());
 }
