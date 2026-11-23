@@ -81,8 +81,13 @@ const text = english
       nav: 'Project categories',
       workTitle: 'Things I Built',
       workIntro:
-        'Click a tile on the isometric canvas to preview, or pick a category to inspect the full cards.',
-      canvasHint: 'Hover & click any tile to preview ↗',
+        'Browse the open showcase canvas to preview any work, or pick a category for the full draggable card desk.',
+      canvasHint: 'Hover to lift, switch angles below, click to preview ↗',
+      viewFlat: 'Flat 0°',
+      viewTilt: 'Tilt 2.5D',
+      viewIso: 'Isometric',
+      pickRandom: 'Random pick',
+      stageNav: 'Canvas perspective',
       dragHint: 'Drag a card by its handle to move it around.',
       all: 'All',
       reset: 'Reset cards',
@@ -119,8 +124,13 @@ const text = english
       skip: '跳至正文',
       nav: '作品分类',
       workTitle: '做过的东西',
-      workIntro: '全部视图里可以直接点开等距画布预览；切到具体分类，展开完整实体卡片桌面。',
+      workIntro: '全部视图里可以直接点开画布预览；切到具体分类，展开可拖拽的完整实体卡片桌面。',
       canvasHint: '轻移鼠标感受视角，点击任意作品预览 ↗',
+      viewFlat: '正视 0°',
+      viewTilt: '轻透视 2.5D',
+      viewIso: '等距俯瞰',
+      pickRandom: '随手抽一张',
+      stageNav: '画布视角切换',
       dragHint: '轻拖右上角把手，可以把卡片随意挪开看看。',
       all: '全部',
       reset: '卡片归位',
@@ -233,7 +243,7 @@ const tilts: Record<Artwork, string> = {
             </button>
           </div>
 
-          <div class="works-canvas-stage" data-works-canvas>
+          <div class="works-canvas-stage" data-works-canvas data-canvas-mode="tilt">
             <div class="works-canvas-scene">
               <div class="isometric-canvas" data-isometric-canvas>
                 <div class="canvas-lettering" aria-hidden="true">
@@ -248,7 +258,9 @@ const tilts: Record<Artwork, string> = {
                     aria-label={english ? `Preview ${project.name.en}` : `预览${project.name.zh}`}
                   >
                     <div class="canvas-object">
-                      <ProjectCover kind={project.id} locale={locale} eager />
+                      <div class="canvas-object-media">
+                        <ProjectCover kind={project.id} locale={locale} eager />
+                      </div>
                       <span class="canvas-object-title">
                         <span>{project.shortName[locale]}</span>
                         <span aria-hidden="true">↗</span>
@@ -256,6 +268,44 @@ const tilts: Record<Artwork, string> = {
                     </div>
                   </a>
                 ))}
+              </div>
+            </div>
+
+            <div class="canvas-stage-dock-row">
+              <div class="canvas-stage-dock" role="group" aria-label={text.stageNav}>
+                <button
+                  type="button"
+                  class="canvas-dock-btn"
+                  data-canvas-view="flat"
+                  aria-pressed="false"
+                >
+                  {text.viewFlat}
+                </button>
+                <button
+                  type="button"
+                  class="canvas-dock-btn is-active"
+                  data-canvas-view="tilt"
+                  aria-pressed="true"
+                >
+                  {text.viewTilt}
+                </button>
+                <button
+                  type="button"
+                  class="canvas-dock-btn"
+                  data-canvas-view="iso"
+                  aria-pressed="false"
+                >
+                  {text.viewIso}
+                </button>
+                <span class="canvas-dock-sep" aria-hidden="true"></span>
+                <button
+                  type="button"
+                  class="canvas-dock-btn canvas-dock-random"
+                  data-canvas-random
+                >
+                  <span>{text.pickRandom}</span>
+                  <span aria-hidden="true">✦</span>
+                </button>
               </div>
             </div>
           </div>
