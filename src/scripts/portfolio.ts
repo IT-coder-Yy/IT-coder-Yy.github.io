@@ -197,37 +197,140 @@ onPageLoad((signal) => {
     );
   }
 
-  // 等距画布视角只响应画布区域内的指针，静止或移动端时不运行帧循环。
+  // 开放式实体画布：三视角切换（flat / tilt / iso）、柔和指针微视差与随机抽卡联动预览。
   const worksCanvasStage = document.querySelector<HTMLElement>('[data-works-canvas]');
   const canvas = document.querySelector<HTMLElement>('[data-isometric-canvas]');
+  const deskStatus = document.querySelector<HTMLElement>('[data-desk-status]');
   if (worksCanvasStage && canvas) {
+    const viewButtons = Array.from(
+      worksCanvasStage.querySelectorAll<HTMLButtonElement>('[data-canvas-view]'),
+    );
+    const randomBtn = worksCanvasStage.querySelector<HTMLButtonElement>('[data-canvas-random]');
+    const canvasCards = Array.from(
+      canvas.querySelectorAll<HTMLAnchorElement>('.canvas-project[data-preview-open]'),
+    );
+
     let frame = 0;
+    let randomTimer = 0;
+    let lastRandomIndex = -1;
+
     const resetView = () => {
       cancelAnimationFrame(frame);
       canvas.style.removeProperty('--pointer-yaw');
       canvas.style.removeProperty('--pointer-pitch');
     };
 
+    const clearRandomHighlight = () => {
+      window.clearTimeout(randomTimer);
+      randomTimer = 0;
+      canvasCards.forEach((card) => card.removeAttribute('data-random-picked'));
+    };
+
+    const modeLabels: Record<string, string> = english
+      ? { flat: 'Flat 0°', tilt: 'Tilt 2.5D', iso: 'Isometric' }
+      : { flat: '正视 0°', tilt: '轻透视 2.5D', iso: '等距俯瞰' };
+
+    const setCanvasMode = (mode: string, announce = false) => {
+      worksCanvasStage.dataset.canvasMode = mode;
+      viewButtons.forEach((button) => {
+        const active = button.dataset.canvasView === mode;
+        button.classList.toggle('is-active', active);
+        button.setAttribute('aria-pressed', String(active));
+      });
+      if (mode === 'flat') resetView();
+      if (announce && deskStatus) {
+        const label = modeLabels[mode] ?? mode;
+        deskStatus.textContent = english
+          ? `Canvas perspective switched to ${label}.`
+          : `画布视角已切换为「${label}」。`;
+      }
+    };
+
+    if (reducedMotion.matches) {
+      setCanvasMode('flat');
+    }
+
+    viewButtons.forEach((button) => {
+      button.addEventListener(
+        'click',
+        () => {
+          const mode = button.dataset.canvasView;
+          if (mode) setCanvasMode(mode, true);
+        },
+        { signal },
+      );
+    });
+
+    randomBtn?.addEventListener(
+      'click',
+      () => {
+        if (!canvasCards.length) return;
+        clearRandomHighlight();
+        let nextIndex = Math.floor(Math.random() * canvasCards.length);
+        if (canvasCards.length > 1 && nextIndex === lastRandomIndex) {
+          nextIndex = (nextIndex + 1 + Math.floor(Math.random() * (canvasCards.length - 1))) % canvasCards.length;
+        }
+        lastRandomIndex = nextIndex;
+        const picked = canvasCards[nextIndex];
+        if (!picked) return;
+
+        if (reducedMotion.matches) {
+          picked.click();
+          return;
+        }
+
+        picked.dataset.randomPicked = 'true';
+        randomTimer = window.setTimeout(() => {
+          picked.removeAttribute('data-random-picked');
+          randomTimer = 0;
+          picked.click();
+        }, 340);
+      },
+      { signal },
+    );
+
+    const worksCanvasScene = worksCanvasStage.querySelector<HTMLElement>('.works-canvas-scene');
     worksCanvasStage.addEventListener(
       'pointermove',
       (event) => {
-        if (reducedMotion.matches || coarsePointer.matches || mobile.matches) return;
+        if (
+          reducedMotion.matches ||
+          coarsePointer.matches ||
+          mobile.matches ||
+          worksCanvasStage.dataset.canvasMode === 'flat'
+        ) {
+          return;
+        }
         cancelAnimationFrame(frame);
         frame = requestAnimationFrame(() => {
-          const bounds = worksCanvasStage.getBoundingClientRect();
+          const bounds = (worksCanvasScene ?? worksCanvasStage).getBoundingClientRect();
           if (bounds.width <= 0 || bounds.height <= 0) return;
-          const x = (event.clientX - bounds.left) / bounds.width - 0.5;
-          const y = (event.clientY - bounds.top) / bounds.height - 0.5;
-          canvas.style.setProperty('--pointer-yaw', `${x * 2.4}deg`);
-          canvas.style.setProperty('--pointer-pitch', `${y * -1.8}deg`);
+          const x = clamp((event.clientX - bounds.left) / bounds.width - 0.5, -0.5, 0.5);
+          const y = clamp((event.clientY - bounds.top) / bounds.height - 0.5, -0.5, 0.5);
+          canvas.style.setProperty('--pointer-yaw', `${(x * 1.4).toFixed(2)}deg`);
+          canvas.style.setProperty('--pointer-pitch', `${(y * -1.1).toFixed(2)}deg`);
         });
       },
       { signal },
     );
     worksCanvasStage.addEventListener('pointerleave', resetView, { signal });
-    reducedMotion.addEventListener('change', resetView, { signal });
+    reducedMotion.addEventListener(
+      'change',
+      () => {
+        resetView();
+        if (reducedMotion.matches) setCanvasMode('flat');
+      },
+      { signal },
+    );
     mobile.addEventListener('change', resetView, { signal });
-    signal.addEventListener('abort', resetView, { once: true });
+    signal.addEventListener(
+      'abort',
+      () => {
+        resetView();
+        clearRandomHighlight();
+      },
+      { once: true },
+    );
   }
 
   // 作品集：滑块胶囊页签 + 等距画布 / 实体卡片桌面互斥切换 + 卡片拖拽。
@@ -298,8 +401,8 @@ onPageLoad((signal) => {
         if (showCanvas) {
           const total = desk.querySelectorAll('[data-project-card]').length;
           status.textContent = english
-            ? `Showing all ${total} projects on the isometric canvas.`
-            : `已在等距画布显示全部 ${total} 个作品。`;
+            ? `Showing all ${total} projects on the showcase canvas.`
+            : `已在作品画布显示全部 ${total} 个作品。`;
         } else {
           const count = groups
             .filter((group) => !group.hidden)
